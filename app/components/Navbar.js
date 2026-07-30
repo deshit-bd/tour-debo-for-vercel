@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const { currency, setCurrency, rates } = useCurrency();
   const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
@@ -212,16 +212,6 @@ export default function Navbar() {
 
         {/* Right: Actions */}
         <div className="navbar-actions">
-          {/* Multilingual Switcher Button (EN vs BN) */}
-          <button
-            onClick={toggleLanguage}
-            className="nav-currency-select"
-            title="Click to toggle language (EN / বাংলা)"
-            style={{ fontWeight: '800' }}
-          >
-            <span>🌐 {language === 'EN' ? 'EN' : 'বাংলা'}</span>
-          </button>
-
           {/* Dark Mode Toggle Button (🌙 / ☀️) */}
           <button
             onClick={toggleTheme}

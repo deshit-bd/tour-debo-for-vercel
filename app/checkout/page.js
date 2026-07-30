@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -12,9 +13,27 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { formatPrice } = useCurrency();
   const [items, setItems] = useState([
-    { id: 1, name: 'bada boom - Paris Tour', price: 74.99, qty: 1 },
-    { id: 2, name: 'Yellow in bloom - Sajek Tour', price: 89.99, qty: 1 },
-    { id: 3, name: 'quinoa dreams - Sundarbans Tour', price: 109.99, qty: 1 },
+    {
+      id: 1,
+      name: 'bada boom - Paris Tour',
+      price: 74.99,
+      qty: 1,
+      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
+    },
+    {
+      id: 2,
+      name: 'Yellow in bloom - Sajek Tour',
+      price: 89.99,
+      qty: 1,
+      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    },
+    {
+      id: 3,
+      name: 'quinoa dreams - Sundarbans Tour',
+      price: 109.99,
+      qty: 1,
+      image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&q=80',
+    },
   ]);
 
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -145,7 +164,15 @@ export default function CheckoutPage() {
               <div className="cart-items-card">
                 {items.map((item, index) => (
                   <div key={item.id} className={`cart-item-row ${index < items.length - 1 ? 'has-divider' : ''}`}>
-                    <div className="item-gray-placeholder"></div>
+                    <div className="checkout-item-thumb">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        sizes="110px"
+                        className="checkout-item-img"
+                      />
+                    </div>
 
                     <div className="item-title-qty">
                       <h3>{item.name}</h3>

@@ -6,7 +6,96 @@ import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-export default function GuideDetailPage() {
+const GUIDE_DETAILS = {
+  dhaka: {
+    title: 'Explore Dhaka',
+    location: 'Dhaka, Bangladesh',
+    rating: '4.7',
+    guideName: 'Kaalam',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+    hero: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80',
+    thumbs: [
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80',
+    ],
+    description: 'Explore Old Dhaka heritage lanes, Ahsan Manzil, Buriganga river life, and iconic local food stops with a verified city guide.',
+    service: 'Private city tour, historical landmark walk, street food curation, riverfront guidance and personal photography support.',
+  },
+  sajek: {
+    title: 'Sajek Mountain Trek',
+    location: 'Sajek Valley, Bangladesh',
+    rating: '4.9',
+    guideName: 'Robin',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+    hero: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    thumbs: [
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=300&q=80',
+    ],
+    description: 'Cloud viewpoints, hill trails, Konglak Peak, local villages and regional food experiences guided by a mountain route specialist.',
+    service: 'Trek planning, viewpoint timing, local transport coordination, food stops, photo points and safety support.',
+  },
+  'cox-bazar': {
+    title: "Cox's Bazar Beach Guide",
+    location: "Cox's Bazar, Bangladesh",
+    rating: '4.8',
+    guideName: 'Tanvir',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
+    hero: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    thumbs: [
+      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80',
+    ],
+    description: 'Beach camp, marine drive stops, parasailing coordination and sunset photography support with a certified coastal guide.',
+    service: 'Beach safety support, activity scheduling, local seafood recommendations, photo session and transport guidance.',
+  },
+  sylhet: {
+    title: 'Sylhet Tea Estate Escapade',
+    location: 'Sylhet, Bangladesh',
+    rating: '4.6',
+    guideName: 'Hasan',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+    hero: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80',
+    thumbs: [
+      'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=300&q=80',
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=300&q=80',
+    ],
+    description: 'Tea garden photography, Ratargul swamp forest boat routes, Sreemangal food stops and scenic day planning.',
+    service: 'Boat route guidance, tea estate walk, local transport coordination, viewpoint planning and photography support.',
+  },
+};
+
+const RELATED_TOURS = [
+  {
+    title: "Cox's Bazar Beach Camp",
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    rating: '4.7',
+    price: '$200',
+    oldPrice: '$250',
+    duration: '3 Days / 2 Night',
+    desc: 'Oceanfront camp stay with beach walks, local seafood stops and sunset photography support.',
+  },
+  {
+    title: 'Sajek Cloud Valley Trek',
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    rating: '4.9',
+    price: '$220',
+    oldPrice: '$280',
+    duration: '3 Days / 2 Night',
+    desc: 'Hilltop viewpoints, cloud trails, indigenous food experiences and guided sunrise routes.',
+  },
+];
+
+export default function GuideDetailPage({ params }) {
+  const guide = GUIDE_DETAILS[params?.id] || GUIDE_DETAILS.dhaka;
   const [ticketCount, setTicketCount] = useState(1);
   const [openAccordions, setOpenAccordions] = useState({
     itinerary: true,
@@ -31,11 +120,13 @@ export default function GuideDetailPage() {
         <div className="detail-gallery-grid">
           <div className="gallery-main-view">
             <Image
-              src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80"
-              alt="Eiffel Tower Paris"
+              src={guide.hero}
+              alt={guide.title}
               fill
+              sizes="(max-width: 768px) 100vw, 78vw"
               className="detail-main-img"
               priority
+              style={{ objectPosition: 'center center' }}
             />
             <button className="gallery-arrow left-arrow">‹</button>
             <button className="gallery-arrow right-arrow">›</button>
@@ -43,16 +134,16 @@ export default function GuideDetailPage() {
 
           <div className="gallery-thumbs-col">
             <div className="thumb-item">
-              <Image src="https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=300&q=80" alt="Paris vista" fill className="thumb-img" />
+              <Image src={guide.thumbs[0]} alt={`${guide.title} photo 1`} fill sizes="(max-width: 768px) 25vw, 220px" className="thumb-img" />
             </div>
             <div className="thumb-item">
-              <Image src="https://images.unsplash.com/photo-1522093007474-d86e9bf7ba6f?auto=format&fit=crop&w=300&q=80" alt="Louvre Paris" fill className="thumb-img" />
+              <Image src={guide.thumbs[1]} alt={`${guide.title} photo 2`} fill sizes="(max-width: 768px) 25vw, 220px" className="thumb-img" />
             </div>
             <div className="thumb-item">
-              <Image src="https://images.unsplash.com/photo-1509299349698-dd22323b5963?auto=format&fit=crop&w=300&q=80" alt="Paris street" fill className="thumb-img" />
+              <Image src={guide.thumbs[2]} alt={`${guide.title} photo 3`} fill sizes="(max-width: 768px) 25vw, 220px" className="thumb-img" />
             </div>
             <div className="thumb-item thumb-more-overlay">
-              <Image src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=300&q=80" alt="Paris canal" fill className="thumb-img" />
+              <Image src={guide.thumbs[3]} alt={`${guide.title} more photos`} fill sizes="(max-width: 768px) 25vw, 220px" className="thumb-img" />
               <div className="overlay-text">10+</div>
             </div>
           </div>
@@ -62,9 +153,10 @@ export default function GuideDetailPage() {
         <div className="guide-profile-header-card">
           <div className="guide-avatar-large">
             <Image
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
-              alt="Guide Avatar"
+              src={guide.avatar}
+              alt={`${guide.guideName} avatar`}
               fill
+              sizes="120px"
               className="guide-avatar-img"
             />
           </div>
@@ -72,10 +164,10 @@ export default function GuideDetailPage() {
           <div className="guide-header-info">
             <div className="guide-title-row">
               <div className="title-and-rating">
-                <h1>Explore Dhaka</h1>
+                <h1>{guide.title}</h1>
                 <div className="stars-row">
                   <span className="star-gold">★★★★★</span>
-                  <span className="rating-score">4.5</span>
+                  <span className="rating-score">{guide.rating}</span>
                   <small className="rating-count">(Ratings)</small>
                 </div>
               </div>
@@ -86,11 +178,11 @@ export default function GuideDetailPage() {
             </div>
 
             <div className="meta-badges-flex">
-              <span className="meta-badge location-badge">📍 Paris, France</span>
-              <span className="meta-badge icons-badge">✈️ 🏨 🍽️ 🚌 (INCLUDED)</span>
-              <span className="meta-badge weather-badge">⛅ 3 Days / 2 Night</span>
-              <span className="meta-badge interest-badge">👥 144 People Showed Interest</span>
-              <span className="meta-badge visited-badge">👥 144 People Visited!</span>
+              <span className="meta-badge location-badge">Location: {guide.location}</span>
+              <span className="meta-badge icons-badge">Flights, hotel, meals and transport included</span>
+              <span className="meta-badge weather-badge">3 Days / 2 Nights</span>
+              <span className="meta-badge interest-badge">144 people showed interest</span>
+              <span className="meta-badge visited-badge">144 people visited</span>
             </div>
           </div>
         </div>
@@ -99,7 +191,7 @@ export default function GuideDetailPage() {
         <div className="guide-description-block">
           <h3>Description :</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
+            {guide.description}
           </p>
         </div>
 
@@ -118,19 +210,19 @@ export default function GuideDetailPage() {
                   <div className="day-block">
                     <h4>Day 1 :</h4>
                     <p>
-                      Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
+                      {guide.description}
                     </p>
                   </div>
                   <div className="day-block">
                     <h4>Day 2 :</h4>
                     <p>
-                      Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
+                      {guide.description}
                     </p>
                   </div>
                   <div className="day-block">
                     <h4>Day 3 :</h4>
                     <p>
-                      Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
+                      {guide.description}
                     </p>
                   </div>
                 </div>
@@ -145,7 +237,7 @@ export default function GuideDetailPage() {
               </div>
               {openAccordions.serviceDetails && (
                 <div className="accordion-body">
-                  <p>Private city tour, historical landmark walk, culinary exploration and personal photography support.</p>
+                  <p>{guide.service}</p>
                 </div>
               )}
             </div>
@@ -393,23 +485,23 @@ export default function GuideDetailPage() {
             {/* Others Also Showed Interest Stack */}
             <div className="others-interest-section">
               <h4>Others Also showed Interest</h4>
-              {Array.from({ length: 2 }).map((_, idx) => (
-                <div key={idx} className="tour-card-figma mini-card">
+              {RELATED_TOURS.map((tour) => (
+                <div key={tour.title} className="tour-card-figma mini-card">
                   <div className="tour-card-image-wrap">
-                    <Image src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Cox's Bazar" fill className="tour-card-img" />
+                    <Image src={tour.image} alt={tour.title} fill sizes="320px" className="tour-card-img" />
                     <button className="heart-circle-btn">♡</button>
-                    <div className="badge-duration">3 Days / 2 Night</div>
+                    <div className="badge-duration">{tour.duration}</div>
                   </div>
                   <div className="tour-card-content">
                     <div className="title-rating-row">
-                      <h4>Tenting at Cox's Bazar</h4>
+                      <h4>{tour.title}</h4>
                       <span className="star-rating">★ 4.7</span>
                     </div>
                     <div className="price-row">
-                      <span className="current-price">$200</span>
-                      <span className="strike-price">$250</span>
+                      <span className="current-price">{tour.price}</span>
+                      <span className="strike-price">{tour.oldPrice}</span>
                     </div>
-                    <p className="tour-snippet">Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.</p>
+                    <p className="tour-snippet">{tour.desc}</p>
                   </div>
                 </div>
               ))}
@@ -430,3 +522,4 @@ export default function GuideDetailPage() {
     </div>
   );
 }
+

@@ -4,11 +4,22 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
+import AccountSidebar from '../../../components/AccountSidebar';
 
 export default function HelpSuggestionsPage() {
   const [intention, setIntention] = useState('');
   const [email, setEmail] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
+  const [photoName, setPhotoName] = useState('');
+
+  const handlePhotoChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setPhotoName(file.name);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
 
   return (
     <div className="figma-page-shell">
@@ -16,65 +27,16 @@ export default function HelpSuggestionsPage() {
 
       <main className="figma-main-content">
         <div className="account-layout-grid">
-          {/* Left Sidebar Navigation Card */}
-          <aside className="account-sidebar-card">
-            <div className="sidebar-menu-item">
-              <Link href="/account">Overview</Link>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>Manage My Account</h4>
-              <ul>
-                <li><Link href="/account/profile">My Profile</Link></li>
-                <li><Link href="/account/bookings">My Bookings</Link></li>
-                <li><Link href="/account/points">My Points</Link></li>
-                <li><Link href="/account/refunds">My Appeal & Refunds</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/vouchers">Payment Options & Vouchers</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Booking History</h4>
-              <ul>
-                <li><Link href="/account/bookings">All Booking</Link></li>
-                <li><Link href="/account/bookings">To Pay</Link></li>
-                <li><Link href="/account/bookings">To Be Started</Link></li>
-                <li><Link href="/account/bookings">Cancelled Bookings</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/messages">Message Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/favorites">Favorites & Followed Tour Planners</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Reviews</h4>
-              <ul>
-                <li><Link href="/account">To Review</Link></li>
-                <li><Link href="/account">History</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4 className="active"><Link href="/account/help">Help Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account">Earn With Us</Link></h4>
-            </div>
-          </aside>
+          <AccountSidebar />
 
           {/* Right Main Area */}
           <div className="account-main-area">
-            <div className="account-section-card">
-              <h3 className="card-title-lg">Help Center</h3>
+            <div className="account-section-card help-suggestions-card">
+              <div className="help-form-header">
+                <span className="account-eyebrow">Customer Voice</span>
+                <h3 className="card-title-lg">Help Center</h3>
+                <p>Tell us what needs improvement. Our support team will review your suggestion.</p>
+              </div>
 
               {/* Sub Tabs */}
               <div className="account-sub-tabs-bar">
@@ -90,6 +52,7 @@ export default function HelpSuggestionsPage() {
                     <input
                       type="text"
                       className="suggestion-text-input"
+                      placeholder="e.g. Improve booking confirmation flow"
                       value={intention}
                       onChange={(e) => setIntention(e.target.value)}
                     />
@@ -100,6 +63,7 @@ export default function HelpSuggestionsPage() {
                     <input
                       type="email"
                       className="suggestion-text-input"
+                      placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
@@ -107,9 +71,10 @@ export default function HelpSuggestionsPage() {
                 </div>
 
                 <div className="field-block">
-                  <label className="field-title">feedback</label>
+                  <label className="field-title">Feedback</label>
                   <textarea
                     rows={6}
+                    placeholder="Write your feedback in detail..."
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                     className="dispute-textarea"
@@ -118,13 +83,28 @@ export default function HelpSuggestionsPage() {
 
                 <div className="field-block">
                   <label className="field-title">Provide a Photo</label>
-                  <div className="evidence-upload-box">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="1.5">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                  </div>
+                  <label className={`evidence-upload-box ${photoPreview ? 'has-preview' : ''}`}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="upload-file-input"
+                      onChange={handlePhotoChange}
+                    />
+                    {photoPreview ? (
+                      <img src={photoPreview} alt="Selected evidence preview" className="upload-preview-img" />
+                    ) : (
+                      <span className="upload-empty-state">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="1.5">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Click to upload photo</span>
+                        <small>PNG, JPG or WEBP</small>
+                      </span>
+                    )}
+                  </label>
+                  {photoName && <small className="upload-file-name">{photoName}</small>}
                 </div>
 
                 <div className="dispute-submit-row">

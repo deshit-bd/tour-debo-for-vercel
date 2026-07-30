@@ -133,6 +133,7 @@ export default function TourDetailPage() {
               src={galleryImages[activeImageIdx]}
               alt="Paris Experience"
               fill
+              sizes="(max-width: 768px) 100vw, 78vw"
               className="detail-main-img"
               priority
               style={{ cursor: 'pointer', objectFit: 'cover', borderRadius: '20px' }}
@@ -185,7 +186,15 @@ export default function TourDetailPage() {
                   overflow: 'hidden',
                 }}
               >
-                <Image src={imgUrl} alt={`Thumbnail ${i + 1}`} fill className="thumb-img" style={{ objectFit: 'cover' }} />
+                <Image
+                  src={imgUrl}
+                  alt={`Thumbnail ${i + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 33vw, 260px"
+                  priority
+                  className="thumb-img"
+                  style={{ objectFit: 'cover' }}
+                />
               </div>
             ))}
             <div
@@ -193,7 +202,15 @@ export default function TourDetailPage() {
               onClick={() => setShowLightbox(true)}
               style={{ cursor: 'pointer' }}
             >
-              <Image src={galleryImages[4]} alt="More images" fill className="thumb-img" style={{ objectFit: 'cover' }} />
+              <Image
+                src={galleryImages[4]}
+                alt="More images"
+                fill
+                sizes="(max-width: 768px) 33vw, 260px"
+                priority
+                className="thumb-img"
+                style={{ objectFit: 'cover' }}
+              />
               <div className="overlay-text">+{galleryImages.length - 3} More</div>
             </div>
           </div>
@@ -630,7 +647,13 @@ export default function TourDetailPage() {
           </button>
 
           <div style={{ position: 'relative', width: '90%', maxWidth: '1000px', height: '70vh' }}>
-            <Image src={galleryImages[activeImageIdx]} alt="Full view" fill style={{ objectFit: 'contain' }} />
+            <Image
+              src={galleryImages[activeImageIdx]}
+              alt="Full view"
+              fill
+              sizes="90vw"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
@@ -648,7 +671,7 @@ export default function TourDetailPage() {
                   border: activeImageIdx === idx ? '3px solid #0B57D0' : 'none',
                 }}
               >
-                <Image src={img} alt="thumb" fill style={{ objectFit: 'cover' }} />
+                <Image src={img} alt="thumb" fill sizes="60px" style={{ objectFit: 'cover' }} />
               </div>
             ))}
           </div>

@@ -63,6 +63,8 @@ export default function PlannerAllProductsPage() {
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80"
                 alt="DeshIT - BD"
                 fill
+                sizes="110px"
+                unoptimized
                 className="vendor-img"
               />
             </div>
@@ -168,6 +170,8 @@ export default function PlannerAllProductsPage() {
                         src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
                         alt={tour.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        unoptimized
                         className="tour-card-img"
                       />
                       <button
@@ -209,6 +213,8 @@ export default function PlannerAllProductsPage() {
                         src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
                         alt={tour.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, 320px"
+                        unoptimized
                         className="card-horizontal-img"
                       />
                       <button

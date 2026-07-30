@@ -89,7 +89,7 @@ const popularTours = [
   {
     id: '3',
     title: 'Amazing Shundarban',
-    image: 'https://images.unsplash.com/photo-1511497584788-8767611136f6?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
     rating: '4.7',
     price: 200,
     oldPrice: 250,
@@ -159,6 +159,7 @@ export default function HomePage() {
                   src={imgUrl}
                   alt={`Travel Hero Banner ${i + 1}`}
                   fill
+                  sizes="(max-width: 1024px) 100vw, 1020px"
                   className={`hero-img ${i === heroIndex ? 'active-slide' : 'inactive-slide'}`}
                   priority={i === 0}
                   style={{
@@ -223,7 +224,7 @@ export default function HomePage() {
             {popularTours.map((t) => (
               <Link href={`/tours/paris`} key={t.id} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
-                  <Image src={t.image} alt={t.title} fill className="tour-card-img" />
+                  <Image src={t.image} alt={t.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
                   <button
                     className="heart-circle-btn"
                     onClick={(e) => toggleFavorite(e, `pop-${t.id}`)}
@@ -268,7 +269,7 @@ export default function HomePage() {
             {offersData.map((o, idx) => (
               <Link href="/tours/paris" key={idx} className="offer-card-figma">
                 <div className="offer-card-image-wrap">
-                  <Image src={o.image} alt={o.title} fill className="offer-card-img" />
+                  <Image src={o.image} alt={o.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="offer-card-img" />
                   <button
                     className="heart-circle-btn"
                     onClick={(e) => toggleFavorite(e, `offer-${idx}`)}
@@ -311,7 +312,7 @@ export default function HomePage() {
           </div>
           <div className="most-visited-grid-figma">
             <Link href="/tours/paris" className="visited-card-large">
-              <Image src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" alt="Dubai" fill className="visited-img" />
+              <Image src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" alt="Dubai" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="visited-img" />
               <div className="visited-top-badge">⏱ 3 Days</div>
               <div className="visited-bottom-bar">
                 <span className="city-pill">Dubai</span>
@@ -320,7 +321,7 @@ export default function HomePage() {
             </Link>
 
             <Link href="/tours/paris" className="visited-card-large">
-              <Image src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris Eiffel" fill className="visited-img" />
+              <Image src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris Eiffel" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="visited-img" />
               <div className="visited-top-badge">⏱ 3 Days</div>
               <div className="visited-bottom-bar">
                 <span className="city-pill">Paris</span>
@@ -329,7 +330,7 @@ export default function HomePage() {
             </Link>
 
             <Link href="/tours/paris" className="visited-card-medium">
-              <Image src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80" alt="Paris Canal" fill className="visited-img" />
+              <Image src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80" alt="Paris Canal" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 17vw" className="visited-img" />
               <div className="visited-top-badge">⏱ 3 Days</div>
               <div className="visited-bottom-bar">
                 <span className="city-pill">Paris</span>
@@ -338,7 +339,7 @@ export default function HomePage() {
             </Link>
 
             <Link href="/tours/paris" className="visited-card-medium">
-              <Image src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80" alt="Paris Street" fill className="visited-img" />
+              <Image src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80" alt="Paris Street" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 17vw" className="visited-img" />
               <div className="visited-top-badge">⏱ 3 Days</div>
               <div className="visited-bottom-bar">
                 <span className="city-pill">Paris</span>
@@ -366,6 +367,7 @@ export default function HomePage() {
                     ][idx % 3]}
                     alt="Cox's Bazar"
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="tour-card-img"
                   />
                   <button

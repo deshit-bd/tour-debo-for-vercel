@@ -27,6 +27,16 @@ export default function AccountProfilePage() {
           {/* Right Main Area: Profile Form Card */}
           <div className="account-main-area">
             <div className="account-section-card profile-details-card">
+              <div className="profile-card-header">
+                <div className="profile-avatar-xl">DB</div>
+                <div>
+                  <span className="account-eyebrow">Personal Information</span>
+                  <h2>DeshIT-BD</h2>
+                  <p>Keep your account details updated for bookings, vouchers, and planner communication.</p>
+                </div>
+                <span className="profile-status-pill">Verified Account</span>
+              </div>
+
               <div className="profile-fields-grid">
                 <div className="field-group">
                   <label>Full Name</label>
@@ -76,7 +86,7 @@ export default function AccountProfilePage() {
               </div>
 
               {passwordMsg && (
-                <div style={{ color: '#10B981', fontWeight: '700', fontSize: '0.85rem', marginBottom: '16px' }}>
+                <div className="profile-success-alert">
                   ✓ {passwordMsg}
                 </div>
               )}

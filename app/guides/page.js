@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FilterSidebar from '../components/FilterSidebar';
@@ -10,7 +11,7 @@ import { useCurrency } from '../context/CurrencyContext';
 
 const INITIAL_GUIDES = [
   {
-    id: 'guide-1',
+    id: 'dhaka',
     title: 'Explore Dhaka',
     locationTag: '(Dhaka)',
     rating: '4.7',
@@ -19,12 +20,12 @@ const INITIAL_GUIDES = [
     priceNote: '(Family) + $50 per person',
     discount: '20% OFF',
     desc: 'Experienced local heritage guide for Old Dhaka street food tours, Ahsan Manzil, and Buriganga boat rides.',
-    coverImage: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
     completedCount: '144 Tour Completed!',
   },
   {
-    id: 'guide-2',
+    id: 'sajek',
     title: 'Sajek Mountain Trek',
     locationTag: '(Sajek)',
     rating: '4.9',
@@ -38,7 +39,7 @@ const INITIAL_GUIDES = [
     completedCount: '198 Tour Completed!',
   },
   {
-    id: 'guide-3',
+    id: 'cox-bazar',
     title: "Cox's Bazar Beach Guide",
     locationTag: "(Cox's Bazar)",
     rating: '4.8',
@@ -52,7 +53,7 @@ const INITIAL_GUIDES = [
     completedCount: '210 Tour Completed!',
   },
   {
-    id: 'guide-4',
+    id: 'sylhet',
     title: 'Sylhet Tea Estate Escapade',
     locationTag: '(Sylhet)',
     rating: '4.6',
@@ -61,13 +62,14 @@ const INITIAL_GUIDES = [
     priceNote: '(Family) + $25 per person',
     discount: '10% OFF',
     desc: 'Specialized guide for Ratargul Swamp Forest boat cruises and Sreemangal tea garden photography.',
-    coverImage: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80',
     completedCount: '112 Tour Completed!',
   },
 ];
 
 export default function TourGuidesPage() {
+  const router = useRouter();
   const { formatPrice } = useCurrency();
   const [sortBy, setSortBy] = useState('lowest');
   const [favorites, setFavorites] = useState({});
@@ -120,26 +122,52 @@ export default function TourGuidesPage() {
 
             {/* 2-Column Grid of Tour Guide Cards */}
             <div className="guides-2col-grid">
-              {sortedGuides.map((guide) => (
-                <div key={guide.id} className="guide-card-figma">
+              {sortedGuides.map((guide, index) => (
+                <div
+                  key={guide.id}
+                  className="guide-card-figma"
+                  onClick={() => router.push(`/guides/${guide.id}`)}
+                  role="link"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') router.push(`/guides/${guide.id}`);
+                  }}
+                >
                   <div className="guide-cover-wrap">
-                    <Image src={guide.coverImage} alt={guide.title} fill className="guide-cover-img" />
+                    <Image
+                      src={guide.coverImage}
+                      alt={guide.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 38vw"
+                      priority={index < 2}
+                      className="guide-cover-img"
+                    />
                     <button
                       className="heart-circle-btn"
-                      onClick={() => toggleFavorite(guide.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(guide.id);
+                      }}
                     >
                       {favorites[guide.id] ? '♥' : '♡'}
                     </button>
 
                     {/* Guide Profile Avatar Overlay */}
                     <div className="guide-avatar-overlay">
-                      <Image src={guide.avatarImage} alt="Guide Avatar" fill className="guide-avatar-img" />
+                      <Image
+                        src={guide.avatarImage}
+                        alt={`${guide.guideName} avatar`}
+                        fill
+                        sizes="72px"
+                        priority={index < 2}
+                        className="guide-avatar-img"
+                      />
                     </div>
                   </div>
 
                   <div className="guide-card-body">
                     <div className="title-rating-row">
-                      <Link href="/guides/dhaka">
+                      <Link href={`/guides/${guide.id}`}>
                         <h3>{guide.title} <small style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '500' }}>{guide.locationTag}</small></h3>
                       </Link>
                       <span className="star-rating">★ {guide.rating}</span>

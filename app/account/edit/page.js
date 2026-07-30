@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AccountSidebar from '../../components/AccountSidebar';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -34,7 +35,17 @@ export default function EditProfilePage() {
       <Navbar />
 
       <main className="figma-main-content edit-profile-dark-container">
-        <div className="dark-form-card">
+        <div className="account-layout-grid">
+          <AccountSidebar />
+
+          <div className="account-main-area">
+            <div className="dark-form-card">
+          <div className="edit-profile-header">
+            <span className="account-eyebrow">Profile Settings</span>
+            <h2>Edit Profile</h2>
+            <p>Update your personal information and profile photo.</p>
+          </div>
+
           {saved ? (
             <div style={{ color: '#10B981', textAlign: 'center', padding: '40px', fontWeight: '800', fontSize: '1.2rem' }}>
               ✓ Profile changes saved successfully! Redirecting to Profile...
@@ -66,7 +77,7 @@ export default function EditProfilePage() {
 
                 {/* Phone Number */}
                 <div className="dark-input-group">
-                  <label>phone number</label>
+                  <label>Phone Number</label>
                   <input
                     type="text"
                     name="phone"
@@ -116,13 +127,15 @@ export default function EditProfilePage() {
               <div className="dark-form-bottom-row">
                 <div className="photo-upload-box">
                   <label>Upload a Photo</label>
-                  <div className="photo-dropzone">
+                  <label className="photo-dropzone">
+                    <input type="file" accept="image/*" className="upload-file-input" />
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                       <circle cx="8.5" cy="8.5" r="1.5" />
                       <polyline points="21 15 16 10 5 21" />
                     </svg>
-                  </div>
+                    <span>Click to upload</span>
+                  </label>
                 </div>
 
                 <div className="save-button-wrap">
@@ -133,6 +146,8 @@ export default function EditProfilePage() {
               </div>
             </form>
           )}
+            </div>
+          </div>
         </div>
       </main>
 

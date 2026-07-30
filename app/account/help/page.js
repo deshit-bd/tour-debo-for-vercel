@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AccountSidebar from '../../components/AccountSidebar';
 
 export const metadata = {
   title: 'Help Center - Customer Service | Tour Dibo',
@@ -14,60 +15,7 @@ export default function HelpCenterPage() {
 
       <main className="figma-main-content">
         <div className="account-layout-grid">
-          {/* Left Sidebar Navigation Card */}
-          <aside className="account-sidebar-card">
-            <div className="sidebar-menu-item">
-              <Link href="/account">Overview</Link>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>Manage My Account</h4>
-              <ul>
-                <li><Link href="/account/profile">My Profile</Link></li>
-                <li><Link href="/account/bookings">My Bookings</Link></li>
-                <li><Link href="/account/points">My Points</Link></li>
-                <li><Link href="/account/refunds">My Appeal & Refunds</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/vouchers">Payment Options & Vouchers</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Booking History</h4>
-              <ul>
-                <li><Link href="/account/bookings">All Booking</Link></li>
-                <li><Link href="/account/bookings">To Pay</Link></li>
-                <li><Link href="/account/bookings">To Be Started</Link></li>
-                <li><Link href="/account/bookings">Cancelled Bookings</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/messages">Message Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/favorites">Favorites & Followed Tour Planners</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Reviews</h4>
-              <ul>
-                <li><Link href="/account">To Review</Link></li>
-                <li><Link href="/account">History</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4 className="active"><Link href="/account/help">Help Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account">Earn With Us</Link></h4>
-            </div>
-          </aside>
+          <AccountSidebar />
 
           {/* Right Main Area */}
           <div className="account-main-area">

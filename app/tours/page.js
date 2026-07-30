@@ -302,7 +302,13 @@ function TourListingContent() {
             {filteredTours.map((item) => (
               <div key={item.id} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
-                  <Image src={sampleImages[0]} alt={item.title} fill className="tour-card-img" />
+                  <Image
+                    src={sampleImages[0]}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="tour-card-img"
+                  />
                   <button
                     className="heart-circle-btn"
                     onClick={() => toggleFavorite(item.id)}
@@ -349,6 +355,7 @@ function TourListingContent() {
                       src={sampleImages[imgIdx]}
                       alt={item.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 320px"
                       className="card-horizontal-img"
                     />
                     <button

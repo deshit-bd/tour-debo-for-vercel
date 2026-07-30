@@ -33,9 +33,14 @@ export default function OpenDisputePage() {
 
           {/* Right Main Area: Open Dispute Form Card */}
           <div className="account-main-area">
-            <div className="account-section-card">
-              <h3 className="card-title-lg">Open Dispute</h3>
-              <p className="subtext-muted">Fill Out These Form Below*</p>
+            <div className="account-section-card dispute-card">
+              <div className="dispute-card-header">
+                <div>
+                  <span className="account-eyebrow">Refund Support</span>
+                  <h3 className="card-title-lg">Open Dispute</h3>
+                  <p className="subtext-muted">Fill out the form below and attach evidence for faster review.</p>
+                </div>
+              </div>
 
               {submitted ? (
                 <div style={{ padding: '40px', textCenter: 'center', color: '#10B981', fontWeight: '800' }}>

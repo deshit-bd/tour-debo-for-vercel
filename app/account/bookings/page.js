@@ -1,25 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
 
 export default function MyBookingsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('all');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setActiveTab(params.get('status') || 'all');
+  }, []);
+
+  const changeTab = (status) => {
+    setActiveTab(status);
+    router.push(`/account/bookings?status=${status}`);
+  };
 
   const bookingsList = [
     { id: '8849201948102', date: '12 Jan 2026', name: 'Tenting at Cox\'s Bazar', qty: 3, status: 'Completed' },
     { id: '8849201948103', date: '15 Feb 2026', name: 'Sajek Valley Tour', qty: 2, status: 'To Pay' },
-    { id: '8849201948104', date: '20 Mar 2026', name: 'Paris City Tour', qty: 1, status: 'Completed' },
+    { id: '8849201948104', date: '20 Mar 2026', name: 'Paris City Tour', qty: 1, status: 'To Be Started' },
     { id: '8849201948105', date: '01 Apr 2026', name: 'Canada Student Visa Assistance', qty: 1, status: 'Cancelled' },
   ];
 
   const filteredBookings = bookingsList.filter((item) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'topay') return item.status === 'To Pay';
+    if (activeTab === 'tostarted') return item.status === 'To Be Started';
     if (activeTab === 'completed') return item.status === 'Completed';
     if (activeTab === 'cancelled') return item.status === 'Cancelled';
     return true;
@@ -41,11 +54,11 @@ export default function MyBookingsPage() {
 
               {/* Status Filter Tabs */}
               <div className="account-sub-tabs-bar">
-                <button className={`sub-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>All</button>
-                <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => setActiveTab('topay')}>To Pay</button>
-                <button className={`sub-tab ${activeTab === 'tostarted' ? 'active' : ''}`} onClick={() => setActiveTab('tostarted')}>To Be Started</button>
-                <button className={`sub-tab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => setActiveTab('completed')}>Completed</button>
-                <button className={`sub-tab ${activeTab === 'cancelled' ? 'active' : ''}`} onClick={() => setActiveTab('cancelled')}>Cancelled</button>
+                <button className={`sub-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => changeTab('all')}>All</button>
+                <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => changeTab('topay')}>To Pay</button>
+                <button className={`sub-tab ${activeTab === 'tostarted' ? 'active' : ''}`} onClick={() => changeTab('tostarted')}>To Be Started</button>
+                <button className={`sub-tab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => changeTab('completed')}>Completed</button>
+                <button className={`sub-tab ${activeTab === 'cancelled' ? 'active' : ''}`} onClick={() => changeTab('cancelled')}>Cancelled</button>
               </div>
 
               {/* Booking List Cards */}

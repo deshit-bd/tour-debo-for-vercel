@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import AccountSidebar from '../../components/AccountSidebar';
 
 export default function PaymentVouchersPage() {
   const [activeTab, setActiveTab] = useState('vouchers');
@@ -21,67 +22,18 @@ export default function PaymentVouchersPage() {
 
       <main className="figma-main-content">
         <div className="account-layout-grid">
-          {/* Left Sidebar Navigation Card */}
-          <aside className="account-sidebar-card">
-            <div className="sidebar-menu-item">
-              <Link href="/account">Overview</Link>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>Manage My Account</h4>
-              <ul>
-                <li><Link href="/account/profile">My Profile</Link></li>
-                <li><Link href="/account/bookings">My Bookings</Link></li>
-                <li><Link href="/account/points">My Points</Link></li>
-                <li><Link href="/account/refunds">My Appeal & Refunds</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4 className="active"><Link href="/account/vouchers">Payment Options & Vouchers</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Booking History</h4>
-              <ul>
-                <li><Link href="/account/bookings">All Booking</Link></li>
-                <li><Link href="/account/bookings">To Pay</Link></li>
-                <li><Link href="/account/bookings">To Be Started</Link></li>
-                <li><Link href="/account/bookings">Cancelled Bookings</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/messages">Message Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/favorites">Favorites & Followed Tour Planners</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4>My Reviews</h4>
-              <ul>
-                <li><Link href="/account/reviews">To Review</Link></li>
-                <li><Link href="/account/reviews/history">History</Link></li>
-              </ul>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account/help">Help Center</Link></h4>
-            </div>
-
-            <div className="sidebar-menu-group">
-              <h4><Link href="/account">Earn With Us</Link></h4>
-            </div>
-          </aside>
+          <AccountSidebar />
 
           {/* Right Main Area */}
           <div className="account-main-area">
             {/* Top Card: My Voucher */}
             <div className="my-voucher-top-card">
+              <div className="voucher-hero-copy">
+                <span className="account-eyebrow">Referral Reward</span>
+                <h2>My Voucher</h2>
+                <p>Share your referral code and redeem available discounts on your next trip.</p>
+              </div>
               <div className="voucher-header-flex">
-                <h3>My Voucher</h3>
                 <div className="voucher-code-wrap">
                   <span className="code-text">REF2026TOUR</span>
                   <button className="copy-icon-btn" onClick={handleCopyCode} aria-label="Copy Code">
@@ -96,9 +48,9 @@ export default function PaymentVouchersPage() {
             </div>
 
             {/* Bottom Card: Payment Options & Vouchers */}
-            <div className="account-section-card">
+            <div className="account-section-card payment-options-card">
               <div className="account-sub-tabs-bar">
-                <Link href="/account/payments" className={`sub-tab ${activeTab === 'payments' ? 'active' : ''}`}>Payment Options</Link>
+                <Link href="/account/payments" prefetch={false} className={`sub-tab ${activeTab === 'payments' ? 'active' : ''}`}>Payment Options</Link>
                 <button className={`sub-tab ${activeTab === 'vouchers' ? 'active' : ''}`} onClick={() => setActiveTab('vouchers')}>Vouchers</button>
               </div>
 
