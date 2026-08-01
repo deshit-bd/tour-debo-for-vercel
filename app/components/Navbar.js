@@ -347,55 +347,69 @@ export default function Navbar() {
                 </div>
               </div>
 
-            {/* Account Popover Menu */}
+            {/* Account Popover Menu & Click Anywhere Outside Backdrop */}
             {showAccountMenu && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '46px',
-                  right: 0,
-                  background: '#ffffff',
-                  color: '#0F172A',
-                  borderRadius: '16px',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
-                  padding: '12px',
-                  width: '220px',
-                  zIndex: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px',
-                }}
-              >
+              <>
+                <div
+                  onClick={() => setShowAccountMenu(false)}
+                  style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'transparent', cursor: 'default' }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '46px',
+                    right: 0,
+                    background: '#ffffff',
+                    color: '#0F172A',
+                    borderRadius: '16px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+                    padding: '12px',
+                    width: '220px',
+                    zIndex: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px',
+                  }}
+                >
                 <div style={{ padding: '6px 10px', fontSize: '0.75rem', background: '#F1F5F9', borderRadius: '8px', color: '#475569', fontWeight: 'bold' }}>
                   Role: {user?.role === 'PLANNER' ? '⚡ Planner / Seller' : '👤 Tourist / Customer'}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    const nextRole = user?.role === 'PLANNER' ? 'USER' : 'PLANNER';
-                    switchRole(nextRole);
-                    setShowAccountMenu(false);
-                    if (nextRole === 'PLANNER') {
-                      router.push('/business-center');
-                    } else {
-                      router.push('/account/profile');
-                    }
-                  }}
-                  style={{
-                    padding: '8px 12px',
-                    fontSize: '0.8rem',
-                    fontWeight: '700',
-                    borderRadius: '8px',
-                    background: user?.role === 'PLANNER' ? '#EFF6FF' : '#FEF3C7',
-                    color: user?.role === 'PLANNER' ? '#2563EB' : '#D97706',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                  }}
-                >
-                  🔄 Switch to {user?.role === 'PLANNER' ? 'Tourist Mode' : 'Planner Mode'}
-                </button>
+                {user?.role === 'PLANNER' ? (
+                  <Link
+                    href="/business-center"
+                    onClick={() => setShowAccountMenu(false)}
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      borderRadius: '8px',
+                      background: '#EFF6FF',
+                      color: '#2563EB',
+                      textDecoration: 'none',
+                      display: 'block',
+                    }}
+                  >
+                    🏢 Go to Seller Business Center
+                  </Link>
+                ) : (
+                  <Link
+                    href="/business-center/profile"
+                    onClick={() => setShowAccountMenu(false)}
+                    style={{
+                      padding: '8px 12px',
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      borderRadius: '8px',
+                      background: '#FEF3C7',
+                      color: '#B45309',
+                      textDecoration: 'none',
+                      display: 'block',
+                    }}
+                  >
+                    📝 Apply for Seller Account (KYC)
+                  </Link>
+                )}
 
                 <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '4px 0' }} />
 
@@ -442,6 +456,7 @@ export default function Navbar() {
                   🚪 Logout Account
                 </button>
               </div>
+              </>
             )}
             </div>
           )}
@@ -490,51 +505,57 @@ export default function Navbar() {
             </div>
 
             {showCurrencyDropdown && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '42px',
-                  right: 0,
-                  background: '#ffffff',
-                  color: '#0F172A',
-                  borderRadius: '14px',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                  padding: '8px',
-                  width: '140px',
-                  zIndex: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px',
-                }}
-              >
-                {Object.keys(rates).map((currKey) => {
-                  const item = rates[currKey];
-                  return (
-                    <button
-                      key={currKey}
-                      type="button"
-                      onClick={() => {
-                        setCurrency(currKey);
-                        setShowCurrencyDropdown(false);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        fontSize: '0.85rem',
-                        fontWeight: '700',
-                        borderRadius: '8px',
-                        background: currency === currKey ? 'var(--primary-blue)' : '#ffffff',
-                        color: currency === currKey ? '#ffffff' : '#1E293B',
-                      }}
-                    >
-                      <span>{item.flag} {currKey}</span>
-                      <span>({item.symbol})</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <>
+                <div
+                  onClick={() => setShowCurrencyDropdown(false)}
+                  style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'transparent', cursor: 'default' }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '42px',
+                    right: 0,
+                    background: '#ffffff',
+                    color: '#0F172A',
+                    borderRadius: '14px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    padding: '8px',
+                    width: '140px',
+                    zIndex: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                  }}
+                >
+                  {Object.keys(rates).map((currKey) => {
+                    const item = rates[currKey];
+                    return (
+                      <button
+                        key={currKey}
+                        type="button"
+                        onClick={() => {
+                          setCurrency(currKey);
+                          setShowCurrencyDropdown(false);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px 10px',
+                          fontSize: '0.85rem',
+                          fontWeight: '700',
+                          borderRadius: '8px',
+                          background: currency === currKey ? 'var(--primary-blue)' : '#ffffff',
+                          color: currency === currKey ? '#ffffff' : '#1E293B',
+                        }}
+                      >
+                        <span>{item.flag} {currKey}</span>
+                        <span>({item.symbol})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
 
@@ -544,17 +565,13 @@ export default function Navbar() {
               Seller Business Center
             </Link>
           ) : (
-            <button
-              type="button"
+            <Link
+              href="/business-center/profile"
               className="btn-become-planner"
-              onClick={() => {
-                switchRole('PLANNER');
-                router.push('/business-center');
-              }}
-              style={{ border: 'none', cursor: 'pointer' }}
+              style={{ textDecoration: 'none' }}
             >
-              {t('becomePlanner')}
-            </button>
+              Become a Seller
+            </Link>
           )}
         </div>
 
@@ -707,7 +724,7 @@ export default function Navbar() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                login(authRole, authName, authEmail);
+                login(authRole, authEmail, authMode === 'register' ? authName : '');
                 setShowAuthModal(false);
                 if (authRole === 'PLANNER') {
                   router.push('/business-center');

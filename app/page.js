@@ -405,15 +405,29 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* Floating Messages Button */}
-      <Link href="/account/messages" className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </Link>
+        {/* Floating Customer Service (Chat / Email) Widget (SRS Page 6 Standard) */}
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 99, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Link
+            href="/account/messages"
+            className="floating-messages-btn"
+            style={{
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              color: '#ffffff',
+              padding: '12px 20px',
+              borderRadius: '30px',
+              fontWeight: '700',
+              boxShadow: '0 8px 24px rgba(37, 99, 235, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              textDecoration: 'none',
+            }}
+          >
+            💬 Customer Service (Chat & Email)
+          </Link>
+        </div>
 
-      <Footer />
+        <Footer />
     </div>
   );
 }

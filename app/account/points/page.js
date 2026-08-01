@@ -7,7 +7,25 @@ import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
 
 export default function MyPointsPage() {
+  const [points, setPoints] = useState(500);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [redeemSuccess, setRedeemSuccess] = useState('');
   const [referred, setReferred] = useState(false);
+
+  const handleRedeemVoucher = (e) => {
+    e.preventDefault();
+    if (voucherCode.trim().toUpperCase() === 'TOURDIBO100') {
+      setPoints((prev) => prev + 100);
+      setRedeemSuccess('🎉 Voucher applied! 100 bonus points added to your balance.');
+    } else if (points >= 200) {
+      setPoints((prev) => prev - 200);
+      setRedeemSuccess('✓ 200 Points redeemed for ৳500 Discount Voucher!');
+    } else {
+      setRedeemSuccess('❌ Invalid code or insufficient points balance.');
+    }
+    setVoucherCode('');
+    setTimeout(() => setRedeemSuccess(''), 4000);
+  };
 
   const handleReferFriend = () => {
     navigator.clipboard.writeText('https://tour-dibo.com/referral?code=REF500');
@@ -20,86 +38,81 @@ export default function MyPointsPage() {
       <Navbar />
 
       <main className="figma-main-content">
-        <div className="account-top-bar-flex">
-          <h2>Profile</h2>
-          <button className="btn-refer-friend" onClick={handleReferFriend}>
-            {referred ? '✓ Link Copied!' : '+ Refer a Friend'}
+        <div className="account-top-bar-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2>My Points & Loyalty Rewards</h2>
+          <button className="btn-refer-friend" onClick={handleReferFriend} style={{ background: '#2563EB', color: '#fff', padding: '10px 18px', borderRadius: '10px', fontWeight: 'bold', border: 'none', cursor: 'pointer' }}>
+            {referred ? '✓ Referral Link Copied!' : '👥 Refer a Friend (+200 pts)'}
           </button>
         </div>
 
         <div className="account-layout-grid">
-          {/* Reusable Account Sidebar */}
           <AccountSidebar />
 
-          {/* Right Main Area */}
           <div className="account-main-area">
-            {/* Top Card: Points Balance */}
-            <div className="points-balance-card">
-              <h3>My Points Balance</h3>
-              <div className="points-score-box">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="2">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7v10M9 9h6M9 15h6" />
-                </svg>
-                <span className="big-points-number">500</span>
+            {/* Points Summary & Total Visits Breakdown */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+              <div className="points-balance-card" style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)', color: '#fff', borderRadius: '16px', padding: '24px' }}>
+                <h3 style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '8px' }}>Loyalty Points Balance</h3>
+                <div style={{ fontSize: '2.5rem', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🪙 {points}</span>
+                  <small style={{ fontSize: '0.85rem', fontWeight: 'normal', background: 'rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: '12px' }}>
+                    Value: ৳{(points * 2.5).toFixed(0)}
+                  </small>
+                </div>
+                <p style={{ fontSize: '0.8rem', opacity: 0.85, marginTop: '8px' }}>Earn 5% points back on every completed tour order!</p>
+              </div>
+
+              {/* SRS Total Visits Metric (Page 5 Standard) */}
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: '16px', padding: '20px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#111827', marginBottom: '12px' }}>
+                  ✈️ Total Visits Summary (SRS Metric)
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
+                  <div style={{ background: '#EFF6FF', padding: '8px', borderRadius: '10px' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#1D4ED8' }}>4</div>
+                    <small style={{ fontSize: '0.72rem', color: '#4B5563' }}>🌊 Sea Visits</small>
+                  </div>
+                  <div style={{ background: '#FEF3C7', padding: '8px', borderRadius: '10px' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#B45309' }}>2</div>
+                    <small style={{ fontSize: '0.72rem', color: '#4B5563' }}>✈️ Abroad</small>
+                  </div>
+                  <div style={{ background: '#ECFDF5', padding: '8px', borderRadius: '10px' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#047857' }}>3</div>
+                    <small style={{ fontSize: '0.72rem', color: '#4B5563' }}>🏞 River/Hill</small>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Bottom Card: Vouchers Table */}
-            <div className="account-section-card">
-              <h3 className="card-title-lg">Vouchers</h3>
-              <div className="recent-table-wrap">
-                <table className="bookings-table">
-                  <thead>
-                    <tr>
-                      <th>Points</th>
-                      <th>Details</th>
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Valid till</th>
-                      <th>Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><strong>500 Points</strong></td>
-                      <td>Welcome Bonus Voucher</td>
-                      <td>2026-01-01</td>
-                      <td>2026-12-31</td>
-                      <td>2026-12-31</td>
-                      <td><Link href="/account/vouchers" className="link-details">$29.00 OFF</Link></td>
-                    </tr>
-                    <tr>
-                      <td><strong>200 Points</strong></td>
-                      <td>Referral Reward</td>
-                      <td>2026-02-01</td>
-                      <td>2026-12-31</td>
-                      <td>2026-12-31</td>
-                      <td><Link href="/account/vouchers" className="link-details">$15.00 OFF</Link></td>
-                    </tr>
-                    <tr>
-                      <td><strong>100 Points</strong></td>
-                      <td>Tour Review Reward</td>
-                      <td>2026-03-01</td>
-                      <td>2026-12-31</td>
-                      <td>2026-12-31</td>
-                      <td><Link href="/account/vouchers" className="link-details">$10.00 OFF</Link></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            {/* Voucher Code Box */}
+            <div className="account-section-card" style={{ background: '#fff', borderRadius: '16px', padding: '24px', border: '1px solid #E5E7EB', marginBottom: '24px' }}>
+              <h3 className="card-title-lg">Redeem Voucher Code or Convert Points</h3>
+
+              {redeemSuccess && (
+                <div style={{ background: '#DEF7EC', color: '#03543F', padding: '10px 14px', borderRadius: '8px', fontWeight: 'bold', marginBottom: '14px', fontSize: '0.88rem' }}>
+                  {redeemSuccess}
+                </div>
+              )}
+
+              <form onSubmit={handleRedeemVoucher} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  placeholder="Enter promo / voucher code (e.g., TOURDIBO100)"
+                  value={voucherCode}
+                  onChange={(e) => setVoucherCode(e.target.value)}
+                  style={{ flex: 1, minWidth: '220px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #D1D5DB' }}
+                />
+                <button type="submit" style={{ background: '#2563EB', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Apply Voucher
+                </button>
+                <button type="button" onClick={handleRedeemVoucher} style={{ background: '#059669', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Redeem 200 Pts (৳500 OFF)
+                </button>
+              </form>
             </div>
           </div>
         </div>
       </main>
-
-      {/* Floating Messages Button */}
-      <Link href="/account/messages" className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </Link>
 
       <Footer />
     </div>

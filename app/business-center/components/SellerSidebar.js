@@ -46,6 +46,46 @@ export default function SellerSidebar() {
       ),
     },
     {
+      href: '/business-center/packages/add-visa',
+      label: 'Add Visa Service',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <line x1="15" y1="8" x2="19" y2="8" />
+          <line x1="15" y1="12" x2="19" y2="12" />
+        </svg>
+      ),
+    },
+    {
+      href: '/business-center/packages/add-guide',
+      label: 'Add Tour Guide',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+        </svg>
+      ),
+    },
+    {
+      href: '/business-center/notice',
+      label: 'Notice Board',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      ),
+    },
+    {
+      href: '/business-center/ads',
+      label: 'In-site Ad Booking',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ),
+    },
+    {
       href: '/business-center/orders',
       label: 'Orders & Bookings',
       icon: (
@@ -96,6 +136,17 @@ export default function SellerSidebar() {
         </svg>
       ),
     },
+    {
+      href: '/admin',
+      label: 'Admin Control Center',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -116,18 +167,11 @@ export default function SellerSidebar() {
         </div>
       </div>
 
-      {/* Role Switcher Box */}
-      <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '14px', padding: '12px', textAlign: 'center' }}>
-        <div style={{ fontSize: '0.78rem', color: '#1E40AF', fontWeight: 'bold', marginBottom: '6px' }}>
-          Active Role: {user?.role === 'PLANNER' ? '⚡ Planner / Seller' : '👤 Tourist'}
+      {/* Verified Business Account Badge */}
+      <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px', padding: '10px 14px', textAlign: 'center' }}>
+        <div style={{ fontSize: '0.78rem', color: '#15803D', fontWeight: 'bold' }}>
+          ✓ Verified Seller Account
         </div>
-        <button
-          type="button"
-          onClick={() => switchRole(user?.role === 'PLANNER' ? 'USER' : 'PLANNER')}
-          style={{ background: '#2563EB', color: '#ffffff', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'pointer', width: '100%' }}
-        >
-          🔄 Switch to {user?.role === 'PLANNER' ? 'Tourist' : 'Planner'}
-        </button>
       </div>
 
       {/* Holiday Mode Toggle */}

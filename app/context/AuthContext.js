@@ -33,14 +33,15 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  // Login function
-  const login = (role = 'USER', name = 'DeshIT-BD', email = 'user@deshit-bd.com') => {
+  // Login function (Email & Password authentication)
+  const login = (role = 'USER', email = 'user@deshit-bd.com', name = '') => {
+    const displayName = name || (email ? email.split('@')[0] : 'User');
     const updatedUser = {
       isLoggedIn: true,
       role,
-      name,
+      name: displayName,
       email,
-      avatar: name.substring(0, 2).toUpperCase(),
+      avatar: displayName.substring(0, 2).toUpperCase(),
     };
     setUser(updatedUser);
     localStorage.setItem('tour_dibo_auth_user', JSON.stringify(updatedUser));
