@@ -11,8 +11,8 @@ export const metadata = {
 
 export default function FollowedPlannersPage() {
   const plannersList = [
-    { id: 1, name: 'DeshIT-BD Planners', activeTours: '12 active tours', badge: 'Bronze Planner' },
-    { id: 2, name: 'Travelers Hub BD', activeTours: '12 active tours', badge: 'Bronze Planner' },
+    { id: 1, name: 'DeshIT-BD Planners', activeTours: '12 active tours', badge: 'Bronze Planner', rating: '4.9', reviews: '210' },
+    { id: 2, name: 'Travelers Hub BD', activeTours: '8 active tours', badge: 'Bronze Planner', rating: '4.8', reviews: '165' },
   ];
 
   return (
@@ -39,11 +39,16 @@ export default function FollowedPlannersPage() {
                 {plannersList.map((item) => (
                   <div key={item.id} className="booking-card-row-figma">
                     <div className="booking-row-body">
-                      <div className="booking-item-cell">
+                      <div className="booking-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <div className="booking-thumb-box">
                           <Image src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80" alt="Planner" fill className="thumb-img" />
                         </div>
-                        <span className="booking-item-name">{item.name}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <span className="booking-item-name">{item.name}</span>
+                          <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            ★ {item.rating} ({item.reviews} reviews)
+                          </span>
+                        </div>
                       </div>
 
                       <div className="active-tours-count">{item.activeTours}</div>
@@ -61,14 +66,6 @@ export default function FollowedPlannersPage() {
           </div>
         </div>
       </main>
-
-      {/* Floating Messages Button */}
-      <div className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </div>
 
       <Footer />
     </div>

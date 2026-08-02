@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import SellerSidebar from '../../components/SellerSidebar';
+import RoleGuard from '../../../components/RoleGuard';
 
 export default function AddPackagePage() {
   const [packageType, setPackageType] = useState('Flexible');
@@ -27,7 +28,8 @@ export default function AddPackagePage() {
     <div className="figma-page-shell">
       <Navbar />
 
-      <main className="figma-main-content">
+      <RoleGuard allowedRoles={['PLANNER']}>
+        <main className="figma-main-content">
         <div className="seller-layout-grid">
           <SellerSidebar />
 
@@ -225,6 +227,7 @@ export default function AddPackagePage() {
           </div>
         </div>
       </main>
+      </RoleGuard>
 
       <Footer />
     </div>

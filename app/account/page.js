@@ -55,7 +55,7 @@ export default function AccountOverviewPage() {
                 </Link>
                 <Link href="/account/history" className="status-box">
                   <div className="box-icon-blue">💳</div>
-                  <span>To Pay</span>
+                  <span>Payment Due</span>
                 </Link>
                 <Link href="/account/bookings" className="status-box">
                   <div className="box-icon-blue">⏳</div>
@@ -87,19 +87,29 @@ export default function AccountOverviewPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: 4 }).map((_, idx) => (
+                    {[
+                      { id: '#8849201', date: '2026-07-15', name: "Tenting at Cox's Bazar", price: '$200.00', rating: '4.8', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80' },
+                      { id: '#8849202', date: '2026-07-18', name: 'Sajek Valley Tour', price: '$250.00', rating: '4.9', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=150&q=80' },
+                      { id: '#8849203', date: '2026-07-22', name: 'Paris City Tour', price: '$1,200.00', rating: '4.7', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=150&q=80' },
+                      { id: '#8849204', date: '2026-08-01', name: 'Canada Student Visa Assistance', price: '$350.00', rating: '4.9', image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=150&q=80' },
+                    ].map((item, idx) => (
                       <tr key={idx}>
-                        <td>#884920{idx + 1}</td>
-                        <td>2026-07-15</td>
+                        <td>{item.id}</td>
+                        <td>{item.date}</td>
                         <td>
-                          <div className="table-item-cell">
+                          <div className="table-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div className="item-thumb">
-                              <Image src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80" alt="Tour" fill className="thumb-img" />
+                              <Image src={item.image} alt={item.name} fill className="thumb-img" />
                             </div>
-                            <span>Tenting at Cox's Bazar</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontWeight: '700', color: '#0F172A' }}>{item.name}</span>
+                              <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                ★ {item.rating} Rating
+                              </span>
+                            </div>
                           </div>
                         </td>
-                        <td><strong>$200.00</strong></td>
+                        <td><strong>{item.price}</strong></td>
                         <td>
                           <Link href="/tours/paris" className="link-details">Details</Link>
                         </td>

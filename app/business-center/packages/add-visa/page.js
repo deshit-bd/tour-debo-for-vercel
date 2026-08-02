@@ -49,7 +49,7 @@ export default function AddVisaPackagePage() {
           <header className="seller-header">
             <div>
               <h1 className="seller-page-title">Add VISA Processing Service Product</h1>
-              <p className="seller-page-subtitle">Configure VISA Country, Type, Validity, Entry options, and Combination Price Sets (SRS Standard).</p>
+              <p className="seller-page-subtitle">Configure VISA Country, Type, Validity, Entry options, and Combination Price Sets.</p>
             </div>
           </header>
 

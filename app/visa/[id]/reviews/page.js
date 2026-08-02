@@ -94,7 +94,9 @@ export default function VisaReviewsPage() {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion(1)}>
                 <h3>Required Documents for Sticker visa</h3>
-                <span className="chevron">{activeAccordion === 1 ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: activeAccordion === 1 ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {activeAccordion === 1 && (
                 <div className="accordion-body docs-body">
@@ -114,7 +116,9 @@ export default function VisaReviewsPage() {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion(2)}>
                 <h3>Required Documents</h3>
-                <span className="chevron">{activeAccordion === 2 ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: activeAccordion === 2 ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {activeAccordion === 2 && (
                 <div className="accordion-body docs-body">
@@ -134,7 +138,9 @@ export default function VisaReviewsPage() {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion(3)}>
                 <h3>Important Notes</h3>
-                <span className="chevron">{activeAccordion === 3 ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: activeAccordion === 3 ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {activeAccordion === 3 && (
                 <div className="accordion-body">
@@ -214,7 +220,7 @@ export default function VisaReviewsPage() {
                   <small>TOUR PLANNER</small>
                   <h4>DeshIT-BD</h4>
                 </div>
-                <button className="btn-chat">💬 Chat</button>
+                <Link href="/account/messages" className="btn-chat" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>💬 Chat</Link>
               </div>
               <div className="planner-badge-row">
                 <span className="check-badge">✔ Bronze Planner</span>
@@ -223,7 +229,7 @@ export default function VisaReviewsPage() {
                 <div className="stat-circle"><span className="stat-percent">90%</span><small>Positive Review</small></div>
                 <div className="stat-circle"><span className="stat-percent">90%</span><small>Response Time</small></div>
               </div>
-              <button className="btn-view-shop">View Shop</button>
+              <Link href="/planner/deshit" className="btn-view-shop" style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>View Shop</Link>
             </div>
 
             {/* Booking Price & Counter Card */}

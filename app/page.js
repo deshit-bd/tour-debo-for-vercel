@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { useCurrency } from './context/CurrencyContext';
+import { POPULAR_TOURS, MOST_VISITED_TOURS, JUST_FOR_YOU_TOURS } from '../lib/toursData';
 
 const heroImages = [
   'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1400&q=80',
@@ -65,57 +66,7 @@ const servicesData = [
   },
 ];
 
-const popularTours = [
-  {
-    id: '1',
-    title: "Tenting at Cox's Bazar",
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-    rating: '4.7',
-    price: 200,
-    oldPrice: 250,
-    duration: '3 Days / 2 Night',
-    desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.',
-  },
-  {
-    id: '2',
-    title: 'Sajek Valley Tour',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-    rating: '4.7',
-    price: 200,
-    oldPrice: 250,
-    duration: '3 Days / 2 Night',
-    desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.',
-  },
-  {
-    id: '3',
-    title: 'Amazing Shundarban',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
-    rating: '4.7',
-    price: 200,
-    oldPrice: 250,
-    duration: '3 Days / 2 Night',
-    desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.',
-  },
-];
 
-const offersData = [
-  {
-    title: 'Parasailing!',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-    rating: '4.7',
-    price: 200,
-    oldPrice: 250,
-    desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.',
-  },
-  {
-    title: 'Kayaking!',
-    image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-    rating: '4.7',
-    price: 200,
-    oldPrice: 250,
-    desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.',
-  },
-];
 
 export default function HomePage() {
   const [heroIndex, setHeroIndex] = useState(0);
@@ -221,8 +172,8 @@ export default function HomePage() {
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="tours-3col-grid">
-            {popularTours.map((t) => (
-              <Link href={`/tours/paris`} key={t.id} className="tour-card-figma">
+            {POPULAR_TOURS.map((t) => (
+              <Link href={`/tours/${t.id}`} key={t.id} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
                   <Image src={t.image} alt={t.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
                   <button
@@ -231,7 +182,7 @@ export default function HomePage() {
                   >
                     {favorites[`pop-${t.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">{t.duration}</div>
+                  <div className="badge-duration">{t.badge}</div>
                 </div>
                 <div className="tour-card-content">
                   <div className="title-rating-row">
@@ -243,7 +194,7 @@ export default function HomePage() {
                     <div className="price-tag">
                       <span className="current-price">{formatPrice(t.price)}</span>
                       <span className="strike-price">{formatPrice(t.oldPrice)}</span>
-                      <span className="discount-tag">20% OFF</span>
+                      {t.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
                   </div>
                   <p className="tour-snippet">{t.desc}</p>
@@ -251,7 +202,7 @@ export default function HomePage() {
                     <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
                   </div>
                   <div className="interest-counter">
-                    <span className="users-icon">👥</span> 144 People Showed Interest!
+                    <span className="users-icon">👥</span> {t.interestCount} People Showed Interest!
                   </div>
                 </div>
               </Link>
@@ -266,17 +217,17 @@ export default function HomePage() {
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="offers-2col-grid">
-            {offersData.map((o, idx) => (
-              <Link href="/tours/paris" key={idx} className="offer-card-figma">
+            {POPULAR_TOURS.filter((t) => t.isOffer).slice(0, 2).map((o, idx) => (
+              <Link href={`/tours/${o.id}`} key={o.id} className="offer-card-figma">
                 <div className="offer-card-image-wrap">
                   <Image src={o.image} alt={o.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="offer-card-img" />
                   <button
                     className="heart-circle-btn"
-                    onClick={(e) => toggleFavorite(e, `offer-${idx}`)}
+                    onClick={(e) => toggleFavorite(e, `offer-${o.id}`)}
                   >
-                    {favorites[`offer-${idx}`] ? '♥' : '♡'}
+                    {favorites[`offer-${o.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">3 Days / 2 Night</div>
+                  <div className="badge-duration">{o.badge}</div>
                 </div>
                 <div className="offer-card-content">
                   <div className="title-rating-row">
@@ -296,7 +247,7 @@ export default function HomePage() {
                     <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
                   </div>
                   <div className="interest-counter">
-                    <span className="users-icon">👥</span> 144 People Showed Interest!
+                    <span className="users-icon">👥</span> {o.interestCount} People Showed Interest!
                   </div>
                 </div>
               </Link>
@@ -304,48 +255,39 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Section 5: Most Visited Tours! */}
+        {/* Section 5: Most Visited Tours! (PDF Page 16 Feedback) */}
         <section className="figma-section">
           <div className="section-header-flex">
             <h2>Most Visited Tours!</h2>
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
-          <div className="most-visited-grid-figma">
-            <Link href="/tours/paris" className="visited-card-large">
-              <Image src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" alt="Dubai" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="visited-img" />
-              <div className="visited-top-badge">⏱ 3 Days</div>
-              <div className="visited-bottom-bar">
-                <span className="city-pill">Dubai</span>
-                <span className="visited-count">👥 144 People Visited!</span>
-              </div>
-            </Link>
-
-            <Link href="/tours/paris" className="visited-card-large">
-              <Image src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris Eiffel" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="visited-img" />
-              <div className="visited-top-badge">⏱ 3 Days</div>
-              <div className="visited-bottom-bar">
-                <span className="city-pill">Paris</span>
-                <span className="visited-count">👥 144 People Visited!</span>
-              </div>
-            </Link>
-
-            <Link href="/tours/paris" className="visited-card-medium">
-              <Image src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80" alt="Paris Canal" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 17vw" className="visited-img" />
-              <div className="visited-top-badge">⏱ 3 Days</div>
-              <div className="visited-bottom-bar">
-                <span className="city-pill">Paris</span>
-                <span className="visited-count">👥 144 People Visited!</span>
-              </div>
-            </Link>
-
-            <Link href="/tours/paris" className="visited-card-medium">
-              <Image src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80" alt="Paris Street" fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 17vw" className="visited-img" />
-              <div className="visited-top-badge">⏱ 3 Days</div>
-              <div className="visited-bottom-bar">
-                <span className="city-pill">Paris</span>
-                <span className="visited-count">👥 144 People Visited!</span>
-              </div>
-            </Link>
+          <div className="tours-3col-grid">
+            {MOST_VISITED_TOURS.map((tour) => (
+              <Link href={`/tours/${tour.id}`} key={tour.id} className="tour-card-figma" style={{ background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', textDecoration: 'none' }}>
+                <div className="tour-card-image-wrap" style={{ position: 'relative', height: '180px' }}>
+                  <Image src={tour.image} alt={tour.title} fill sizes="(max-width: 768px) 100vw, 33vw" style={{ objectFit: 'cover' }} />
+                  <span className="badge-featured" style={{ position: 'absolute', top: '10px', right: '10px', background: '#2563EB', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                    {tour.badge}
+                  </span>
+                </div>
+                <div className="tour-card-content" style={{ padding: '16px' }}>
+                  <div className="title-rating-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#0F172A', margin: 0 }}>{tour.title}</h3>
+                    <span className="star-rating" style={{ fontSize: '0.88rem', color: '#FFB800' }}>★ {tour.rating}</span>
+                  </div>
+                  <div className="price-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <small style={{ color: '#64748B', fontSize: '0.75rem' }}>Starting From</small>
+                    <div className="price-tag" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <span className="current-price" style={{ fontSize: '1.1rem', fontWeight: '800', color: '#2563EB' }}>{formatPrice(tour.price)}</span>
+                      <span className="strike-price" style={{ fontSize: '0.8rem', textDecoration: 'line-through', color: '#94A3B8' }}>{formatPrice(tour.oldPrice)}</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#166534', background: '#DCFCE7', padding: '4px 8px', borderRadius: '6px', fontWeight: '600', display: 'inline-block' }}>
+                    🔥 {tour.visitedCount} People Visited!
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -356,47 +298,43 @@ export default function HomePage() {
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="tours-3col-grid">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <Link href="/tours/paris" key={`just-${idx}`} className="tour-card-figma">
+            {JUST_FOR_YOU_TOURS.map((tour, idx) => (
+              <Link href={`/tours/${tour.id}`} key={`just-${tour.id}`} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
                   <Image
-                    src={[
-                      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-                      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-                      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
-                    ][idx % 3]}
-                    alt="Cox's Bazar"
+                    src={tour.image}
+                    alt={tour.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="tour-card-img"
                   />
                   <button
                     className="heart-circle-btn"
-                    onClick={(e) => toggleFavorite(e, `just-${idx}`)}
+                    onClick={(e) => toggleFavorite(e, `just-${tour.id}`)}
                   >
-                    {favorites[`just-${idx}`] ? '♥' : '♡'}
+                    {favorites[`just-${tour.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">3 Days / 2 Night</div>
+                  <div className="badge-duration">{tour.badge}</div>
                 </div>
                 <div className="tour-card-content">
                   <div className="title-rating-row">
-                    <h3>Tenting at Cox's Bazar</h3>
-                    <span className="star-rating">★ 4.7</span>
+                    <h3>{tour.title}</h3>
+                    <span className="star-rating">★ {tour.rating}</span>
                   </div>
                   <div className="price-row">
                     <small>Starting From</small>
                     <div className="price-tag">
-                      <span className="current-price">{formatPrice(200)}</span>
-                      <span className="strike-price">{formatPrice(250)}</span>
-                      <span className="discount-tag">20% OFF</span>
+                      <span className="current-price">{formatPrice(tour.price)}</span>
+                      <span className="strike-price">{formatPrice(tour.oldPrice)}</span>
+                      {tour.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
                   </div>
-                  <p className="tour-snippet">Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.</p>
+                  <p className="tour-snippet">{tour.desc}</p>
                   <div className="icons-features-row">
                     <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
                   </div>
                   <div className="interest-counter">
-                    <span className="users-icon">👥</span> 144 People Showed Interest!
+                    <span className="users-icon">👥</span> {tour.interestCount} People Showed Interest!
                   </div>
                 </div>
               </Link>
@@ -405,29 +343,29 @@ export default function HomePage() {
         </section>
       </main>
 
-        {/* Floating Customer Service (Chat / Email) Widget (SRS Page 6 Standard) */}
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 99, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <Link
-            href="/account/messages"
-            className="floating-messages-btn"
-            style={{
-              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-              color: '#ffffff',
-              padding: '12px 20px',
-              borderRadius: '30px',
-              fontWeight: '700',
-              boxShadow: '0 8px 24px rgba(37, 99, 235, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              textDecoration: 'none',
-            }}
-          >
-            💬 Customer Service (Chat & Email)
-          </Link>
-        </div>
+      {/* Floating Customer Service (Chat / Email) Widget (SRS Page 6 Standard) */}
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 99, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <Link
+          href="/account/messages"
+          className="floating-messages-btn"
+          style={{
+            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '30px',
+            fontWeight: '700',
+            boxShadow: '0 8px 24px rgba(37, 99, 235, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            textDecoration: 'none',
+          }}
+        >
+          💬 Tour Planner Chat (Online)
+        </Link>
+      </div>
 
-        <Footer />
+      <Footer />
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function AddTourGuidePage() {
             </div>
 
             <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: '24px 0 12px 0' }}>
-              2. Language Proficiency (5 Box Parameter - SRS Page 4 Standard)
+              2. Language Proficiency (5 Box Parameter)
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#6B7280', marginBottom: '16px' }}>Select proficiency level (1 to 5 boxes) for each language.</p>
 

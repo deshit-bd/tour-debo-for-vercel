@@ -8,117 +8,9 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FilterSidebar from '../components/FilterSidebar';
 import { useCurrency } from '../context/CurrencyContext';
+import { ALL_TOURS } from '../../lib/toursData';
 
-const ALL_TOURS_DATA = [
-  {
-    id: 'tour-1',
-    title: 'Parasailing Adventure!',
-    location: "Cox's Bazar",
-    rating: 4.7,
-    price: 180,
-    oldPrice: 250,
-    duration: '3 Days',
-    badge: '3 Days / 2 Night',
-    isOffer: true,
-    countryType: 'Single Country',
-    packageType: 'Couple',
-    transportation: 'Include',
-    meal: 'Breakfast',
-    accommodation: '4 Star',
-    sightseeing: 'Sea',
-    desc: 'Fly high above the Bay of Bengal coastline with certified instructors and premium equipment.',
-  },
-  {
-    id: 'tour-2',
-    title: 'Sajek Valley Cloud Tour',
-    location: 'Sajek Valley',
-    rating: 4.9,
-    price: 220,
-    oldPrice: 280,
-    duration: '3 Days',
-    badge: '3 Days / 2 Night',
-    isOffer: true,
-    countryType: 'Single Country',
-    packageType: 'Family',
-    transportation: 'Include',
-    meal: 'All Include',
-    accommodation: 'Bamboo Cottage',
-    sightseeing: 'Mountain',
-    desc: 'Witness the sea of clouds from Helipad and Konglak Hilltop cottage with local indigenous cuisine.',
-  },
-  {
-    id: 'tour-3',
-    title: 'Sundarbans Mangrove Cruise',
-    location: 'Sundarbans',
-    rating: 4.8,
-    price: 250,
-    oldPrice: 320,
-    duration: '5 Days',
-    badge: '5 Days / 4 Night',
-    isOffer: false,
-    countryType: 'Single Country',
-    packageType: 'Group',
-    transportation: 'Partial Include',
-    meal: 'All Include',
-    accommodation: 'Ship',
-    sightseeing: 'Forest',
-    desc: 'Explore Kotka beach and Harbaria wild forest inside the world largest mangrove forest.',
-  },
-  {
-    id: 'tour-4',
-    title: 'Paris City of Romance Tour',
-    location: 'Paris',
-    rating: 5.0,
-    price: 290,
-    oldPrice: 350,
-    duration: '7 Days',
-    badge: '7 Days / 6 Night',
-    isOffer: true,
-    countryType: 'Multi - Country',
-    packageType: 'Couple',
-    transportation: 'Include',
-    meal: 'Breakfast',
-    accommodation: '5 Star',
-    sightseeing: 'City',
-    desc: 'Full access Eiffel Tower pass, Seine River cruise, Louvre museum guided walkthrough.',
-  },
-  {
-    id: 'tour-5',
-    title: 'Sylhet Ratargul & Jaflong Escaped',
-    location: 'Sylhet',
-    rating: 4.6,
-    price: 120,
-    oldPrice: 160,
-    duration: '3 Days',
-    badge: '3 Days / 2 Night',
-    isOffer: true,
-    countryType: 'Single Country',
-    packageType: 'Family',
-    transportation: 'Include',
-    meal: 'Breakfast',
-    accommodation: '3 Star',
-    sightseeing: 'Nature',
-    desc: 'Explore freshwater swamp forest by wooden boat and clear tea gardens of Sreemangal.',
-  },
-  {
-    id: 'tour-6',
-    title: 'Saint Martin Coral Island Camp',
-    location: 'Saint Martin',
-    rating: 4.8,
-    price: 195,
-    oldPrice: 240,
-    duration: '3 Days',
-    badge: '3 Days / 2 Night',
-    isOffer: false,
-    countryType: 'Single Country',
-    packageType: 'Couple',
-    transportation: 'Include',
-    meal: 'Dinner',
-    accommodation: 'Tent',
-    sightseeing: 'Sea',
-    desc: 'Bicycle ride on Chera Dwip, night beach camp bonfire and fresh sea seafood dinner.',
-  },
-];
+
 
 function TourListingContent() {
   const searchParams = useSearchParams();
@@ -131,10 +23,12 @@ function TourListingContent() {
   const [activeImageIndex, setActiveImageIndex] = useState({});
   const [filters, setFilters] = useState({
     rating: 1,
-    maxPrice: 300,
+    maxPrice: 500,
     startingPoint: searchQuery,
     onlyOffer: false,
+    localTour: false,
     countryType: [],
+    selectedCountries: [],
     packageType: [],
     duration: [],
     transportation: [],
@@ -143,15 +37,10 @@ function TourListingContent() {
     sightseeing: [],
   });
 
-  const sampleImages = [
-    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
-  ];
 
   // Dynamic filtering & sorting engine
   const filteredTours = useMemo(() => {
-    return ALL_TOURS_DATA.filter((tour) => {
+    return ALL_TOURS.filter((tour) => {
       if (filters.rating && tour.rating < filters.rating) return false;
       if (filters.maxPrice && tour.price > filters.maxPrice) return false;
       if (
@@ -162,7 +51,18 @@ function TourListingContent() {
         return false;
       }
       if (filters.onlyOffer && !tour.isOffer) return false;
+      if (filters.localTour && !tour.isLocal) return false;
       if (filters.countryType?.length > 0 && !filters.countryType.includes(tour.countryType)) return false;
+      
+      // Multi-Country Filter Matching
+      if (filters.selectedCountries?.length > 0) {
+        const tourCountries = tour.multiCountries || [tour.country || tour.location];
+        const hasMatch = filters.selectedCountries.some(sc =>
+          tourCountries.some(tc => tc.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(tc.toLowerCase()))
+        );
+        if (!hasMatch) return false;
+      }
+
       if (filters.packageType?.length > 0 && !filters.packageType.includes(tour.packageType)) return false;
       if (filters.duration?.length > 0 && !filters.duration.includes(tour.duration)) return false;
       if (filters.transportation?.length > 0 && !filters.transportation.includes(tour.transportation)) return false;
@@ -177,17 +77,17 @@ function TourListingContent() {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const nextImage = (id) => {
+  const nextImage = (id, total = 4) => {
     setActiveImageIndex((prev) => ({
       ...prev,
-      [id]: ((prev[id] || 0) + 1) % sampleImages.length,
+      [id]: ((prev[id] || 0) + 1) % total,
     }));
   };
 
-  const prevImage = (id) => {
+  const prevImage = (id, total = 4) => {
     setActiveImageIndex((prev) => ({
       ...prev,
-      [id]: (prev[id] || 0) === 0 ? sampleImages.length - 1 : (prev[id] || 0) - 1,
+      [id]: (prev[id] || 0) === 0 ? total - 1 : (prev[id] || 0) - 1,
     }));
   };
 
@@ -297,143 +197,196 @@ function TourListingContent() {
             </button>
           </div>
         ) : viewMode === 'grid' ? (
-          /* Vertical Grid View (2 Columns) */
-          <div className="tours-2col-grid">
+          <div className="tours-grid-layout" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginTop: '20px' }}>
             {filteredTours.map((item) => (
-              <div key={item.id} className="tour-card-figma">
-                <div className="tour-card-image-wrap">
-                  <Image
-                    src={sampleImages[0]}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="tour-card-img"
-                  />
+              <div key={item.id} className="grid-tour-card" style={{ background: '#ffffff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ position: 'relative', height: '180px' }}>
+                  <Image src={item.image} alt={item.title} fill style={{ objectFit: 'cover' }} />
                   <button
-                    className="heart-circle-btn"
                     onClick={() => toggleFavorite(item.id)}
+                    style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer' }}
                   >
-                    {favorites[item.id] ? '♥' : '♡'}
+                    {favorites[item.id] ? '❤️' : '♡'}
                   </button>
-                  <div className="badge-duration">{item.badge}</div>
                 </div>
-                <div className="tour-card-content">
-                  <div className="title-rating-row">
-                    <Link href="/tours/paris">
-                      <h3>{item.title}</h3>
+                <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1E293B', marginBottom: '4px' }}>{item.title}</h3>
+                    <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '8px' }}>📍 {item.location}</p>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                    <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>{formatPrice(item.price)}</span>
+                    <Link href={`/tours/${item.id}`} style={{ background: 'var(--primary-blue)', color: '#fff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', textDecoration: 'none' }}>
+                      View Details
                     </Link>
-                    <span className="star-rating">★ {item.rating}</span>
-                  </div>
-                  <div className="price-row">
-                    <small>Starting From</small>
-                    <div className="price-tag">
-                      <span className="current-price">{formatPrice(item.price)}</span>
-                      <span className="strike-price">{formatPrice(item.oldPrice)}</span>
-                      {item.isOffer && <span className="discount-tag">20% OFF</span>}
-                    </div>
-                  </div>
-                  <p className="tour-snippet">{item.desc}</p>
-                  <div className="icons-features-row">
-                    <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
-                  </div>
-                  <div className="interest-counter">
-                    <span className="users-icon">👥</span> 144 People Showed Interest!
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          /* Horizontal List View */
           <div className="tour-horizontal-list">
             {filteredTours.map((item) => {
-              const imgIdx = activeImageIndex[item.id] || 0;
+              const itemImages = (item.images && item.images.length > 0) ? item.images : [item.image];
+              const currentImgIdx = activeImageIndex[item.id] || 0;
               return (
-                <div key={item.id} className="tour-card-horizontal">
-                  <div className="horizontal-img-box">
+                <Link key={item.id} href={`/tours/${item.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <div className="tour-card-horizontal">
+                  <div className="horizontal-img-box" style={{ position: 'relative', minHeight: '220px', width: '100%', height: '100%', overflow: 'hidden' }}>
                     <Image
-                      src={sampleImages[imgIdx]}
+                      src={itemImages[currentImgIdx] || item.image}
                       alt={item.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 320px"
-                      className="card-horizontal-img"
+                      priority
+                      style={{ objectFit: 'cover' }}
                     />
                     <button
-                      className="heart-circle-btn"
-                      onClick={() => toggleFavorite(item.id)}
+                      className="img-nav left"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); prevImage(item.id, itemImages.length); }}
+                      style={{
+                        position: 'absolute',
+                        left: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '28px',
+                        height: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      }}
                     >
-                      {favorites[item.id] ? '♥' : '♡'}
-                    </button>
-                    <button className="img-arrow left-arrow" onClick={() => prevImage(item.id)}>
                       ‹
                     </button>
-                    <button className="img-arrow right-arrow" onClick={() => nextImage(item.id)}>
+                    <button
+                      className="img-nav right"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextImage(item.id, itemImages.length); }}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '28px',
+                        height: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      }}
+                    >
                       ›
                     </button>
-                    <div className="badge-duration">{item.badge}</div>
-                    <div className="img-dots-overlay">
-                      {sampleImages.map((_, i) => (
+                    <button
+                      className="heart-btn"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(item.id); }}
+                      style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        zIndex: 2,
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      }}
+                    >
+                      {favorites[item.id] ? '❤️' : '♡'}
+                    </button>
+                    <div
+                      className="img-dots"
+                      style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        display: 'flex',
+                        gap: '6px',
+                        zIndex: 2,
+                      }}
+                    >
+                      {itemImages.map((_, i) => (
                         <span
                           key={i}
-                          className={`dot ${i === imgIdx ? 'active' : ''}`}
-                        ></span>
+                          style={{
+                            width: i === currentImgIdx ? '16px' : '6px',
+                            height: '6px',
+                            borderRadius: '3px',
+                            background: i === currentImgIdx ? '#ffffff' : 'rgba(255,255,255,0.6)',
+                            transition: 'all 0.2s ease',
+                          }}
+                        />
                       ))}
                     </div>
                   </div>
 
                   <div className="horizontal-content-box">
                     <div className="horizontal-header-row">
-                      <div className="title-location-group">
-                        <Link href="/tours/paris">
-                          <h3>{item.title}</h3>
-                        </Link>
-                        <span className="location-tag">📍 {item.location}</span>
+                      <div>
+                        <div className="title-and-rating" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="tour-title-link" style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-dark)' }}>
+                            {item.title}
+                          </span>
+                          <span className="rating-badge" style={{ background: '#FFFBEB', color: '#B45309', padding: '2px 8px', borderRadius: '6px', fontWeight: '700', fontSize: '0.85rem' }}>★ {item.rating}</span>
+                        </div>
+                        <p className="location-text" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>📍 {item.location}</p>
                       </div>
-                      <div className="rating-price-group">
-                        <div className="star-rating">★ {item.rating}</div>
-                        <div className="price-stack">
-                          <small>Starting From</small>
-                          <div className="price-numbers">
-                            <span className="current-price">{formatPrice(item.price)}</span>
-                            <span className="strike-price">{formatPrice(item.oldPrice)}</span>
+
+                      <div className="price-and-action" style={{ textAlign: 'right' }}>
+                        <span className="btn-view-details" style={{ background: 'var(--primary-blue)', color: '#ffffff', padding: '8px 18px', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', display: 'inline-block', marginBottom: '6px' }}>
+                          View Details
+                        </span>
+                        <div className="price-box">
+                          <small style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)' }}>Starting From</small>
+                          <div className="price-numbers" style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
+                            <span className="current-price" style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--primary-blue)' }}>{formatPrice(item.price)}</span>
+                            <span className="strike-price" style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through' }}>{formatPrice(item.oldPrice)}</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="duration-tag-row">
-                      <span className="duration-pill">⏱ {item.duration}</span>
-                      {item.isOffer && <span className="discount-tag">20% OFF</span>}
-                      <span
-                        style={{
-                          fontSize: '0.72rem',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          background: '#F1F5F9',
-                          color: '#475569',
-                          fontWeight: '600',
-                        }}
-                      >
-                        🏡 {item.accommodation}
-                      </span>
+                    <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span className="duration-pill" style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
+                      {item.isOffer && <span className="discount-tag" style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#DC2626', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>20% OFF</span>}
+                      <span style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
                     </div>
 
-                    <p className="tour-description-text">{item.desc}</p>
+                    <p className="tour-description-text" style={{ fontSize: '0.88rem', color: 'var(--text-body)', margin: '4px 0' }}>{item.desc}</p>
 
-                    <div className="horizontal-footer-row">
-                      <div className="icons-features-row">
+                    <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #F1F5F9' }}>
+                      <div className="icons-features-row" style={{ display: 'flex', gap: '10px', fontSize: '1rem' }}>
                         <span>✈️</span>
                         <span>🏨</span>
                         <span>🍽️</span>
                         <span>🚌</span>
                         <span>⛰️</span>
                       </div>
-                      <div className="interest-counter">
+                      <div className="interest-counter" style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: '600' }}>
                         <span className="users-icon">👥</span> 144 People Showed Interest!
                       </div>
                     </div>
                   </div>
                 </div>
+                </Link>
               );
             })}
           </div>

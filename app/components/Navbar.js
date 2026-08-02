@@ -689,7 +689,10 @@ export default function Navbar() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px', background: '#F1F5F9', padding: '4px', borderRadius: '12px' }}>
               <button
                 type="button"
-                onClick={() => setAuthRole('USER')}
+                onClick={() => {
+                  setAuthRole('USER');
+                  if (authEmail === 'planner@deshit-bd.com') setAuthEmail('user@deshit-bd.com');
+                }}
                 style={{
                   padding: '10px',
                   borderRadius: '10px',
@@ -705,7 +708,10 @@ export default function Navbar() {
               </button>
               <button
                 type="button"
-                onClick={() => setAuthRole('PLANNER')}
+                onClick={() => {
+                  setAuthRole('PLANNER');
+                  if (authEmail === 'user@deshit-bd.com') setAuthEmail('planner@deshit-bd.com');
+                }}
                 style={{
                   padding: '10px',
                   borderRadius: '10px',
@@ -774,7 +780,6 @@ export default function Navbar() {
                           type="text"
                           value={authNid}
                           onChange={(e) => setAuthNid(e.target.value)}
-                          placeholder="e.g. 1995269182348123"
                           style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
                           required
                         />
@@ -796,19 +801,6 @@ export default function Navbar() {
                         </div>
                       </div>
 
-                      <div>
-                        <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
-                          Planner Account Category *
-                        </label>
-                        <select
-                          value={plannerType}
-                          onChange={(e) => setPlannerType(e.target.value)}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem', fontWeight: '600' }}
-                        >
-                          <option value="Personal">Personal Planner</option>
-                          <option value="Company">Company / Registered Agency</option>
-                        </select>
-                      </div>
 
                       {/* Trade License Fields - Required if Company / Agency Registration */}
                       {plannerType === 'Company' && (
@@ -821,8 +813,7 @@ export default function Navbar() {
                               type="text"
                               value={tradeLicense}
                               onChange={(e) => setTradeLicense(e.target.value)}
-                              placeholder="e.g. TRAD/DNCC/019481/2024"
-                              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #93C5FD', outline: 'none', fontSize: '0.9rem', background: '#ffffff' }}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
                               required
                             />
                           </div>
@@ -831,7 +822,7 @@ export default function Navbar() {
                             <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1E40AF', display: 'block', marginBottom: '4px' }}>
                               Trade License Document Image Upload *
                             </label>
-                            <input type="file" accept="image/*,.pdf" style={{ fontSize: '0.75rem', width: '100%', background: '#ffffff', padding: '6px', borderRadius: '8px' }} />
+                            <input type="file" accept="image/*,.pdf" style={{ fontSize: '0.75rem', width: '100%' }} />
                           </div>
                         </div>
                       )}

@@ -33,7 +33,7 @@ export default function BookingHistoryPage() {
               {/* Status Filter Tabs */}
               <div className="account-sub-tabs-bar">
                 <Link href="/account/bookings" className="sub-tab">All</Link>
-                <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => setActiveTab('topay')}>To Pay</button>
+                <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => setActiveTab('topay')}>Payment Due</button>
                 <Link href="/account/bookings" className="sub-tab">To Be Started</Link>
                 <Link href="/account/bookings" className="sub-tab">Completed</Link>
                 <Link href="/account/bookings" className="sub-tab">Cancelled</Link>

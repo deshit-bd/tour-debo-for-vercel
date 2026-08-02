@@ -179,13 +179,18 @@ export default function PlannerAllProductsPage() {
                         onClick={() => toggleFavorite(tour.id)}
                       >
                         {favorites[tour.id] ? '♥' : '♡'}
+                      <button
+                        className="heart-circle-btn"
+                        onClick={() => toggleFavorite(tour.id)}
+                      >
+                        {favorites[tour.id] ? '♥' : '♡'}
                       </button>
                       <div className="badge-duration">{tour.duration}</div>
                     </div>
 
                     <div className="tour-card-content">
                       <div className="title-rating-row">
-                        <Link href="/tours/paris">
+                        <Link href={`/tours/${tour.id}`}>
                           <h3>{tour.title}</h3>
                         </Link>
                         <span className="star-rating">★ {tour.rating}</span>
@@ -217,46 +222,12 @@ export default function PlannerAllProductsPage() {
                         unoptimized
                         className="card-horizontal-img"
                       />
-                      <button
-                        className="heart-circle-btn"
-                        onClick={() => toggleFavorite(tour.id)}
-                      >
-                        {favorites[tour.id] ? '♥' : '♡'}
-                      </button>
                     </div>
-
-                    <div className="horizontal-content-box">
-                      <div className="horizontal-header-row">
-                        <div className="title-location-group">
-                          <Link href="/tours/paris">
-                            <h3>{tour.title}</h3>
-                          </Link>
-                          <span className="location-tag">📍 {tour.location}</span>
-                        </div>
-
-                        <div className="rating-price-group">
-                          <span className="star-rating">★ {tour.rating}</span>
-                          <small style={{ display: 'block', fontSize: '0.7rem', color: '#94A3B8' }}>Starting From</small>
-                          <div className="price-tag">
-                            <span className="current-price">${tour.price}</span>
-                            <span className="strike-price">{tour.oldPrice}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="duration-tag-row">
-                        <span className="duration-pill">🕒 {tour.duration}</span>
-                        {tour.isOffer && <span className="discount-tag">20% OFF</span>}
-                      </div>
-
-                      <p className="tour-description-text">{tour.desc}</p>
-
-                      <div className="horizontal-footer-row">
-                        <div className="icons-features-row">
-                          <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚶</span><span>⛰️</span>
-                        </div>
-                        <span className="interest-counter">👥 144 People Showed Interest!</span>
-                      </div>
+                    <div className="horizontal-content-box" style={{ padding: '16px' }}>
+                      <Link href={`/tours/${tour.id}`}>
+                        <h3>{tour.title}</h3>
+                      </Link>
+                      <p className="tour-snippet">{tour.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -265,14 +236,6 @@ export default function PlannerAllProductsPage() {
           </div>
         </div>
       </main>
-
-      {/* Floating Messages Button */}
-      <Link href="/account/messages" className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </Link>
 
       <Footer />
     </div>

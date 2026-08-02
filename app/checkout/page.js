@@ -1,38 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCurrency } from '../context/CurrencyContext';
 import { generateTicketPDF } from '../utils/pdfGenerator';
 
-export default function CheckoutPage() {
+const TOURS_DATA_MAP = {
+  'paris': {
+    name: 'Paris : City of Love Tour',
+    prices: { single: 120, couple: 216 },
+    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
+  },
+  'sylhet': {
+    name: 'Sylhet : Ratargul & Jaflong Escaped Tour',
+    prices: { single: 144, couple: 240 },
+    image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=400&q=80',
+  },
+  'parasailing': {
+    name: 'Cox\'s Bazar : Parasailing Adventure!',
+    prices: { single: 216, couple: 360 },
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+  },
+  'sajek': {
+    name: 'Sajek Valley : Cloud & Helipad Retreat',
+    prices: { single: 180, couple: 300 },
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80',
+  },
+  'saintmartin': {
+    name: 'Saint Martin : Coral Island Beach Camp',
+    prices: { single: 165, couple: 280 },
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80',
+  },
+};
+
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { formatPrice } = useCurrency();
+
+  const tourId = searchParams?.get('tourId') || 'paris';
+  const pkgType = searchParams?.get('package') || 'single';
+  const initialCount = parseInt(searchParams?.get('count') || '1', 10);
+
+  const selectedTour = TOURS_DATA_MAP[tourId.toLowerCase()] || TOURS_DATA_MAP['paris'];
+  const unitPrice = selectedTour.prices[pkgType] || selectedTour.prices.single;
+  const pkgLabel = pkgType === 'couple' ? 'Couple Package' : 'Single Package';
+
   const [items, setItems] = useState([
     {
       id: 1,
-      name: 'bada boom - Paris Tour',
-      price: 74.99,
-      qty: 1,
-      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 2,
-      name: 'Yellow in bloom - Sajek Tour',
-      price: 89.99,
-      qty: 1,
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      id: 3,
-      name: 'quinoa dreams - Sundarbans Tour',
-      price: 109.99,
-      qty: 1,
-      image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&q=80',
+      name: `${selectedTour.name} (${pkgLabel})`,
+      price: unitPrice,
+      qty: Math.max(1, initialCount),
+      image: selectedTour.image,
     },
   ]);
 
@@ -49,9 +73,12 @@ export default function CheckoutPage() {
     setItems(items.map(item => item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item));
   };
 
-  const totalAmount = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const taxes = 8.20;
-  const grandTotal = totalAmount + taxes;
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const sellerDiscount = 15;
+  const voucherDiscount = voucher.toUpperCase() === 'DESH2026' ? 20 : 0;
+  const partnerDiscount = paymentMethod === 'card' ? 10 : 5;
+  const taxes = 0;
+  const grandTotal = Math.max(0, subtotal - sellerDiscount - voucherDiscount - partnerDiscount);
 
   const handlePay = () => {
     setProcessing(true);
@@ -77,7 +104,7 @@ export default function CheckoutPage() {
 
       <main className="figma-main-content">
         {paymentSuccess ? (
-          /* Payment Success & PDF Ticket Download Screen */
+          /* Payment Success Screen */
           <div
             style={{
               background: '#ffffff',
@@ -133,6 +160,8 @@ export default function CheckoutPage() {
                   fontWeight: '800',
                   fontSize: '0.95rem',
                   boxShadow: '0 6px 20px rgba(11, 87, 208, 0.3)',
+                  border: 'none',
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
@@ -150,6 +179,8 @@ export default function CheckoutPage() {
                   borderRadius: '999px',
                   fontWeight: '700',
                   fontSize: '0.95rem',
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
               >
                 View My Bookings
@@ -194,19 +225,45 @@ export default function CheckoutPage() {
 
             {/* Right Column: Order Summary & Payment Form */}
             <div className="checkout-summary-column">
+              {/* Discount Banner (PDF Page 14 Feedback) */}
+              <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px', color: '#92400E', fontSize: '0.82rem', fontWeight: 'bold' }}>
+                <div>🎉 Applicable Discount Breakdown:</div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
+                  <span style={{ background: '#FEE2E2', color: '#991B1B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
+                    Seller Discount: - {formatPrice(sellerDiscount)}
+                  </span>
+                  <span style={{ background: voucherDiscount > 0 ? '#DCFCE7' : '#F1F5F9', color: voucherDiscount > 0 ? '#166534' : '#64748B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
+                    Voucher Discount: {voucherDiscount > 0 ? `- ${formatPrice(voucherDiscount)}` : 'None'}
+                  </span>
+                  <span style={{ background: '#DBEAFE', color: '#1E40AF', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
+                    Payment Partner Discount: - {formatPrice(partnerDiscount)}
+                  </span>
+                </div>
+              </div>
+
               {/* Amount Summary Card */}
               <div className="summary-breakdown-card">
                 <div className="summary-line">
-                  <span>Total Amount:</span>
-                  <strong>{formatPrice(totalAmount)}</strong>
+                  <span>Subtotal Amount:</span>
+                  <strong>{formatPrice(subtotal)}</strong>
+                </div>
+                <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                  <span>Seller Discount:</span>
+                  <strong>- {formatPrice(sellerDiscount)}</strong>
+                </div>
+                {voucherDiscount > 0 && (
+                  <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                    <span>Voucher Discount ({voucher.toUpperCase()}):</span>
+                    <strong>- {formatPrice(voucherDiscount)}</strong>
+                  </div>
+                )}
+                <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                  <span>Payment Partner Discount:</span>
+                  <strong>- {formatPrice(partnerDiscount)}</strong>
                 </div>
                 <div className="summary-line">
                   <span>Platform Fee:</span>
-                  <strong>NIL</strong>
-                </div>
-                <div className="summary-line">
-                  <span>Taxes:</span>
-                  <strong>{formatPrice(taxes)}</strong>
+                  <strong>{formatPrice(0)}</strong>
                 </div>
 
                 <div className="summary-total-banner">
@@ -226,6 +283,9 @@ export default function CheckoutPage() {
                     value={voucher}
                     onChange={(e) => setVoucher(e.target.value)}
                   />
+                  <button onClick={() => setVoucher('DESH2026')} style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
+                    Apply
+                  </button>
                 </div>
               </div>
 
@@ -322,5 +382,13 @@ export default function CheckoutPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '60px', textAlign: 'center', fontWeight: 'bold' }}>Loading Checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

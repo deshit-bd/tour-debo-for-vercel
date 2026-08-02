@@ -990,7 +990,7 @@ button {
 .visa-3col-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 12px;
 }
 
 .visa-card-figma {
@@ -1359,14 +1359,14 @@ button {
 .guides-2col-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin-top: 20px;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .guide-cover-wrap {
   position: relative;
   width: 100%;
-  height: 268px;
+  height: 170px;
   overflow: visible;
   background: #E2E8F0;
 }
@@ -1377,7 +1377,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 42px;
+  height: 32px;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.18));
   z-index: 1;
   pointer-events: none;
@@ -1385,25 +1385,25 @@ button {
 
 .guide-cover-img {
   object-fit: cover;
-  border-radius: 18px 18px 0 0;
+  border-radius: 14px 14px 0 0;
   transition: transform 0.5s ease;
 }
 
 .guide-card-figma:hover .guide-cover-img {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 .guide-avatar-overlay {
   position: absolute;
-  left: 24px;
-  bottom: -38px;
-  width: 78px;
-  height: 78px;
+  left: 18px;
+  bottom: -28px;
+  width: 56px;
+  height: 56px;
   overflow: hidden;
   border-radius: 999px;
-  border: 5px solid #ffffff;
+  border: 3px solid #ffffff;
   background: #E2E8F0;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
   z-index: 3;
 }
 
@@ -1414,9 +1414,9 @@ button {
 .guide-card-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
-  padding: 52px 24px 22px;
+  padding: 34px 16px 14px;
 }
 
 .guide-profile-header-card,

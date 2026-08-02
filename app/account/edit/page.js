@@ -5,16 +5,18 @@ import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
+import AddressSegment from '../../components/AddressSegment';
 
 export default function EditProfilePage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: 'DeshIT-BD',
-    email: 'press.dhaka@fco.gov.uk',
-    phone: '+880 17 0000 0000',
-    dob: '08/15/1995',
-    profession: 'Software Engineer',
-    gender: 'Male',
+    name: 'Sanjid Ibrahim',
+    email: 'sanjidbd@gmail.com',
+    countryCode: '+880',
+    phone: '1712000323',
+    dob: '1986-03-19',
+    profession: 'Job',
+    gender: 'male',
   });
   const [saved, setSaved] = useState(false);
 
@@ -31,121 +33,168 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="figma-page-shell dark-theme-shell">
+    <div className="figma-page-shell">
       <Navbar />
 
-      <main className="figma-main-content edit-profile-dark-container">
+      <main className="figma-main-content">
         <div className="account-layout-grid">
           <AccountSidebar />
 
           <div className="account-main-area">
-            <div className="dark-form-card">
-          <div className="edit-profile-header">
-            <span className="account-eyebrow">Profile Settings</span>
-            <h2>Edit Profile</h2>
-            <p>Update your personal information and profile photo.</p>
-          </div>
+            <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid #E2E8F0', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <span style={{ fontSize: '0.78rem', color: '#0097B2', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile Settings</span>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0F172A', margin: '4px 0 0 0' }}>Edit Profile</h2>
+                <p style={{ fontSize: '0.88rem', color: '#64748B', margin: '4px 0 0 0' }}>Update your personal information, mobile country code, and profession.</p>
+              </div>
 
-          {saved ? (
-            <div style={{ color: '#10B981', textAlign: 'center', padding: '40px', fontWeight: '800', fontSize: '1.2rem' }}>
-              ✓ Profile changes saved successfully! Redirecting to Profile...
-            </div>
-          ) : (
-            <form onSubmit={handleSave}>
-              <div className="form-grid-2col">
-                {/* Name */}
-                <div className="dark-input-group">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
+              {saved ? (
+                <div style={{ color: '#059669', textAlign: 'center', padding: '40px', fontWeight: '800', fontSize: '1.1rem', background: '#ECFDF5', borderRadius: '12px', border: '1px solid #A7F3D0' }}>
+                  ✓ Profile changes saved successfully! Redirecting to My Profile...
                 </div>
+              ) : (
+                <form onSubmit={handleSave}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+                    {/* Full Name */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                      />
+                    </div>
 
-                {/* E-mail */}
-                <div className="dark-input-group">
-                  <label>E-mail</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
+                    {/* Email Address */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Email Address *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                      />
+                    </div>
 
-                {/* Phone Number */}
-                <div className="dark-input-group">
-                  <label>Phone Number</label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
+                    {/* Mobile with Country Code Dropdown */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Mobile Number *</label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <select
+                          name="countryCode"
+                          value={formData.countryCode}
+                          onChange={handleChange}
+                          style={{ padding: '10px 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', background: '#F8FAFC', cursor: 'pointer', outline: 'none' }}
+                        >
+                          <option value="+880">🇧🇩 +880 (BD)</option>
+                          <option value="+1">🇺🇸 +1 (US/CA)</option>
+                          <option value="+44">🇬🇧 +44 (UK)</option>
+                          <option value="+91">🇮🇳 +91 (IN)</option>
+                          <option value="+65">🇸🇬 +65 (SG)</option>
+                          <option value="+61">🇦🇺 +61 (AU)</option>
+                          <option value="+971">🇦🇪 +971 (UAE)</option>
+                          <option value="+966">🇸🇦 +966 (KSA)</option>
+                        </select>
+                        <input
+                          type="text"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          required
+                          style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                        />
+                      </div>
+                    </div>
 
-                {/* Date of Birth */}
-                <div className="dark-input-group">
-                  <label>Date of birth <small>(MM/DD/YY)</small></label>
-                  <div className="input-with-icon">
-                    <input
-                      type="text"
-                      name="dob"
-                      value={formData.dob}
-                      onChange={handleChange}
-                    />
-                    <span className="calendar-icon">📅</span>
+                    {/* Birthday */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Birthday</label>
+                      <input
+                        type="date"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleChange}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                      />
+                    </div>
+
+                    {/* Gender* */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Gender *</label>
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none', background: '#fff', cursor: 'pointer' }}
+                      >
+                        <option value="male">male</option>
+                        <option value="female">female</option>
+                        <option value="other">other</option>
+                      </select>
+                    </div>
+
+                    {/* Profession Dropdown */}
+                    <div>
+                      <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Profession *</label>
+                      <select
+                        name="profession"
+                        value={formData.profession}
+                        onChange={handleChange}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none', background: '#fff', cursor: 'pointer' }}
+                      >
+                        <option value="Job">Job</option>
+                        <option value="Business">Business</option>
+                        <option value="Student">Student</option>
+                        <option value="Home Maker">Home Maker</option>
+                        <option value="Others">Others</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                {/* Profession */}
-                <div className="dark-input-group">
-                  <label>Profession</label>
-                  <input
-                    type="text"
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleChange}
-                  />
-                </div>
+                  {/* Address Segment Component */}
+                  <AddressSegment />
 
-                {/* Gender */}
-                <div className="dark-input-group">
-                  <label>Gender</label>
-                  <input
-                    type="text"
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Bottom Section: Photo Upload + Save Button */}
-              <div className="dark-form-bottom-row">
-                <div className="photo-upload-box">
-                  <label>Upload a Photo</label>
-                  <label className="photo-dropzone">
-                    <input type="file" accept="image/*" className="upload-file-input" />
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0066FF" strokeWidth="1.5">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                    <span>Click to upload</span>
-                  </label>
-                </div>
-
-                <div className="save-button-wrap">
-                  <button type="submit" className="btn-dark-save">
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-            </form>
-          )}
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                    <button
+                      type="submit"
+                      style={{
+                        background: '#0097B2',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '12px 24px',
+                        borderRadius: '6px',
+                        fontWeight: '800',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,151,178,0.2)',
+                      }}
+                    >
+                      SAVE CHANGES
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/account/profile')}
+                      style={{
+                        background: '#F1F5F9',
+                        color: '#475569',
+                        border: 'none',
+                        padding: '12px 20px',
+                        borderRadius: '6px',
+                        fontWeight: '700',
+                        fontSize: '0.9rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

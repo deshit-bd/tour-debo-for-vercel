@@ -23,6 +23,8 @@ const INITIAL_GUIDES = [
     coverImage: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
     completedCount: '144 Tour Completed!',
+    countryType: 'Single Country',
+    packageType: 'Family',
   },
   {
     id: 'sajek',
@@ -37,6 +39,8 @@ const INITIAL_GUIDES = [
     coverImage: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
     completedCount: '198 Tour Completed!',
+    countryType: 'Single Country',
+    packageType: 'Group',
   },
   {
     id: 'cox-bazar',
@@ -51,6 +55,8 @@ const INITIAL_GUIDES = [
     coverImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80',
     completedCount: '210 Tour Completed!',
+    countryType: 'Single Country',
+    packageType: 'Couple',
   },
   {
     id: 'sylhet',
@@ -65,20 +71,59 @@ const INITIAL_GUIDES = [
     coverImage: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
     avatarImage: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80',
     completedCount: '112 Tour Completed!',
+    countryType: 'Single Country',
+    packageType: 'Family',
   },
 ];
+
+const defaultFilterState = {
+  rating: 1,
+  maxPrice: 300,
+  startingPoint: '',
+  onlyOffer: false,
+  localTour: false,
+  countryType: [],
+  selectedCountries: [],
+  packageType: [],
+  duration: [],
+  transportation: [],
+  meal: [],
+  accommodation: [],
+  sightseeing: [],
+};
 
 export default function TourGuidesPage() {
   const router = useRouter();
   const { formatPrice } = useCurrency();
   const [sortBy, setSortBy] = useState('lowest');
   const [favorites, setFavorites] = useState({});
+  const [filters, setFilters] = useState(defaultFilterState);
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const sortedGuides = [...INITIAL_GUIDES].sort((a, b) =>
+  const filteredGuides = INITIAL_GUIDES.filter((guide) => {
+    if (parseFloat(guide.rating) < filters.rating) return false;
+    if (guide.price > filters.maxPrice) return false;
+    if (filters.onlyOffer && !guide.discount) return false;
+    if (filters.startingPoint) {
+      const q = filters.startingPoint.toLowerCase();
+      const matchLoc = guide.locationTag.toLowerCase().includes(q);
+      const matchTitle = guide.title.toLowerCase().includes(q);
+      const matchName = guide.guideName.toLowerCase().includes(q);
+      if (!matchLoc && !matchTitle && !matchName) return false;
+    }
+    if (filters.countryType.length > 0 && !filters.countryType.includes(guide.countryType)) {
+      return false;
+    }
+    if (filters.packageType.length > 0 && !filters.packageType.includes(guide.packageType)) {
+      return false;
+    }
+    return true;
+  });
+
+  const sortedGuides = [...filteredGuides].sort((a, b) =>
     sortBy === 'lowest' ? a.price - b.price : b.price - a.price
   );
 
@@ -88,8 +133,8 @@ export default function TourGuidesPage() {
 
       <main className="figma-main-content">
         <div className="listing-layout-grid">
-          {/* Left Column: Filter Sidebar */}
-          <FilterSidebar />
+          {/* Left Column: Fully Functional Filter Sidebar */}
+          <FilterSidebar filters={filters} onFilterChange={setFilters} />
 
           {/* Right Column: Tour Guides Grid */}
           <div className="results-container">
@@ -121,96 +166,101 @@ export default function TourGuidesPage() {
             </div>
 
             {/* 2-Column Grid of Tour Guide Cards */}
-            <div className="guides-2col-grid">
-              {sortedGuides.map((guide, index) => (
-                <div
-                  key={guide.id}
-                  className="guide-card-figma"
-                  onClick={() => router.push(`/guides/${guide.id}`)}
-                  role="link"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') router.push(`/guides/${guide.id}`);
-                  }}
+            {sortedGuides.length === 0 ? (
+              <div style={{ background: '#fff', padding: '40px', textAlign: 'center', borderRadius: '20px', border: '1px solid #E2E8F0', marginTop: '20px' }}>
+                <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1E293B', marginBottom: '8px' }}>No Tour Guides Found</h4>
+                <p style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '16px' }}>Try resetting your filter parameters or increasing price range.</p>
+                <button
+                  onClick={() => setFilters(defaultFilterState)}
+                  style={{ background: '#2563EB', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}
                 >
-                  <div className="guide-cover-wrap">
-                    <Image
-                      src={guide.coverImage}
-                      alt={guide.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 38vw"
-                      priority={index < 2}
-                      className="guide-cover-img"
-                    />
-                    <button
-                      className="heart-circle-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(guide.id);
-                      }}
-                    >
-                      {favorites[guide.id] ? '♥' : '♡'}
-                    </button>
-
-                    {/* Guide Profile Avatar Overlay */}
-                    <div className="guide-avatar-overlay">
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="guides-2col-grid">
+                {sortedGuides.map((guide, index) => (
+                  <div
+                    key={guide.id}
+                    className="guide-card-figma"
+                    onClick={() => router.push(`/guides/${guide.id}`)}
+                    role="link"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') router.push(`/guides/${guide.id}`);
+                    }}
+                  >
+                    <div className="guide-cover-wrap">
                       <Image
-                        src={guide.avatarImage}
-                        alt={`${guide.guideName} avatar`}
+                        src={guide.coverImage}
+                        alt={guide.title}
                         fill
-                        sizes="72px"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 38vw"
                         priority={index < 2}
-                        className="guide-avatar-img"
+                        className="guide-cover-img"
                       />
+                      <button
+                        className="heart-circle-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(guide.id);
+                        }}
+                      >
+                        {favorites[guide.id] ? '♥' : '♡'}
+                      </button>
+
+                      {/* Guide Profile Avatar Overlay */}
+                      <div className="guide-avatar-overlay">
+                        <Image
+                          src={guide.avatarImage}
+                          alt={`${guide.guideName} avatar`}
+                          fill
+                          sizes="72px"
+                          priority={index < 2}
+                          className="guide-avatar-img"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="guide-card-body">
+                      <div className="title-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <Link href={`/guides/${guide.id}`} style={{ textDecoration: 'none' }}>
+                          <span className="guide-card-title" style={{ color: '#000000', fontWeight: '600', fontSize: '0.98rem' }}>{guide.title}</span>
+                        </Link>
+                        <span className="location-tag" style={{ fontSize: '0.8rem', color: '#64748B' }}>{guide.locationTag}</span>
+                        <div className="rating-pill" style={{ marginLeft: 'auto', fontSize: '0.78rem', fontWeight: '700', color: '#D97706' }}>★ {guide.rating}</div>
+                      </div>
+
+                      <div className="guide-name-text">{guide.guideName}</div>
+
+                      <div className="price-line-row" style={{ margin: '8px 0' }}>
+                        <span className="starting-label" style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block' }}>STARTING FROM</span>
+                        <div className="price-val-wrap" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '3px' }}>
+                          <strong className="guide-price-text" style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>{formatPrice(guide.price)}</strong>
+                          <span className="price-note" style={{ fontSize: '0.82rem', color: '#64748B' }}>{guide.priceNote}</span>
+                          <span className="discount-pill-green" style={{ background: '#ECFDF5', color: '#059669', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #A7F3D0' }}>{guide.discount}</span>
+                        </div>
+                      </div>
+
+                      <p className="guide-desc">{guide.desc}</p>
+
+                      <div className="card-footer-icons-row">
+                        <div className="mini-meta-icons">
+                          <span>✈️</span>
+                          <span>🏨</span>
+                          <span>🍽️</span>
+                          <span>🚌</span>
+                        </div>
+                        <div className="completed-count-text">🏃 {guide.completedCount}</div>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="guide-card-body">
-                    <div className="title-rating-row">
-                      <Link href={`/guides/${guide.id}`}>
-                        <h3>{guide.title} <small style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: '500' }}>{guide.locationTag}</small></h3>
-                      </Link>
-                      <span className="star-rating">★ {guide.rating}</span>
-                    </div>
-
-                    <div className="guide-subtitle" style={{ fontSize: '0.88rem', fontWeight: '600', color: 'var(--primary-blue)', marginBottom: '4px' }}>
-                      {guide.guideName}
-                    </div>
-
-                    <div className="guide-price-row">
-                      <small style={{ display: 'block', fontSize: '0.72rem', color: '#94A3B8', textTransform: 'uppercase' }}>Starting From</small>
-                      <div className="price-tag-wrap" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '2px' }}>
-                        <strong className="current-price">{formatPrice(guide.price)}</strong>
-                        <span className="price-note" style={{ fontSize: '0.78rem', color: '#64748B' }}>{guide.priceNote}</span>
-                        <span className="discount-tag">{guide.discount}</span>
-                      </div>
-                    </div>
-
-                    <p className="guide-desc" style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: '1.4', margin: '8px 0' }}>{guide.desc}</p>
-
-                    <div className="guide-footer-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid #E2E8F0', marginTop: 'auto' }}>
-                      <div className="icons-features-row" style={{ display: 'flex', gap: '8px', fontSize: '0.9rem' }}>
-                        <span>✈️</span><span>🏨</span><span>🍽️</span><span>🏃</span><span>🚌</span><span>⛰️</span>
-                      </div>
-                      <div className="completed-counter" style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary-blue)' }}>
-                        <span>🏃</span> {guide.completedCount}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>
-
-      {/* Floating Messages Button */}
-      <Link href="/account/messages" className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </Link>
 
       <Footer />
     </div>

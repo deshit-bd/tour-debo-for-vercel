@@ -11,8 +11,24 @@ export const metadata = {
 
 export default function FollowedToursPage() {
   const followedTours = [
-    { id: 'xxxxxxxxxxxxxxxxxxxx', name: 'Cox\'s Bazar Beach Tour', price: '$500', duration: '3 Days' },
-    { id: 'xxxxxxxxxxxxxxxxxxxx', name: 'Sajek Valley Experience', price: '$500', duration: '5 Days' },
+    {
+      id: '8849201948102',
+      name: 'Cox\'s Bazar Beach Tour',
+      price: '$500',
+      duration: '3 Days',
+      rating: '4.8',
+      reviews: '124',
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80',
+    },
+    {
+      id: '8849201948103',
+      name: 'Sajek Valley Experience',
+      price: '$500',
+      duration: '5 Days',
+      rating: '4.9',
+      reviews: '98',
+      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=150&q=80',
+    },
   ];
 
   return (
@@ -39,20 +55,25 @@ export default function FollowedToursPage() {
                 {followedTours.map((item, idx) => (
                   <div key={idx} className="booking-card-row-figma">
                     <div className="booking-row-header">
-                      <small className="booking-id-text">ID {item.id}</small>
+                      <small className="booking-id-text">ID #{item.id}</small>
                     </div>
 
                     <div className="booking-row-body">
-                      <div className="booking-item-cell">
+                      <div className="booking-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                         <div className="booking-thumb-box">
-                          <Image src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80" alt="Tour" fill className="thumb-img" />
+                          <Image src={item.image} alt={item.name} fill className="thumb-img" />
                         </div>
-                        <span className="booking-item-name">{item.name}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <span className="booking-item-name">{item.name}</span>
+                          <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            ★ {item.rating} ({item.reviews} reviews)
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="fav-tour-price">{item.price}</div>
+                      <div className="fav-tour-price" style={{ fontSize: '1rem', fontWeight: '800', color: '#0F172A' }}>{item.price}</div>
 
-                      <div className="days-pill-badge">{item.duration}</div>
+                      <div className="days-pill-badge" style={{ background: '#EFF6FF', color: '#2563EB', padding: '6px 14px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: '700' }}>{item.duration}</div>
 
                       <Link href="/tours/paris" className="link-details-btn">Details</Link>
                     </div>
@@ -63,14 +84,6 @@ export default function FollowedToursPage() {
           </div>
         </div>
       </main>
-
-      {/* Floating Messages Button */}
-      <div className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-        <span>Messages</span>
-      </div>
 
       <Footer />
     </div>

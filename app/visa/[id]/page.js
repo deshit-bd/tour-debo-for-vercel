@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -16,8 +17,8 @@ const VISA_DETAILS = {
     telephoneCode: '+1',
     exchangeRate: '1 CAD is equivalent to 86 BDT',
     embassyAddress: 'House 16A, Road 48, Gulshan 2, Dhaka 1212, Bangladesh',
-    visaFee: '$10',
-    processingFee: '$200',
+    visaFee: '৳1,800',
+    processingFee: '৳24,000',
     mainImage: 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=500&q=80',
@@ -35,8 +36,8 @@ const VISA_DETAILS = {
     telephoneCode: '+44',
     exchangeRate: '1 GBP is equivalent to 140 BDT',
     embassyAddress: 'United Nations Road, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '$15',
-    processingFee: '$260',
+    visaFee: '৳1,800',
+    processingFee: '৳31,200',
     mainImage: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&w=500&q=80',
@@ -54,8 +55,8 @@ const VISA_DETAILS = {
     telephoneCode: '+61',
     exchangeRate: '1 AUD is equivalent to 72 BDT',
     embassyAddress: 'Gulshan Avenue, Dhaka, Bangladesh',
-    visaFee: '$12',
-    processingFee: '$240',
+    visaFee: '৳1,440',
+    processingFee: '৳28,800',
     mainImage: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1523428096881-5bd79d043006?auto=format&fit=crop&w=500&q=80',
@@ -73,8 +74,8 @@ const VISA_DETAILS = {
     telephoneCode: '+1',
     exchangeRate: '1 USD is equivalent to 118 BDT',
     embassyAddress: 'Madani Avenue, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '$20',
-    processingFee: '$300',
+    visaFee: '৳2,400',
+    processingFee: '৳36,000',
     mainImage: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=500&q=80',
@@ -92,8 +93,8 @@ const VISA_DETAILS = {
     telephoneCode: '+49',
     exchangeRate: '1 EUR is equivalent to 128 BDT',
     embassyAddress: 'Madani Avenue, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '$10',
-    processingFee: '$210',
+    visaFee: '৳1,200',
+    processingFee: '৳25,200',
     mainImage: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=500&q=80',
@@ -111,14 +112,128 @@ const VISA_DETAILS = {
     telephoneCode: '+60',
     exchangeRate: '1 MYR is equivalent to 25 BDT',
     embassyAddress: 'Gulshan Avenue, Dhaka, Bangladesh',
-    visaFee: '$8',
-    processingFee: '$180',
+    visaFee: '৳960',
+    processingFee: '৳21,600',
     mainImage: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1400&q=80',
     gallery: [
       'https://images.unsplash.com/photo-1508964942454-1a56651d54ac?auto=format&fit=crop&w=500&q=80',
       'https://images.unsplash.com/photo-1524015308230-f65f7b921b66?auto=format&fit=crop&w=500&q=80',
       'https://images.unsplash.com/photo-1470219556762-1771e7f9427d?auto=format&fit=crop&w=500&q=80',
       'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  japan: {
+    country: 'Japan',
+    rating: '4.8',
+    type: 'Tourist Visa Available',
+    capital: 'Tokyo',
+    localTime: 'GMT +9',
+    telephoneCode: '+81',
+    exchangeRate: '1 JPY is equivalent to 0.78 BDT',
+    embassyAddress: 'Plot No. 5 & 7, Dutabash Road, Baridhara, Dhaka 1212',
+    visaFee: '৳1,200',
+    processingFee: '৳22,800',
+    mainImage: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  singapore: {
+    country: 'Singapore',
+    rating: '4.9',
+    type: 'Work Visa Available',
+    capital: 'Singapore',
+    localTime: 'GMT +8',
+    telephoneCode: '+65',
+    exchangeRate: '1 SGD is equivalent to 88 BDT',
+    embassyAddress: 'Ventura Avenue, Gulshan 2, Dhaka 1212',
+    visaFee: '৳1,440',
+    processingFee: '৳26,400',
+    mainImage: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1565967511849-76a61a516170?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  dubai: {
+    country: 'UAE (Dubai)',
+    rating: '4.8',
+    type: 'Tourist Visa Available',
+    capital: 'Abu Dhabi',
+    localTime: 'GMT +4',
+    telephoneCode: '+971',
+    exchangeRate: '1 AED is equivalent to 32 BDT',
+    embassyAddress: 'House 19, Road 143, Gulshan 2, Dhaka 1212',
+    visaFee: '৳1,800',
+    processingFee: '৳23,400',
+    mainImage: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1526495124232-a04e1849168c?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  france: {
+    country: 'France',
+    rating: '4.7',
+    type: 'Student Visa Available',
+    capital: 'Paris',
+    localTime: 'GMT +1',
+    telephoneCode: '+33',
+    exchangeRate: '1 EUR is equivalent to 128 BDT',
+    embassyAddress: 'Madani Avenue, Baridhara, Dhaka 1212',
+    visaFee: '৳1,440',
+    processingFee: '৳27,600',
+    mainImage: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1509299349698-dd22323b5963?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1522093007474-d86e9bf7ba6f?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  turkey: {
+    country: 'Turkey',
+    rating: '4.6',
+    type: 'Tourist Visa Available',
+    capital: 'Ankara',
+    localTime: 'GMT +3',
+    telephoneCode: '+90',
+    exchangeRate: '1 TRY is equivalent to 3.6 BDT',
+    embassyAddress: 'House 7, Road 2, Baridhara, Dhaka 1212',
+    visaFee: '৳960',
+    processingFee: '৳18,000',
+    mainImage: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1527838832700-54595d63713b?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1545459720-aac8509eb02c?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=500&q=80',
+    ],
+  },
+  newzealand: {
+    country: 'New Zealand',
+    rating: '4.7',
+    type: 'Work Visa Available',
+    capital: 'Wellington',
+    localTime: 'GMT +12',
+    telephoneCode: '+64',
+    exchangeRate: '1 NZD is equivalent to 70 BDT',
+    embassyAddress: 'Gulshan Avenue, Dhaka, Bangladesh',
+    visaFee: '৳2,160',
+    processingFee: '৳33,600',
+    mainImage: 'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=1400&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80',
+      'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=500&q=80',
     ],
   },
 };
@@ -129,53 +244,72 @@ const otherCountries = [
     country: 'Canada',
     rating: '4.7',
     image: 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=800&q=80',
-    price: '$200',
-    oldPrice: '$250',
+    price: '৳24,000',
+    oldPrice: '৳30,000',
   },
   {
     id: 'uk',
     country: 'United Kingdom',
     rating: '4.8',
     image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
-    price: '$260',
-    oldPrice: '$320',
+    price: '৳31,200',
+    oldPrice: '৳38,400',
   },
   {
     id: 'australia',
     country: 'Australia',
     rating: '4.6',
     image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80',
-    price: '$240',
-    oldPrice: '$300',
+    price: '৳28,800',
+    oldPrice: '৳36,000',
   },
   {
     id: 'usa',
     country: 'United States',
     rating: '4.9',
     image: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80',
-    price: '$300',
-    oldPrice: '$380',
+    price: '৳36,000',
+    oldPrice: '৳45,600',
   },
   {
     id: 'germany',
     country: 'Germany',
     rating: '4.5',
     image: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80',
-    price: '$210',
-    oldPrice: '$260',
+    price: '৳25,200',
+    oldPrice: '৳31,200',
   },
   {
     id: 'malaysia',
     country: 'Malaysia',
     rating: '4.7',
     image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=800&q=80',
-    price: '$180',
-    oldPrice: '$230',
+    price: '৳21,600',
+    oldPrice: '৳27,600',
+  },
+  {
+    id: 'japan',
+    country: 'Japan',
+    rating: '4.8',
+    image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80',
+    price: '৳22,800',
+    oldPrice: '৳28,800',
+  },
+  {
+    id: 'singapore',
+    country: 'Singapore',
+    rating: '4.9',
+    image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=800&q=80',
+    price: '৳26,400',
+    oldPrice: '৳32,400',
   },
 ];
 
 export default function VisaDetailPage({ params }) {
-  const visa = VISA_DETAILS[params?.id] || VISA_DETAILS.canada;
+  const routeParams = useParams();
+  const visaId = routeParams?.id || params?.id || 'canada';
+  const visa = VISA_DETAILS[visaId] || VISA_DETAILS.canada;
+
   const [applicantCount, setApplicantCount] = useState(1);
   const [visaTypeSelect, setVisaTypeSelect] = useState('Tourist Visa');
   const [entryTypeSelect, setEntryTypeSelect] = useState('Single Entry');
@@ -274,7 +408,9 @@ export default function VisaDetailPage({ params }) {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion('stickerVisa')}>
                 <h3>Required Documents for Sticker visa</h3>
-                <span className="chevron">{openAccordions.stickerVisa ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: openAccordions.stickerVisa ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {openAccordions.stickerVisa && (
                 <div className="accordion-body docs-body">
@@ -293,7 +429,9 @@ export default function VisaDetailPage({ params }) {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion('requiredDocs')}>
                 <h3>Required Documents</h3>
-                <span className="chevron">{openAccordions.requiredDocs ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: openAccordions.requiredDocs ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {openAccordions.requiredDocs && (
                 <div className="accordion-body docs-body">
@@ -311,7 +449,9 @@ export default function VisaDetailPage({ params }) {
             <div className="accordion-card">
               <div className="accordion-header" onClick={() => toggleAccordion('importantNotes')}>
                 <h3>Important Notes</h3>
-                <span className="chevron">{openAccordions.importantNotes ? '▲' : '▼'}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: openAccordions.importantNotes ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
               {openAccordions.importantNotes && (
                 <div className="accordion-body">
@@ -328,7 +468,7 @@ export default function VisaDetailPage({ params }) {
                   <small>Tour Planner</small>
                   <h4>DeshIT-BD</h4>
                 </div>
-                <button className="btn-chat">Chat</button>
+                <Link href="/account/messages" className="btn-chat" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>Chat</Link>
               </div>
 
               <div className="planner-badge-row">
@@ -346,7 +486,7 @@ export default function VisaDetailPage({ params }) {
                 </div>
               </div>
 
-              <button className="btn-view-shop">View Shop</button>
+              <Link href="/planner/deshit" className="btn-view-shop" style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>View Shop</Link>
             </div>
 
             <div className="booking-price-card" style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '2px solid #2563EB' }}>
@@ -384,7 +524,7 @@ export default function VisaDetailPage({ params }) {
               <div className="price-card-header" style={{ marginBottom: '16px' }}>
                 <small>Calculated Fee ({visaTypeSelect} - {entryTypeSelect}):</small>
                 <div className="fee-big-text" style={{ color: '#2563EB', fontSize: '1.6rem', fontWeight: 'bold' }}>
-                  ৳{calcVisaFee()}
+                  ৳{calcVisaFee().toLocaleString()}
                 </div>
               </div>
 
@@ -396,7 +536,7 @@ export default function VisaDetailPage({ params }) {
 
               <div className="booking-buttons-stack" style={{ marginTop: '16px' }}>
                 <button className="btn-book-now" style={{ background: '#2563EB', color: '#fff', width: '100%', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                  ⚡ Submit VISA Application (Total: ৳{calcVisaFee() * applicantCount})
+                  ⚡ Submit VISA Application (Total: ৳{(calcVisaFee() * applicantCount).toLocaleString()})
                 </button>
               </div>
             </div>
@@ -404,7 +544,8 @@ export default function VisaDetailPage({ params }) {
             <div className="others-interest-section">
               <h4>Other Countries</h4>
               {otherCountries
-                .filter((item) => item.id !== params?.id)
+                .filter((item) => item.id !== visaId)
+                .slice(0, 4)
                 .map((item) => (
                   <Link key={item.id} href={`/visa/${item.id}`} className="visa-card-figma mini-visa-card">
                     <div className="visa-card-image-wrap">
@@ -439,7 +580,7 @@ export default function VisaDetailPage({ params }) {
           <h4>Other Countries</h4>
           <div className="visa-other-countries-grid">
             {otherCountries
-              .filter((item) => item.id !== params?.id)
+              .filter((item) => item.id !== visaId)
               .map((item) => (
                 <Link key={item.id} href={`/visa/${item.id}`} className="visa-card-figma mini-visa-card">
                   <div className="visa-card-image-wrap">
@@ -470,12 +611,12 @@ export default function VisaDetailPage({ params }) {
         </section>
       </main>
 
-      <div className="floating-messages-btn">
+      <Link href="/account/messages" className="floating-messages-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
         </svg>
         <span>Messages</span>
-      </div>
+      </Link>
 
       <Footer />
     </div>
