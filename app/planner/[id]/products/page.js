@@ -179,11 +179,6 @@ export default function PlannerAllProductsPage() {
                         onClick={() => toggleFavorite(tour.id)}
                       >
                         {favorites[tour.id] ? '♥' : '♡'}
-                      <button
-                        className="heart-circle-btn"
-                        onClick={() => toggleFavorite(tour.id)}
-                      >
-                        {favorites[tour.id] ? '♥' : '♡'}
                       </button>
                       <div className="badge-duration">{tour.duration}</div>
                     </div>
