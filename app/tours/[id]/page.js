@@ -153,8 +153,8 @@ export default function TourDetailPage() {
 
       <main className="figma-main-content">
         {/* Top Gallery Layout */}
-        <div className="detail-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '16px' }}>
-          <div className="gallery-main-view" style={{ position: 'relative', height: '420px', borderRadius: '16px', overflow: 'hidden' }}>
+        <div className="detail-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '16px', height: '580px' }}>
+          <div className="gallery-main-view" style={{ position: 'relative', height: '580px', borderRadius: '16px', overflow: 'hidden' }}>
             <Image
               src={galleryImages[activeImageIdx]}
               alt="Paris Experience"
@@ -167,14 +167,39 @@ export default function TourDetailPage() {
             <button className="gallery-arrow right-arrow" onClick={() => setActiveImageIdx((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.9)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold' }}>›</button>
           </div>
 
-          <div className="gallery-thumbs-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', height: '420px' }}>
+          <div className="gallery-thumbs-col" style={{ display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: 'repeat(4, 1fr)', gap: '10px', height: '580px' }}>
             {galleryImages.slice(1, 4).map((imgUrl, i) => (
-              <div key={i} onClick={() => setActiveImageIdx(i + 1)} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer' }}>
-                <Image src={imgUrl} alt={`Thumb ${i + 1}`} fill sizes="140px" style={{ objectFit: 'cover' }} />
+              <div
+                key={i}
+                onClick={() => setActiveImageIdx(i + 1)}
+                style={{
+                  position: 'relative',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  border: activeImageIdx === i + 1 ? '2px solid #2563EB' : '2px solid transparent',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Image src={imgUrl} alt={`Thumb ${i + 1}`} fill sizes="280px" style={{ objectFit: 'cover' }} />
               </div>
             ))}
-            <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', background: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setActiveImageIdx(4)}>
-              <Image src={galleryImages[4]} alt="Thumb 4" fill style={{ objectFit: 'cover', opacity: 0.4 }} />
+            <div
+              style={{
+                position: 'relative',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                background: '#0F172A',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: activeImageIdx === 4 ? '2px solid #2563EB' : '2px solid transparent',
+                transition: 'all 0.2s ease',
+              }}
+              onClick={() => setActiveImageIdx(4)}
+            >
+              <Image src={galleryImages[4]} alt="Thumb 4" fill sizes="280px" style={{ objectFit: 'cover', opacity: 0.4 }} />
               <span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '800', zIndex: 2 }}>10+</span>
             </div>
           </div>
@@ -416,23 +441,7 @@ export default function TourDetailPage() {
             </div>
           </div>
 
-          {/* Tour Guide Profile Card (PDF Page 8 Reference) */}
-          <div style={{ marginTop: '20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ position: 'relative', width: '48px', height: '48px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #2563EB' }}>
-                <Image src={tour.guideAvatar} alt={tour.guideName} fill style={{ objectFit: 'cover' }} />
-              </div>
-              <div>
-                <strong style={{ fontSize: '0.98rem', color: '#0F172A' }}>Tour Guide: {tour.guideName}</strong>
-                <div style={{ fontSize: '0.8rem', color: '#64748B' }}>
-                  🗣️ Languages: {tour.guideLangs} | ★ {tour.guideRating}
-                </div>
-              </div>
-            </div>
-            <Link href="/guides" style={{ background: '#2563EB', color: '#fff', padding: '7px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold', textDecoration: 'none' }}>
-              View Guide's Programs →
-            </Link>
-          </div>
+
         </div>
 
         {/* Two-Column Main Section Layout */}
