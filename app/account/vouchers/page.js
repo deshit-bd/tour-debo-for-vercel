@@ -47,12 +47,8 @@ export default function PaymentVouchersPage() {
               </p>
             </div>
 
-            {/* Bottom Card: Payment Options & Vouchers */}
+            {/* Bottom Card: Vouchers List */}
             <div className="account-section-card payment-options-card">
-              <div className="account-sub-tabs-bar">
-                <Link href="/account/payments" prefetch={false} className={`sub-tab ${activeTab === 'payments' ? 'active' : ''}`}>Payment Options</Link>
-                <button className={`sub-tab ${activeTab === 'vouchers' ? 'active' : ''}`} onClick={() => setActiveTab('vouchers')}>Vouchers</button>
-              </div>
 
               <div className="recent-table-wrap">
                 <table className="bookings-table">

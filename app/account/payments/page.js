@@ -28,10 +28,6 @@ export default function PaymentOptionsPage() {
                 </div>
               </div>
 
-              <div className="account-sub-tabs-bar">
-                <span className="sub-tab active">Payment Options</span>
-                <Link href="/account/vouchers" prefetch={false} className="sub-tab">Vouchers</Link>
-              </div>
 
               {/* bKash Payment Row */}
               <div className="payment-row-card">

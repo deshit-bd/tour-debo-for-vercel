@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -46,6 +46,12 @@ function CheckoutContent() {
   const pkgType = searchParams?.get('package') || 'single';
   const initialCount = parseInt(searchParams?.get('count') || '1', 10);
 
+  const guideName = searchParams?.get('guide');
+  const guideTitle = searchParams?.get('title');
+  const guideVariety = searchParams?.get('variety');
+  const guidePasses = parseInt(searchParams?.get('passes') || '1', 10);
+  const guidePrice = parseFloat(searchParams?.get('price') || '2500');
+
   const selectedTour = TOURS_DATA_MAP[tourId.toLowerCase()] || TOURS_DATA_MAP['paris'];
   const unitPrice = selectedTour.prices[pkgType] || selectedTour.prices.single;
   const pkgLabel = pkgType === 'couple' ? 'Couple Package' : 'Single Package';
@@ -59,6 +65,24 @@ function CheckoutContent() {
       image: selectedTour.image,
     },
   ]);
+
+  const isGuideBooking = Boolean(guideName || guideTitle);
+
+  useEffect(() => {
+    if (guideName || guideTitle) {
+      // guidePrice is passed in BDT from guide page (e.g. ৳3,200). Convert to base USD for CurrencyContext.
+      const baseUsdPrice = guidePrice / 120;
+      setItems([
+        {
+          id: 'guide-booking-item',
+          name: `${guideTitle || 'Tour Guide Service'} (${guideVariety || 'Couple'}) - Guide: ${guideName || 'Verified Guide'}`,
+          price: baseUsdPrice / Math.max(1, guidePasses),
+          qty: Math.max(1, guidePasses),
+          image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80',
+        },
+      ]);
+    }
+  }, [guideName, guideTitle, guideVariety, guidePasses, guidePrice]);
 
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [voucher, setVoucher] = useState('');
@@ -74,9 +98,9 @@ function CheckoutContent() {
   };
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
-  const sellerDiscount = 15;
-  const voucherDiscount = voucher.toUpperCase() === 'DESH2026' ? 20 : 0;
-  const partnerDiscount = paymentMethod === 'card' ? 10 : 5;
+  const sellerDiscount = isGuideBooking ? 0 : 15;
+  const voucherDiscount = voucher.toUpperCase() === 'DESH2026' ? (isGuideBooking ? 100 / 120 : 20) : 0;
+  const partnerDiscount = isGuideBooking ? 0 : (paymentMethod === 'card' ? 10 : 5);
   const taxes = 0;
   const grandTotal = Math.max(0, subtotal - sellerDiscount - voucherDiscount - partnerDiscount);
 
@@ -247,17 +271,17 @@ function CheckoutContent() {
                   <span>Subtotal Amount:</span>
                   <strong>{formatPrice(subtotal)}</strong>
                 </div>
-                <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                <div className="summary-line">
                   <span>Seller Discount:</span>
                   <strong>- {formatPrice(sellerDiscount)}</strong>
                 </div>
                 {voucherDiscount > 0 && (
-                  <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                  <div className="summary-line">
                     <span>Voucher Discount ({voucher.toUpperCase()}):</span>
                     <strong>- {formatPrice(voucherDiscount)}</strong>
                   </div>
                 )}
-                <div className="summary-line" style={{ color: '#059669', fontSize: '0.84rem' }}>
+                <div className="summary-line">
                   <span>Payment Partner Discount:</span>
                   <strong>- {formatPrice(partnerDiscount)}</strong>
                 </div>
@@ -360,13 +384,18 @@ function CheckoutContent() {
                   <p className="checkout-terms-note">
                     By Clicking "Pay"* I agree to company terms of services
                   </p>
+
+                  {/* Full-width Pay Button inside card */}
+                  <button
+                    className="btn-pay-blue"
+                    onClick={handlePay}
+                    disabled={processing}
+                    style={{ width: '100%', marginTop: '16px', border: 'none', cursor: 'pointer' }}
+                  >
+                    {processing ? 'Processing Payment...' : `Pay ${formatPrice(grandTotal)}`}
+                  </button>
                 </div>
               </div>
-
-              {/* Pay Button */}
-              <button className="btn-pay-blue" onClick={handlePay} disabled={processing}>
-                {processing ? 'Processing Payment...' : `Pay ${formatPrice(grandTotal)}`}
-              </button>
             </div>
           </div>
         )}

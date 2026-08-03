@@ -218,7 +218,7 @@ const AVAILABLE_COUNTRIES = [
   { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' },
 ];
 
-export default function FilterSidebar({ filters = defaultFilterState, onFilterChange, mode = 'tour' }) {
+export default function FilterSidebar({ filters = defaultFilterState, onFilterChange, mode = 'tour', hideCountryType = false }) {
   const [localFilters, setLocalFilters] = useState(filters);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
@@ -286,10 +286,10 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
         </div>
       </div>
 
-      {/* Price Range */}
+      {/* Price / Service Charge Range */}
       <div className="filter-group">
-        <label className="filter-group-title">
-          Price Range (${localFilters.maxPrice || (mode === 'visa' ? 500 : 300)})
+        <label className="filter-group-title" style={{ fontSize: '0.83rem', whiteSpace: 'nowrap' }}>
+          {mode === 'visa' ? 'Service Charge Range' : 'Price Range'} (${localFilters.maxPrice || (mode === 'visa' ? 500 : 300)})
         </label>
         <div className="price-slider-wrap">
           <input
@@ -339,6 +339,7 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
       </div>
 
       {/* Country */}
+      {!hideCountryType && (
       <div className="filter-group">
         <label className="filter-group-title">Country</label>
         <div className="checkbox-list">
@@ -360,7 +361,7 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
               checked={localFilters.localTour || false}
               onChange={() => updateFilters('localTour', !localFilters.localTour)}
             />
-            🏠 Local Tour (Bangladesh)
+            🏠 Local Tour
           </label>
           )}
 
@@ -525,6 +526,7 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
           </div>
         )}
       </div>
+      )}
 
       {/* Package Type — tour only */}
       {mode !== 'visa' && (
@@ -630,27 +632,37 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
       </div>
       )}
 
-      {/* Guide Languages & Options — tour only */}
+      {/* Guide Languages & Specialty — tour only */}
       {mode !== 'visa' && (
       <div className="filter-group">
         <label className="filter-group-title">Guide Languages & Specialty</label>
-        <div className="checkbox-grid-2col">
-          {[
-            'English Guide',
-            'Bengali Guide',
-            'French Guide',
-            'Photography Expert',
-            'Certified Instructor',
-          ].map((item) => (
-            <label key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.sightseeing || []).includes(item)}
-                onChange={() => toggleArrayItem('sightseeing', item)}
-              />
-              {item}
-            </label>
-          ))}
+        <div style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid #CBD5E1', padding: '6px 12px', marginTop: '6px' }}>
+          <select
+            value={(localFilters.sightseeing || [])[0] || ''}
+            onChange={(e) => {
+              const val = e.target.value;
+              updateFilters('sightseeing', val ? [val] : []);
+            }}
+            style={{
+              width: '100%',
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              fontSize: '0.84rem',
+              fontWeight: '600',
+              color: '#1E293B',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="">All Languages & Specialties ▾</option>
+            <option value="English Guide">English Guide</option>
+            <option value="Bengali Guide">Bengali Guide</option>
+            <option value="Sylheti Guide">Sylheti Guide</option>
+            <option value="Chakma Guide">Chakma Guide</option>
+            <option value="French Guide">French Guide</option>
+            <option value="Photography Expert">Photography Expert</option>
+            <option value="Certified Instructor">Certified Instructor</option>
+          </select>
         </div>
       </div>
       )}

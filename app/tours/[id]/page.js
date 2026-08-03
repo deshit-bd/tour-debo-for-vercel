@@ -369,7 +369,7 @@ export default function TourDetailPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>📍 {tour.fullLocation}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                ✈️ 🏨 🍽️ 🚌 <strong style={{ fontSize: '0.72rem', background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>(INCLUDED)</strong>
+                ✈️ 🏨 🍽️ 🥾 🚌 <strong style={{ fontSize: '0.72rem', background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>(INCLUDED)</strong>
               </span>
 
               {/* Premium Segmented Toggle Switch for Fixed Date vs Open Tour */}
@@ -435,7 +435,7 @@ export default function TourDetailPage() {
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-              <span>🌤️ {tour.duration}</span>
+              <span>🌤️ {tour.badge || `${tour.duration} / 2 Night`}</span>
               <span>👥 {tour.visitedCount} People Visited!</span>
               <span>👤 {tour.interestCount} People Showed Interest!</span>
             </div>
@@ -515,23 +515,38 @@ export default function TourDetailPage() {
               )}
             </div>
 
-            {/* 4. Excluded service & Excluded service Accordion */}
-            <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', marginBottom: '12px', overflow: 'hidden' }}>
-              <div onClick={() => toggleAccordion('includedExcluded')} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '700', color: '#0F172A' }}>
-                <span>Excluded service & Excluded service</span>
+            {/* 4. Included & Excluded Tour Services Accordion */}
+            <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', marginBottom: '12px', overflow: 'hidden', padding: '6px' }}>
+              <div onClick={() => toggleAccordion('includedExcluded')} style={{ background: '#EFF6FF', borderRadius: '10px', padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '800', color: '#0F172A' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.94rem' }}>🎒 Included &amp; Excluded Tour Services</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: openAccordions.includedExcluded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </div>
               {openAccordions.includedExcluded && (
-                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7' }}>
-                  <ul style={{ margin: 0, paddingLeft: '18px', listStyleType: 'disc' }}>
-                    <li>International airfare tickets & airport tax (unless add-on purchased).</li>
-                    <li>Personal expenses, laundry, minibar, and telephone calls.</li>
-                    <li>Schengen visa processing & embassy application fees.</li>
-                    <li>Driver & tour guide personal tipping gratuities.</li>
-                    <li>Optional adventure activities not included in itinerary.</li>
-                  </ul>
+                <div style={{ padding: '12px 6px 6px', fontSize: '0.84rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                  {/* Left Box: Included */}
+                  <div style={{ background: '#F0FDF4', padding: '12px 16px', borderRadius: '10px', border: '1px solid #BBF7D0' }}>
+                    <h5 style={{ color: '#15803D', fontWeight: '800', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✓ What's Included:</h5>
+                    <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px', color: '#166534', lineHeight: '1.5' }}>
+                      <li>All airport transfers &amp; comfortable AC vehicle transportation.</li>
+                      <li>Deluxe hotel accommodation with daily breakfast.</li>
+                      <li>All sight-seeing entry tickets &amp; guided tours.</li>
+                      <li>English speaking professional local tour guide.</li>
+                    </ul>
+                  </div>
+
+                  {/* Right Box: Excluded */}
+                  <div style={{ background: '#FEF2F2', padding: '12px 16px', borderRadius: '10px', border: '1px solid #FECACA' }}>
+                    <h5 style={{ color: '#B91C1C', fontWeight: '800', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✕ What's Excluded:</h5>
+                    <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px', color: '#991B1B', lineHeight: '1.5' }}>
+                      <li>International airfare tickets &amp; airport tax (unless add-on purchased).</li>
+                      <li>Personal expenses, laundry, minibar, and telephone calls.</li>
+                      <li>Schengen visa processing &amp; embassy application fees.</li>
+                      <li>Driver &amp; tour guide personal tipping gratuities.</li>
+                      <li>Optional adventure activities not included in itinerary.</li>
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>

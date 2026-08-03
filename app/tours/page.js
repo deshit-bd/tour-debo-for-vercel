@@ -338,8 +338,8 @@ function TourListingContent() {
                     </div>
                   </div>
 
-                  <div className="horizontal-content-box">
-                    <div className="horizontal-header-row">
+                  <div className="horizontal-content-box" style={{ padding: '12px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '4px' }}>
+                    <div className="horizontal-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
                         <div className="title-and-rating" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span className="tour-title-link" style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-dark)' }}>
@@ -347,11 +347,11 @@ function TourListingContent() {
                           </span>
                           <span className="rating-badge" style={{ background: '#FFFBEB', color: '#B45309', padding: '2px 8px', borderRadius: '6px', fontWeight: '700', fontSize: '0.85rem' }}>★ {item.rating}</span>
                         </div>
-                        <p className="location-text" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>📍 {item.location}</p>
+                        <p className="location-text" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>📍 {item.location}</p>
                       </div>
 
                       <div className="price-and-action" style={{ textAlign: 'right' }}>
-                        <span className="btn-view-details" style={{ background: 'var(--primary-blue)', color: '#ffffff', padding: '8px 18px', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', display: 'inline-block', marginBottom: '6px' }}>
+                        <span className="btn-view-details" style={{ background: 'var(--primary-blue)', color: '#ffffff', padding: '6px 16px', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', display: 'inline-block', marginBottom: '3px' }}>
                           View Details
                         </span>
                         <div className="price-box">
@@ -364,21 +364,21 @@ function TourListingContent() {
                       </div>
                     </div>
 
-                    <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', margin: '2px 0' }}>
                       <span className="duration-pill" style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
                       {item.isOffer && <span className="discount-tag" style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#DC2626', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>20% OFF</span>}
                       <span style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
                     </div>
 
-                    <p className="tour-description-text" style={{ fontSize: '0.88rem', color: 'var(--text-body)', margin: '4px 0' }}>{item.desc}</p>
+                    <p className="tour-description-text" style={{ fontSize: '0.88rem', color: 'var(--text-body)', margin: '2px 0' }}>{item.desc}</p>
 
-                    <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #F1F5F9' }}>
+                    <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #F1F5F9', marginTop: '2px' }}>
                       <div className="icons-features-row" style={{ display: 'flex', gap: '10px', fontSize: '1rem' }}>
-                        <span>✈️</span>
-                        <span>🏨</span>
-                        <span>🍽️</span>
-                        <span>🚌</span>
-                        <span>⛰️</span>
+                        <span title="Flight (Included)">✈️</span>
+                        <span title="Hotel (Included)">🏨</span>
+                        <span title="Meals (Included)">🍽️</span>
+                        <span title="Transport (Included)">🚌</span>
+                        <span title="Sightseeing (Included)">⛰️</span>
                       </div>
                       <div className="interest-counter" style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: '600' }}>
                         <span className="users-icon">👥</span> 144 People Showed Interest!

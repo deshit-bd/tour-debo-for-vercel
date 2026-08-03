@@ -182,7 +182,6 @@ export default function HomePage() {
                   >
                     {favorites[`pop-${t.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">{t.badge}</div>
                 </div>
                 <div className="tour-card-content">
                   <div className="title-rating-row">
@@ -198,8 +197,17 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="tour-snippet">{t.desc}</p>
-                  <div className="icons-features-row">
-                    <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
+                  <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                      🌤️ {t.badge}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span title="Flight (Included)">✈️</span>
+                      <span title="Hotel (Included)">🏨</span>
+                      <span title="Meals (Included)">🍽️</span>
+                      <span title="Transport (Included)">🚌</span>
+                      <span title="Sightseeing (Included)">⛰️</span>
+                    </div>
                   </div>
                   <div className="interest-counter">
                     <span className="users-icon">👥</span> {t.interestCount} People Showed Interest!
@@ -216,20 +224,19 @@ export default function HomePage() {
             <h2>Matha Noshto Offers!!!</h2>
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
-          <div className="offers-2col-grid">
+          <div className="tours-3col-grid">
             {POPULAR_TOURS.filter((t) => t.isOffer).slice(0, 2).map((o, idx) => (
-              <Link href={`/tours/${o.id}`} key={o.id} className="offer-card-figma">
-                <div className="offer-card-image-wrap">
-                  <Image src={o.image} alt={o.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="offer-card-img" />
+              <Link href={`/tours/${o.id}`} key={o.id} className="tour-card-figma">
+                <div className="tour-card-image-wrap">
+                  <Image src={o.image} alt={o.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
                   <button
                     className="heart-circle-btn"
                     onClick={(e) => toggleFavorite(e, `offer-${o.id}`)}
                   >
                     {favorites[`offer-${o.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">{o.badge}</div>
                 </div>
-                <div className="offer-card-content">
+                <div className="tour-card-content">
                   <div className="title-rating-row">
                     <h3>{o.title}</h3>
                     <span className="star-rating">★ {o.rating}</span>
@@ -243,8 +250,17 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="tour-snippet">{o.desc}</p>
-                  <div className="icons-features-row">
-                    <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
+                  <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                      🌤️ {o.badge}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span title="Flight (Included)">✈️</span>
+                      <span title="Hotel (Included)">🏨</span>
+                      <span title="Meals (Included)">🍽️</span>
+                      <span title="Transport (Included)">🚌</span>
+                      <span title="Sightseeing (Included)">⛰️</span>
+                    </div>
                   </div>
                   <div className="interest-counter">
                     <span className="users-icon">👥</span> {o.interestCount} People Showed Interest!
@@ -255,35 +271,52 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Section 5: Most Visited Tours! (PDF Page 16 Feedback) */}
+        {/* Section 5: Most Visited Tours! */}
         <section className="figma-section">
           <div className="section-header-flex">
             <h2>Most Visited Tours!</h2>
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="tours-3col-grid">
-            {MOST_VISITED_TOURS.map((tour) => (
-              <Link href={`/tours/${tour.id}`} key={tour.id} className="tour-card-figma" style={{ background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', textDecoration: 'none' }}>
-                <div className="tour-card-image-wrap" style={{ position: 'relative', height: '180px' }}>
-                  <Image src={tour.image} alt={tour.title} fill sizes="(max-width: 768px) 100vw, 33vw" style={{ objectFit: 'cover' }} />
-                  <span className="badge-featured" style={{ position: 'absolute', top: '10px', right: '10px', background: '#2563EB', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                    {tour.badge}
-                  </span>
+            {MOST_VISITED_TOURS.map((t) => (
+              <Link href={`/tours/${t.id}`} key={`mv-${t.id}`} className="tour-card-figma">
+                <div className="tour-card-image-wrap">
+                  <Image src={t.image} alt={t.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
+                  <button
+                    className="heart-circle-btn"
+                    onClick={(e) => toggleFavorite(e, `mv-${t.id}`)}
+                  >
+                    {favorites[`mv-${t.id}`] ? '♥' : '♡'}
+                  </button>
                 </div>
-                <div className="tour-card-content" style={{ padding: '16px' }}>
-                  <div className="title-rating-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#0F172A', margin: 0 }}>{tour.title}</h3>
-                    <span className="star-rating" style={{ fontSize: '0.88rem', color: '#FFB800' }}>★ {tour.rating}</span>
+                <div className="tour-card-content">
+                  <div className="title-rating-row">
+                    <h3>{t.title}</h3>
+                    <span className="star-rating">★ {t.rating}</span>
                   </div>
-                  <div className="price-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <small style={{ color: '#64748B', fontSize: '0.75rem' }}>Starting From</small>
-                    <div className="price-tag" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <span className="current-price" style={{ fontSize: '1.1rem', fontWeight: '800', color: '#2563EB' }}>{formatPrice(tour.price)}</span>
-                      <span className="strike-price" style={{ fontSize: '0.8rem', textDecoration: 'line-through', color: '#94A3B8' }}>{formatPrice(tour.oldPrice)}</span>
+                  <div className="price-row">
+                    <small>Starting From</small>
+                    <div className="price-tag">
+                      <span className="current-price">{formatPrice(t.price)}</span>
+                      <span className="strike-price">{formatPrice(t.oldPrice)}</span>
+                      {t.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#166534', background: '#DCFCE7', padding: '4px 8px', borderRadius: '6px', fontWeight: '600', display: 'inline-block' }}>
-                    🔥 {tour.visitedCount} People Visited!
+                  <p className="tour-snippet">{t.desc}</p>
+                  <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                      🌤️ {t.badge || t.duration}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span title="Flight (Included)">✈️</span>
+                      <span title="Hotel (Included)">🏨</span>
+                      <span title="Meals (Included)">🍽️</span>
+                      <span title="Transport (Included)">🚌</span>
+                      <span title="Sightseeing (Included)">⛰️</span>
+                    </div>
+                  </div>
+                  <div className="interest-counter">
+                    <span className="users-icon">👥</span> {t.interestCount || t.visitedCount || 144} People Showed Interest!
                   </div>
                 </div>
               </Link>
@@ -314,7 +347,6 @@ export default function HomePage() {
                   >
                     {favorites[`just-${tour.id}`] ? '♥' : '♡'}
                   </button>
-                  <div className="badge-duration">{tour.badge}</div>
                 </div>
                 <div className="tour-card-content">
                   <div className="title-rating-row">
@@ -330,8 +362,17 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="tour-snippet">{tour.desc}</p>
-                  <div className="icons-features-row">
-                    <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚌</span><span>⛰️</span>
+                  <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                      🌤️ {tour.badge}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span title="Flight (Included)">✈️</span>
+                      <span title="Hotel (Included)">🏨</span>
+                      <span title="Meals (Included)">🍽️</span>
+                      <span title="Transport (Included)">🚌</span>
+                      <span title="Sightseeing (Included)">⛰️</span>
+                    </div>
                   </div>
                   <div className="interest-counter">
                     <span className="users-icon">👥</span> {tour.interestCount} People Showed Interest!

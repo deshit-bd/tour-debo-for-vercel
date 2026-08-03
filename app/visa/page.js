@@ -203,6 +203,38 @@ const ALL_VISAS = [
     processingTime: '4-8 Weeks',
     flagImage: 'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?auto=format&fit=crop&w=800&q=80',
   },
+  {
+    id: 'hajj-saudi',
+    country: 'Saudi Arabia (Hajj)',
+    countryType: 'Single Country',
+    rating: 4.9,
+    availability: 'Hajj Visa Available',
+    visaType: 'Hajj',
+    duration: '1-2 Months',
+    visaFeeBdt: 3500,
+    peopleServed: 2450,
+    priceBdt: 45000,
+    oldPriceBdt: 55000,
+    isOffer: true,
+    processingTime: '2-4 Weeks',
+    flagImage: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'umrah-saudi',
+    country: 'Saudi Arabia (Umrah)',
+    countryType: 'Single Country',
+    rating: 4.9,
+    availability: 'Umrah Visa Available',
+    visaType: 'Umrah',
+    duration: '15-30 Days',
+    visaFeeBdt: 2200,
+    peopleServed: 3100,
+    priceBdt: 18500,
+    oldPriceBdt: 24000,
+    isOffer: true,
+    processingTime: '1-2 Weeks',
+    flagImage: 'https://images.unsplash.com/photo-1565552645632-d725f8bfc19a?auto=format&fit=crop&w=800&q=80',
+  },
 ];
 
 function fmtBdt(amount) {
@@ -217,6 +249,7 @@ export default function StudentVisaPage() {
   const [filters, setFilters] = useState(defaultVisaFilters);
   const [sortBy, setSortBy] = useState('rating');
   const [favorites, setFavorites] = useState({});
+  const [showAll, setShowAll] = useState(false);
 
   const toggleFav = (e, id) => {
     e.preventDefault();
@@ -255,6 +288,10 @@ export default function StudentVisaPage() {
     return result;
   }, [filters, sortBy]);
 
+  const displayedVisas = useMemo(() => {
+    return showAll ? filteredVisas : filteredVisas.slice(0, 12);
+  }, [filteredVisas, showAll]);
+
   const activeFilterCount = [
     filters.rating > 1,
     filters.maxPriceBdt < 60000,
@@ -270,40 +307,59 @@ export default function StudentVisaPage() {
       <Navbar />
 
       <main className="figma-main-content">
-        {/* Page Header */}
-        <div className="visa-page-header" style={{ marginBottom: '24px' }}>
-          <div>
-            <span className="visa-eyebrow">Study Abroad Support</span>
-            <h2>Student Visa</h2>
-            <p>
+        {/* Top Header Card */}
+        <div
+          className="listing-header-banner"
+          style={{
+            background: 'linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%)',
+            borderRadius: '16px',
+            padding: '18px 24px',
+            marginBottom: '16px',
+            border: '1px solid #DBEAFE',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px',
+          }}
+        >
+          <div style={{ flex: '1 1 280px' }}>
+            <span style={{ fontSize: '0.70rem', fontWeight: '800', background: '#DBEAFE', color: '#1E40AF', padding: '3px 10px', borderRadius: '10px', letterSpacing: '0.5px' }}>
+              STUDY ABROAD SUPPORT
+            </span>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A', marginTop: '6px', marginBottom: '3px' }}>
+              Student Visa
+            </h1>
+            <p style={{ fontSize: '0.84rem', color: '#475569', margin: 0 }}>
               Verified visa processing packages for top study destinations.{' '}
               <strong style={{ color: '#2563EB' }}>{filteredVisas.length} results found.</strong>
-              {activeFilterCount > 0 && (
-                <span style={{ marginLeft: '8px', background: '#DBEAFE', color: '#1E40AF', padding: '2px 8px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700' }}>
-                  {activeFilterCount} filter active
-                </span>
-              )}
             </p>
           </div>
 
-          {/* Sort Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: '600', color: '#64748B' }}>Sort by:</span>
+          {/* Sort bar in far right corner */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto', flexShrink: 0 }}>
+            <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>Sort by:</span>
             {[
-              { value: 'rating', label: '⭐ Rating' },
-              { value: 'price_low', label: '৳ Price: Low' },
-              { value: 'price_high', label: '৳ Price: High' },
-              { value: 'popular', label: '🔥 Popular' },
+              { id: 'rating', label: '⭐ Rating' },
+              { id: 'price_low', label: '↓ Price: Low' },
+              { id: 'price_high', label: '↑ Price: High' },
+              { id: 'popular', label: '🔥 Popular' },
             ].map((opt) => (
               <button
-                key={opt.value}
-                onClick={() => setSortBy(opt.value)}
+                key={opt.id}
+                onClick={() => setSortBy(opt.id)}
                 style={{
-                  padding: '6px 14px', borderRadius: '20px', border: '1px solid',
-                  borderColor: sortBy === opt.value ? '#2563EB' : '#E2E8F0',
-                  background: sortBy === opt.value ? '#2563EB' : '#fff',
-                  color: sortBy === opt.value ? '#fff' : '#475569',
-                  fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s',
+                  padding: '5px 12px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  background: sortBy === opt.id ? '#2563EB' : '#ffffff',
+                  color: sortBy === opt.id ? '#fff' : '#475569',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {opt.label}
@@ -332,74 +388,99 @@ export default function StudentVisaPage() {
                 </button>
               </div>
             ) : (
-              <div className="visa-3col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '12px' }}>
-                {filteredVisas.map((v) => (
-                  <Link href={`/visa/${v.id}`} key={v.id} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                    <div
-                      className="visa-card-figma"
-                      style={{ borderRadius: '14px', overflow: 'hidden', border: '1px solid #E2E8F0', background: '#fff', transition: 'box-shadow 0.25s, transform 0.25s' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(37,99,235,0.14)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
-                    >
-                      {/* Image */}
-                      <div className="visa-card-image-wrap" style={{ height: '140px', position: 'relative' }}>
-                        <Image
-                          src={v.flagImage}
-                          alt={v.country}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          priority={v.id === 'canada' || v.id === 'uk'}
-                          className="visa-card-img"
-                          style={{ objectFit: 'cover' }}
-                        />
-                        {v.isOffer && (
-                          <span style={{ position: 'absolute', top: '10px', right: '42px', background: '#EF4444', color: '#fff', fontSize: '0.68rem', fontWeight: '700', padding: '3px 8px', borderRadius: '6px' }}>
-                            -{discountPct(v.priceBdt, v.oldPriceBdt)}% OFF
-                          </span>
-                        )}
-                        <button
-                          className="heart-circle-btn"
-                          onClick={(e) => toggleFav(e, v.id)}
-                          style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', fontSize: '0.9rem' }}
-                        >
-                          {favorites[v.id] ? '❤️' : '♡'}
-                        </button>
-                      </div>
-
-                      {/* Card Body */}
-                      <div className="visa-card-body" style={{ padding: '8px 12px' }}>
-                        <div className="title-rating-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                          <h3 style={{ fontSize: '0.98rem', margin: 0, fontWeight: '700', color: '#0F172A' }}>{v.country}</h3>
-                          <span className="star-rating" style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700' }}>★ {v.rating}</span>
+              <>
+                <div className="visa-3col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '12px' }}>
+                  {displayedVisas.map((v) => (
+                    <Link href={`/visa/${v.id}`} key={v.id} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                      <div
+                        className="visa-card-figma"
+                        style={{ borderRadius: '14px', overflow: 'hidden', border: '1px solid #E2E8F0', background: '#fff', transition: 'box-shadow 0.25s, transform 0.25s' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(37,99,235,0.14)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
+                      >
+                        {/* Image */}
+                        <div className="visa-card-image-wrap" style={{ height: '140px', position: 'relative' }}>
+                          <Image
+                            src={v.flagImage}
+                            alt={v.country}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            priority={v.id === 'canada' || v.id === 'uk'}
+                            className="visa-card-img"
+                            style={{ objectFit: 'cover' }}
+                          />
+                          <button
+                            className="heart-circle-btn"
+                            onClick={(e) => toggleFav(e, v.id)}
+                            style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', fontSize: '0.9rem' }}
+                          >
+                            {favorites[v.id] ? '❤️' : '♡'}
+                          </button>
                         </div>
 
-                        <div className="visa-info-lines" style={{ fontSize: '0.75rem', color: '#475569', lineHeight: '1.2', display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '5px' }}>
-                          <p style={{ margin: 0, fontWeight: '600', color: '#2563EB' }}>{v.availability}</p>
-                          <p style={{ margin: 0 }}>Duration : {v.duration}</p>
-                          <p style={{ margin: 0 }}>Visa Fee : {fmtBdt(v.visaFeeBdt)}</p>
-                        </div>
+                        {/* Card Body */}
+                        <div className="visa-card-body" style={{ padding: '6px 12px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                          <div className="title-rating-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0px' }}>
+                            <h3 style={{ fontSize: '0.92rem', margin: 0, fontWeight: '600', color: '#0F172A' }}>{v.country}</h3>
+                            <span className="star-rating" style={{ fontSize: '0.75rem', color: '#D97706', fontWeight: '600' }}>★ {v.rating}</span>
+                          </div>
 
-                        <div className="visa-served-badge" style={{ padding: '2px 6px', fontSize: '0.7rem', marginBottom: '5px', background: '#F1F5F9', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          👥 <span>{v.peopleServed.toLocaleString()} People Served</span>
-                        </div>
+                          <div className="visa-info-lines" style={{ fontSize: '0.74rem', color: '#475569', lineHeight: '1.2', display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '0px' }}>
+                            <p style={{ margin: 0, fontWeight: '500', color: '#2563EB' }}>{v.availability}</p>
+                            <p style={{ margin: 0, fontWeight: '400' }}>Duration : {v.duration}</p>
+                            <p style={{ margin: 0, fontWeight: '400' }}>Visa Fee : {fmtBdt(v.visaFeeBdt)}</p>
+                          </div>
 
-                        <div className="visa-price-footer" style={{ borderTop: '1px solid #F1F5F9', paddingTop: '4px', marginTop: '2px' }}>
-                          <small style={{ fontSize: '0.64rem', color: '#64748B', display: 'block', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Processing Fee Starting From</small>
-                          <div className="price-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '1px' }}>
-                            <span className="current-price" style={{ fontSize: '0.95rem', fontWeight: '800', color: '#2563EB' }}>{fmtBdt(v.priceBdt)}</span>
-                            <span className="strike-price" style={{ fontSize: '0.74rem', textDecoration: 'line-through', color: '#94A3B8' }}>{fmtBdt(v.oldPriceBdt)}</span>
-                            {v.isOffer && (
-                              <span className="discount-tag" style={{ fontSize: '0.66rem', background: '#FEE2E2', color: '#DC2626', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>
-                                -{discountPct(v.priceBdt, v.oldPriceBdt)}%
-                              </span>
-                            )}
+                          <div className="visa-served-badge" style={{ padding: '2px 6px', fontSize: '0.68rem', fontWeight: '500', margin: '1px 0', background: '#F1F5F9', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            👥 <span>{v.peopleServed.toLocaleString()} People Served</span>
+                          </div>
+
+                          <div className="visa-price-footer" style={{ borderTop: '1px solid #F1F5F9', paddingTop: '3px', marginTop: '1px' }}>
+                            <small style={{ fontSize: '0.62rem', color: '#64748B', display: 'block', textTransform: 'uppercase', letterSpacing: '0.2px', fontWeight: '500', marginBottom: '1px' }}>Processing Fee Starting From</small>
+                            <div className="price-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '1px' }}>
+                              <span className="current-price" style={{ fontSize: '0.92rem', fontWeight: '700', color: '#2563EB' }}>{fmtBdt(v.priceBdt)}</span>
+                              <span className="strike-price" style={{ fontSize: '0.72rem', textDecoration: 'line-through', color: '#94A3B8', fontWeight: '400' }}>{fmtBdt(v.oldPriceBdt)}</span>
+                              {v.isOffer && (
+                                <span className="discount-tag" style={{ fontSize: '0.64rem', background: '#FEE2E2', color: '#DC2626', padding: '1px 4px', borderRadius: '3px', fontWeight: '600' }}>
+                                  -{discountPct(v.priceBdt, v.oldPriceBdt)}%
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {filteredVisas.length > 12 && (
+                  <div style={{ textAlign: 'center', marginTop: '28px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowAll((prev) => !prev)}
+                      style={{
+                        padding: '10px 28px',
+                        background: '#ffffff',
+                        border: '1.5px solid #2563EB',
+                        color: '#2563EB',
+                        borderRadius: '24px',
+                        fontWeight: '700',
+                        fontSize: '0.88rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: '0 2px 10px rgba(37,99,235,0.12)',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#2563EB'; }}
+                    >
+                      {showAll ? 'Show Less ▲' : `Show More (${filteredVisas.length - 12} More) ▼`}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

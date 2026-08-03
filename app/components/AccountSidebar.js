@@ -72,11 +72,23 @@ function SidebarInner() {
           </ul>
         </div>
 
-        {/* 3. Payment Options & Vouchers */}
+        {/* 3. Payment */}
         <div className="sidebar-menu-group">
-          <Link href="/account/vouchers" {...navProps} style={{ textDecoration: 'none', fontSize: '0.92rem', fontWeight: '800', color: pathname.startsWith('/account/vouchers') || pathname.startsWith('/account/payments') ? '#2563EB' : '#1E293B', display: 'block', padding: '4px 10px' }}>
-            Payment Options & Vouchers
+          <Link href="/account/payments" {...navProps} style={{ textDecoration: 'none', fontSize: '0.92rem', fontWeight: '800', color: pathname.startsWith('/account/payments') || pathname.startsWith('/account/vouchers') ? '#2563EB' : '#1E293B', display: 'block', padding: '4px 10px' }}>
+            Payment
           </Link>
+          <ul style={{ listStyle: 'none', paddingLeft: '22px', margin: '4px 0 0 0', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+            <li>
+              <Link href="/account/payments" {...navProps} style={{ textDecoration: 'none', fontSize: '0.82rem', fontWeight: pathname === '/account/payments' ? '700' : '500', color: pathname === '/account/payments' ? '#2563EB' : '#64748B' }}>
+                Payment Details
+              </Link>
+            </li>
+            <li>
+              <Link href="/account/vouchers" {...navProps} style={{ textDecoration: 'none', fontSize: '0.82rem', fontWeight: pathname === '/account/vouchers' ? '700' : '500', color: pathname === '/account/vouchers' ? '#2563EB' : '#64748B' }}>
+                Vouchers
+              </Link>
+            </li>
+          </ul>
         </div>
 
         {/* 4. My Booking History */}

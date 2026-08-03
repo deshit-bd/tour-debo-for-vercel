@@ -1,26 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
 import ReviewModal from '../../components/ReviewModal';
 
-export default function MyBookingsPage() {
+function BookingsContent() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('all');
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('status') || 'all';
   const [reviewModalItem, setReviewModalItem] = useState(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setActiveTab(params.get('status') || 'all');
-  }, []);
-
   const changeTab = (status) => {
-    setActiveTab(status);
     router.push(`/account/bookings?status=${status}`);
   };
 
@@ -28,7 +23,7 @@ export default function MyBookingsPage() {
     {
       id: '8849201948102',
       date: '12 Jan 2026',
-      name: 'Tenting at Cox\'s Bazar',
+      name: "Tenting at Cox's Bazar",
       qty: 3,
       rating: '4.8',
       status: 'Completed',
@@ -72,87 +67,83 @@ export default function MyBookingsPage() {
   });
 
   return (
-    <div className="figma-page-shell">
-      <Navbar />
+    <div className="account-main-area">
+      <div className="account-section-card">
+        <h3 className="card-title-lg">My Bookings</h3>
 
-      <main className="figma-main-content">
-        <div className="account-layout-grid">
-          <AccountSidebar />
+        {/* Status Filter Tabs */}
+        <div className="account-sub-tabs-bar">
+          <button className={`sub-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => changeTab('all')}>All</button>
+          <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => changeTab('topay')}>Payment Due</button>
+          <button className={`sub-tab ${activeTab === 'tostarted' ? 'active' : ''}`} onClick={() => changeTab('tostarted')}>To Be Started</button>
+          <button className={`sub-tab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => changeTab('completed')}>Completed</button>
+          <button className={`sub-tab ${activeTab === 'cancelled' ? 'active' : ''}`} onClick={() => changeTab('cancelled')}>Cancelled</button>
+        </div>
 
-          <div className="account-main-area">
-            <div className="account-section-card">
-              <h3 className="card-title-lg">My Bookings</h3>
+        {/* Booking List Cards */}
+        <div className="bookings-cards-stack">
+          {filteredBookings.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94A3B8' }}>
+              <p style={{ fontSize: '0.95rem' }}>No bookings found for this category.</p>
+            </div>
+          ) : (
+            filteredBookings.map((item, idx) => (
+              <div key={idx} className="booking-card-row-figma">
+                <div className="booking-row-header">
+                  <small className="booking-id-text">Booking Id : #{item.id}</small>
+                  <small className="booking-date-text">Booking Date : {item.date}</small>
+                </div>
 
-              {/* Status Filter Tabs */}
-              <div className="account-sub-tabs-bar">
-                <button className={`sub-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => changeTab('all')}>All</button>
-                <button className={`sub-tab ${activeTab === 'topay' ? 'active' : ''}`} onClick={() => changeTab('topay')}>Payment Due</button>
-                <button className={`sub-tab ${activeTab === 'tostarted' ? 'active' : ''}`} onClick={() => changeTab('tostarted')}>To Be Started</button>
-                <button className={`sub-tab ${activeTab === 'completed' ? 'active' : ''}`} onClick={() => changeTab('completed')}>Completed</button>
-                <button className={`sub-tab ${activeTab === 'cancelled' ? 'active' : ''}`} onClick={() => changeTab('cancelled')}>Cancelled</button>
-              </div>
-
-              {/* Booking List Cards */}
-              <div className="bookings-cards-stack">
-                {filteredBookings.map((item, idx) => (
-                  <div key={idx} className="booking-card-row-figma">
-                    <div className="booking-row-header">
-                      <small className="booking-id-text">ID #{item.id}</small>
-                      <small className="booking-date-text">Booking Date : {item.date}</small>
+                <div className="booking-row-body">
+                  <div className="booking-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="booking-thumb-box">
+                      <Image src={item.image} alt={item.name} fill className="thumb-img" />
                     </div>
-
-                    <div className="booking-row-body">
-                      <div className="booking-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <div className="booking-thumb-box">
-                          <Image src={item.image} alt={item.name} fill className="thumb-img" />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <span className="booking-item-name">{item.name}</span>
-                          <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            ★ {item.rating} Rating
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="booking-qty">Quantity - {item.qty}</div>
-
-                      <div className={`booking-status-badge ${item.status === 'Completed' ? 'green-badge' : item.status === 'Payment Due' || item.status === 'To Pay' ? 'topay-badge' : 'gray-badge'}`}>
-                        {item.status}
-                      </div>
-
-                      {/* Action buttons: Review for Completed orders, or Details link */}
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        {item.status === 'Completed' && (
-                          <button
-                            onClick={() => setReviewModalItem(item)}
-                            style={{
-                              background: '#FF6B00',
-                              color: '#fff',
-                              border: 'none',
-                              padding: '8px 14px',
-                              borderRadius: '8px',
-                              fontSize: '0.82rem',
-                              fontWeight: 'bold',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Review
-                          </button>
-                        )}
-                        <Link href="/tours/paris" className="link-details-btn">
-                          Details
-                        </Link>
-                      </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <span className="booking-item-name">{item.name}</span>
+                      <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                        ★ {item.rating} Rating
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
 
-      {/* Review Modal Window (PDF Page 7) */}
+                  <div className="booking-qty">Quantity - {item.qty}</div>
+
+                  <div className={`booking-status-badge ${item.status === 'Completed' ? 'green-badge' : item.status === 'Payment Due' || item.status === 'To Pay' ? 'topay-badge' : item.status === 'Cancelled' ? 'red-badge' : 'gray-badge'}`}>
+                    {item.status}
+                  </div>
+
+                  {/* Action buttons: Review for Completed orders, or Details link */}
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {item.status === 'Completed' && (
+                      <button
+                        onClick={() => setReviewModalItem(item)}
+                        style={{
+                          background: '#FF6B00',
+                          color: '#fff',
+                          border: 'none',
+                          padding: '8px 14px',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Review
+                      </button>
+                    )}
+                    <Link href="/tours/paris" className="link-details-btn">
+                      Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Review Modal Window */}
       {reviewModalItem && (
         <ReviewModal
           item={reviewModalItem}
@@ -160,6 +151,23 @@ export default function MyBookingsPage() {
           onSubmitSuccess={() => router.push('/account/reviews?tab=history')}
         />
       )}
+    </div>
+  );
+}
+
+export default function MyBookingsPage() {
+  return (
+    <div className="figma-page-shell">
+      <Navbar />
+
+      <main className="figma-main-content">
+        <div className="account-layout-grid">
+          <AccountSidebar />
+          <Suspense fallback={<div style={{ padding: '24px', background: '#fff', borderRadius: '16px' }}>Loading bookings...</div>}>
+            <BookingsContent />
+          </Suspense>
+        </div>
+      </main>
 
       <Footer />
     </div>

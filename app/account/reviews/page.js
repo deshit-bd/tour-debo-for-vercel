@@ -155,7 +155,7 @@ function ReviewContent() {
                 Tour &amp; Service Provider (Purchased Items)
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {pendingReviews.map((item) => (
                   <div
                     key={item.id}
@@ -176,6 +176,9 @@ function ReviewContent() {
                     </div>
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '700' }}>
+                        Booking Id : #{item.id}
+                      </span>
                       <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: '800', color: '#0F172A', lineHeight: 1.3 }}>
                         {item.name}
                       </h4>
@@ -228,6 +231,7 @@ function ReviewContent() {
                     <Image src={item.image} alt={item.name} fill style={{ objectFit: 'cover' }} />
                   </div>
                   <div>
+                    <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '700', display: 'block' }}>Booking Id : #{item.id}</span>
                     <strong style={{ fontSize: '0.98rem', color: '#0F172A', display: 'block' }}>{item.name}</strong>
                     <small style={{ fontSize: '0.78rem', color: '#64748B' }}>Purchased on {item.date}</small>
                   </div>

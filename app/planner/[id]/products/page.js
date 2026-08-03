@@ -8,10 +8,10 @@ import Footer from '../../../components/Footer';
 import FilterSidebar from '../../../components/FilterSidebar';
 
 const VENDOR_PRODUCTS_DATA = [
-  { id: 1, title: 'Parasailing Adventure!', location: "Cox's Bazar", price: 200, oldPrice: '$250', rating: 4.7, duration: '3 Days', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
-  { id: 2, title: 'Sajek Valley Cloud Cottage', location: 'Sajek Valley', price: 220, oldPrice: '$280', rating: 4.9, duration: '3 Days', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
-  { id: 3, title: 'Sundarbans River Cruise', location: 'Sundarbans', price: 250, oldPrice: '$320', rating: 4.8, duration: '5 Days', isOffer: false, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
-  { id: 4, title: 'Sylhet Swamp Forest Boat Tour', location: 'Sylhet', price: 120, oldPrice: '$160', rating: 4.6, duration: '3 Days', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
+  { id: 1, title: 'Parasailing Adventure!', location: "Cox's Bazar", price: 200, oldPrice: '$250', rating: 4.7, duration: '3 Days / 2 Nights', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
+  { id: 2, title: 'Sajek Valley Cloud Cottage', location: 'Sajek Valley', price: 220, oldPrice: '$280', rating: 4.9, duration: '3 Days / 2 Nights', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
+  { id: 3, title: 'Sundarbans River Cruise', location: 'Sundarbans', price: 250, oldPrice: '$320', rating: 4.8, duration: '5 Days / 4 Nights', isOffer: false, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
+  { id: 4, title: 'Sylhet Swamp Forest Boat Tour', location: 'Sylhet', price: 120, oldPrice: '$160', rating: 4.6, duration: '3 Days / 2 Nights', isOffer: true, desc: 'Lorem ipsum dolor sit amet consectetur. Lacinia sodales vulputate pharetra eu proin at adipiscing suspendisse risus.' },
 ];
 
 export default function PlannerAllProductsPage() {

@@ -12,10 +12,12 @@ import { useCurrency } from '../context/CurrencyContext';
 const INITIAL_GUIDES = [
   {
     id: 'dhaka',
-    title: 'Explore Dhaka',
-    locationTag: '(Dhaka)',
+    title: 'Explore Dhaka Heritage',
+    locationTag: 'Dhaka, Bangladesh',
     rating: '4.7',
     guideName: 'With Kaalam',
+    languages: 'English, Bengali',
+    coveredSpots: 'Old Dhaka, Ahsan Manzil, Lalbagh Fort & Buriganga River',
     price: 200,
     priceNote: '(Family) + $50 per person',
     discount: '20% OFF',
@@ -25,14 +27,20 @@ const INITIAL_GUIDES = [
     completedCount: '144 Tour Completed!',
     countryType: 'Single Country',
     packageType: 'Family',
+    duration: '2 Days / 1 Night',
+    included: 'Flights, hotel, meals and transport included',
+    showedInterest: '144 people showed interest',
+    visitedCount: '144 people visited',
   },
   {
     id: 'sajek',
     title: 'Sajek Mountain Trek',
-    locationTag: '(Sajek)',
+    locationTag: 'Sajek, Bangladesh',
     rating: '4.9',
-    price: 180,
     guideName: 'With Robin',
+    languages: 'English, Bengali, Chakma',
+    coveredSpots: 'Konglak Peak, Helipad Viewpoint, Ruilui Para & Hazachora Waterfalls',
+    price: 180,
     priceNote: '(Group) + $30 per person',
     discount: '15% OFF',
     desc: 'Indigenous hill guide for cloud helipad view, Konglak Peak trekking, and bamboo chicken dining.',
@@ -41,13 +49,19 @@ const INITIAL_GUIDES = [
     completedCount: '198 Tour Completed!',
     countryType: 'Single Country',
     packageType: 'Group',
+    duration: '3 Days / 2 Nights',
+    included: 'Flights, hotel, meals and transport included',
+    showedInterest: '198 people showed interest',
+    visitedCount: '198 people visited',
   },
   {
     id: 'cox-bazar',
     title: "Cox's Bazar Beach Guide",
-    locationTag: "(Cox's Bazar)",
+    locationTag: "Cox's Bazar, Bangladesh",
     rating: '4.8',
     guideName: 'With Tanvir',
+    languages: 'English, Bengali',
+    coveredSpots: 'Inani Coral Beach, Himchari Waterfall, Marine Drive & Sunset Point',
     price: 220,
     priceNote: '(Couple) + $40 per person',
     discount: '25% OFF',
@@ -57,13 +71,19 @@ const INITIAL_GUIDES = [
     completedCount: '210 Tour Completed!',
     countryType: 'Single Country',
     packageType: 'Couple',
+    duration: '4 Days / 3 Nights',
+    included: 'Flights, hotel, meals and transport included',
+    showedInterest: '210 people showed interest',
+    visitedCount: '210 people visited',
   },
   {
     id: 'sylhet',
     title: 'Sylhet Tea Estate Escapade',
-    locationTag: '(Sylhet)',
+    locationTag: 'Sylhet, Bangladesh',
     rating: '4.6',
     guideName: 'With Hasan',
+    languages: 'English, Bengali, Sylheti',
+    coveredSpots: 'Ratargul Swamp Forest, Jaflong Zero Point, Sreemangal Tea Garden & Bholaganj White Stones',
     price: 150,
     priceNote: '(Family) + $25 per person',
     discount: '10% OFF',
@@ -73,6 +93,10 @@ const INITIAL_GUIDES = [
     completedCount: '112 Tour Completed!',
     countryType: 'Single Country',
     packageType: 'Family',
+    duration: '3 Days / 2 Nights',
+    included: 'Flights, hotel, meals and transport included',
+    showedInterest: '144 people showed interest',
+    visitedCount: '144 people visited',
   },
 ];
 
@@ -120,6 +144,14 @@ export default function TourGuidesPage() {
     if (filters.packageType.length > 0 && !filters.packageType.includes(guide.packageType)) {
       return false;
     }
+    if (filters.sightseeing && filters.sightseeing.length > 0) {
+      const selectedLang = filters.sightseeing[0].toLowerCase();
+      const guideLangs = (guide.languages || '').toLowerCase();
+      if (selectedLang.includes('english') && !guideLangs.includes('english')) return false;
+      if (selectedLang.includes('bengali') && !guideLangs.includes('bengali')) return false;
+      if (selectedLang.includes('sylheti') && !guideLangs.includes('sylheti')) return false;
+      if (selectedLang.includes('chakma') && !guideLangs.includes('chakma')) return false;
+    }
     return true;
   });
 
@@ -134,9 +166,9 @@ export default function TourGuidesPage() {
       <main className="figma-main-content">
         <div className="listing-layout-grid">
           {/* Left Column: Fully Functional Filter Sidebar */}
-          <FilterSidebar filters={filters} onFilterChange={setFilters} />
+          <FilterSidebar filters={filters} onFilterChange={setFilters} hideCountryType={true} />
 
-          {/* Right Column: Tour Guides Grid */}
+          {/* Right Column: Tour Guides List */}
           <div className="results-container">
             <div className="results-top-bar">
               <h2>
@@ -165,7 +197,7 @@ export default function TourGuidesPage() {
               </div>
             </div>
 
-            {/* 2-Column Grid of Tour Guide Cards */}
+            {/* Horizontal List of Tour Guide Cards (Matching Figma Screenshot) */}
             {sortedGuides.length === 0 ? (
               <div style={{ background: '#fff', padding: '40px', textAlign: 'center', borderRadius: '20px', border: '1px solid #E2E8F0', marginTop: '20px' }}>
                 <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1E293B', marginBottom: '8px' }}>No Tour Guides Found</h4>
@@ -178,80 +210,100 @@ export default function TourGuidesPage() {
                 </button>
               </div>
             ) : (
-              <div className="guides-2col-grid">
-                {sortedGuides.map((guide, index) => (
+              <div className="guides-horizontal-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+                {sortedGuides.map((guide) => (
                   <div
                     key={guide.id}
-                    className="guide-card-figma"
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '20px',
+                      border: '1px solid #E2E8F0',
+                      padding: '20px 24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '20px',
+                      position: 'relative',
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.03)',
+                      transition: 'all 0.25s ease',
+                      cursor: 'pointer',
+                    }}
                     onClick={() => router.push(`/guides/${guide.id}`)}
-                    role="link"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') router.push(`/guides/${guide.id}`);
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(37,99,235,0.12)';
+                      e.currentTarget.style.borderColor = '#BFDBFE';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.03)';
+                      e.currentTarget.style.borderColor = '#E2E8F0';
                     }}
                   >
-                    <div className="guide-cover-wrap">
+                    {/* Left Avatar */}
+                    <div style={{ width: '95px', height: '95px', borderRadius: '16px', overflow: 'hidden', position: 'relative', flexShrink: 0, background: '#F1F5F9' }}>
                       <Image
-                        src={guide.coverImage}
+                        src={guide.avatarImage || guide.coverImage}
                         alt={guide.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 38vw"
-                        priority={index < 2}
-                        className="guide-cover-img"
+                        style={{ objectFit: 'cover' }}
                       />
-                      <button
-                        className="heart-circle-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(guide.id);
-                        }}
-                      >
-                        {favorites[guide.id] ? '♥' : '♡'}
-                      </button>
-
-                      {/* Guide Profile Avatar Overlay */}
-                      <div className="guide-avatar-overlay">
-                        <Image
-                          src={guide.avatarImage}
-                          alt={`${guide.guideName} avatar`}
-                          fill
-                          sizes="72px"
-                          priority={index < 2}
-                          className="guide-avatar-img"
-                        />
-                      </div>
                     </div>
 
-                    <div className="guide-card-body">
-                      <div className="title-rating-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <Link href={`/guides/${guide.id}`} style={{ textDecoration: 'none' }}>
-                          <span className="guide-card-title" style={{ color: '#000000', fontWeight: '600', fontSize: '0.98rem' }}>{guide.title}</span>
-                        </Link>
-                        <span className="location-tag" style={{ fontSize: '0.8rem', color: '#64748B' }}>{guide.locationTag}</span>
-                        <div className="rating-pill" style={{ marginLeft: 'auto', fontSize: '0.78rem', fontWeight: '700', color: '#D97706' }}>★ {guide.rating}</div>
-                      </div>
-
-                      <div className="guide-name-text">{guide.guideName}</div>
-
-                      <div className="price-line-row" style={{ margin: '8px 0' }}>
-                        <span className="starting-label" style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block' }}>STARTING FROM</span>
-                        <div className="price-val-wrap" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '3px' }}>
-                          <strong className="guide-price-text" style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>{formatPrice(guide.price)}</strong>
-                          <span className="price-note" style={{ fontSize: '0.82rem', color: '#64748B' }}>{guide.priceNote}</span>
-                          <span className="discount-pill-green" style={{ background: '#ECFDF5', color: '#059669', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #A7F3D0' }}>{guide.discount}</span>
+                    {/* Main Content */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {/* Title and Top Right Icons */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                        <h3 style={{ fontSize: '1.35rem', fontWeight: '900', color: '#0F172A', margin: 0, letterSpacing: '-0.2px' }}>
+                          {guide.title}
+                        </h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                          <span style={{ cursor: 'pointer', fontSize: '0.95rem', color: '#64748B' }} title="Share">↗</span>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(guide.id);
+                            }}
+                            style={{ cursor: 'pointer', fontSize: '1.1rem', color: favorites[guide.id] ? '#DC2626' : '#64748B' }}
+                          >
+                            {favorites[guide.id] ? '♥' : '♡'}
+                          </span>
                         </div>
                       </div>
 
-                      <p className="guide-desc">{guide.desc}</p>
-
-                      <div className="card-footer-icons-row">
-                        <div className="mini-meta-icons">
-                          <span>✈️</span>
-                          <span>🏨</span>
-                          <span>🍽️</span>
-                          <span>🚌</span>
+                      {/* Rating & Languages Row */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '4px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span style={{ color: '#F59E0B', fontSize: '0.95rem', letterSpacing: '1px' }}>★★★★★</span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#334155', marginLeft: '4px' }}>
+                            {guide.rating}(Ratings)
+                          </span>
                         </div>
-                        <div className="completed-count-text">🏃 {guide.completedCount}</div>
+                        <span style={{ color: '#CBD5E1', fontSize: '0.82rem' }}>•</span>
+                        <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: '600' }}>
+                          🌐 Languages: <strong style={{ color: '#0F172A', fontWeight: '700' }}>{guide.languages || 'English, Bengali'}</strong>
+                        </span>
+                      </div>
+
+                      {/* Pill Tags Row */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '600', color: '#334155' }}>
+                          Location: {guide.locationTag}
+                        </span>
+                        {guide.coveredSpots && (
+                          <span style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '700', color: '#1D4ED8' }}>
+                            📍 Covered Spots: {guide.coveredSpots}
+                          </span>
+                        )}
+                        <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '600', color: '#334155' }}>
+                          {guide.included}
+                        </span>
+                        <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '600', color: '#334155' }}>
+                          {guide.duration}
+                        </span>
+                        <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '600', color: '#334155' }}>
+                          {guide.showedInterest}
+                        </span>
+                        <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '5px 14px', fontSize: '0.78rem', fontWeight: '600', color: '#334155' }}>
+                          {guide.visitedCount}
+                        </span>
                       </div>
                     </div>
                   </div>

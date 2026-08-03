@@ -90,10 +90,10 @@ export default function VisaFilterSidebar({ filters = defaultVisaFilters, onFilt
         </div>
       </div>
 
-      {/* Price Range (BDT) */}
+      {/* Service Charge Range (BDT) */}
       <div className="filter-group">
-        <label className="filter-group-title">
-          Price Range (৳{(localFilters.maxPriceBdt || 60000).toLocaleString()})
+        <label className="filter-group-title" style={{ fontSize: '0.83rem', whiteSpace: 'nowrap' }}>
+          Service Charge Range (৳{(localFilters.maxPriceBdt || 60000).toLocaleString()})
         </label>
         <div className="price-slider-wrap">
           <input
@@ -142,28 +142,6 @@ export default function VisaFilterSidebar({ filters = defaultVisaFilters, onFilt
         </label>
       </div>
 
-      {/* Visa Type */}
-      <div className="filter-group">
-        <label className="filter-group-title">Visa Type</label>
-        <div className="checkbox-list">
-          {[
-            { value: 'Student', label: '🎓 Student Visa' },
-            { value: 'Tourist', label: '✈️ Tourist Visa' },
-            { value: 'Work', label: '💼 Work Visa' },
-            { value: 'Business', label: '🏢 Business Visa' },
-          ].map((item) => (
-            <label key={item.value} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.visaType || []).includes(item.value)}
-                onChange={() => toggleArr('visaType', item.value)}
-              />
-              {item.label}
-            </label>
-          ))}
-        </div>
-      </div>
-
       {/* Country Type */}
       <div className="filter-group">
         <label className="filter-group-title">Country</label>
@@ -180,104 +158,130 @@ export default function VisaFilterSidebar({ filters = defaultVisaFilters, onFilt
           ))}
         </div>
 
-        {/* Country Multi-select Dropdown */}
-        <div ref={dropdownRef} style={{ marginTop: '10px', position: 'relative' }}>
-          <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '4px', display: 'block' }}>
-            Select Countries:
-          </label>
+        {/* Country Multi-select Dropdown - Only shown when 'Multi - Country' is selected */}
+        {(localFilters.countryType || []).includes('Multi - Country') && (
+          <div ref={dropdownRef} style={{ marginTop: '10px', position: 'relative' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: '700', color: '#475569', marginBottom: '4px', display: 'block' }}>
+              Select Countries:
+            </label>
 
-          {/* Dropdown Trigger */}
-          <div
-            onClick={() => setIsCountryDropdownOpen((p) => !p)}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              background: '#fff', border: `1px solid ${isCountryDropdownOpen ? '#2563EB' : '#CBD5E1'}`,
-              borderRadius: '10px', padding: '8px 12px', cursor: 'pointer',
-              boxShadow: isCountryDropdownOpen ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
-              transition: 'all 0.2s',
-            }}
-          >
-            <span style={{ fontSize: '0.82rem', color: '#475569' }}>
-              {(localFilters.selectedCountries || []).length > 0
-                ? `${localFilters.selectedCountries.length} selected`
-                : 'Select countries...'}
-            </span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5">
-              <polyline points={isCountryDropdownOpen ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
-            </svg>
-          </div>
-
-          {/* Dropdown List */}
-          {isCountryDropdownOpen && (
-            <div style={{
-              position: 'absolute', top: '44px', left: 0, right: 0, zIndex: 999,
-              background: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.12)', overflow: 'hidden',
-            }}>
-              <div style={{ padding: '8px' }}>
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={countrySearch}
-                  onChange={(e) => setCountrySearch(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    width: '100%', padding: '6px 10px', border: '1px solid #E2E8F0',
-                    borderRadius: '8px', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-              <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '4px 8px' }}>
-                {filteredCountries.map((c) => {
-                  const isSelected = (localFilters.selectedCountries || []).includes(c.name);
-                  return (
-                    <label
-                      key={c.code}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        padding: '6px 8px', borderRadius: '6px', cursor: 'pointer',
-                        background: isSelected ? '#EFF6FF' : 'transparent',
-                        fontSize: '0.82rem', fontWeight: isSelected ? '700' : '500',
-                        color: isSelected ? '#1D4ED8' : '#334155',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleArr('selectedCountries', c.name)}
-                      />
-                      <span>{c.flag}</span>
-                      <span>{c.name}</span>
-                    </label>
-                  );
-                })}
-              </div>
+            {/* Dropdown Trigger */}
+            <div
+              onClick={() => setIsCountryDropdownOpen((p) => !p)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#fff', border: `1px solid ${isCountryDropdownOpen ? '#2563EB' : '#CBD5E1'}`,
+                borderRadius: '10px', padding: '8px 12px', cursor: 'pointer',
+                boxShadow: isCountryDropdownOpen ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
+                transition: 'all 0.2s',
+              }}
+            >
+              <span style={{ fontSize: '0.82rem', color: '#475569' }}>
+                {(localFilters.selectedCountries || []).length > 0
+                  ? `${localFilters.selectedCountries.length} selected`
+                  : 'Select countries...'}
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5">
+                <polyline points={isCountryDropdownOpen ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
+              </svg>
             </div>
-          )}
 
-          {/* Selected Country Badges */}
-          {(localFilters.selectedCountries || []).length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px' }}>
-              {localFilters.selectedCountries.map((c) => (
-                <span
-                  key={c}
-                  style={{
-                    background: '#DBEAFE', color: '#1E40AF', fontSize: '0.72rem',
-                    fontWeight: '700', padding: '2px 8px', borderRadius: '999px',
-                    display: 'inline-flex', alignItems: 'center', gap: '4px',
-                  }}
-                >
-                  {c}
+            {/* Dropdown List */}
+            {isCountryDropdownOpen && (
+              <div style={{
+                position: 'absolute', top: '44px', left: 0, right: 0, zIndex: 999,
+                background: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.12)', overflow: 'hidden',
+              }}>
+                <div style={{ padding: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      width: '100%', padding: '6px 10px', border: '1px solid #E2E8F0',
+                      borderRadius: '8px', fontSize: '0.8rem', outline: 'none', boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '4px 8px' }}>
+                  {filteredCountries.map((c) => {
+                    const isSelected = (localFilters.selectedCountries || []).includes(c.name);
+                    return (
+                      <label
+                        key={c.code}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '8px',
+                          padding: '6px 8px', borderRadius: '6px', cursor: 'pointer',
+                          background: isSelected ? '#EFF6FF' : 'transparent',
+                          fontSize: '0.82rem', fontWeight: isSelected ? '700' : '500',
+                          color: isSelected ? '#1D4ED8' : '#334155',
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleArr('selectedCountries', c.name)}
+                        />
+                        <span>{c.flag}</span>
+                        <span>{c.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Selected Country Badges */}
+            {(localFilters.selectedCountries || []).length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px' }}>
+                {localFilters.selectedCountries.map((c) => (
                   <span
-                    onClick={() => toggleArr('selectedCountries', c)}
-                    style={{ cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' }}
+                    key={c}
+                    style={{
+                      background: '#DBEAFE', color: '#1E40AF', fontSize: '0.72rem',
+                      fontWeight: '700', padding: '2px 8px', borderRadius: '999px',
+                      display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    }}
                   >
-                    ✕
+                    {c}
+                    <span
+                      onClick={() => toggleArr('selectedCountries', c)}
+                      style={{ cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' }}
+                    >
+                      ✕
+                    </span>
                   </span>
-                </span>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Visa Type */}
+      <div className="filter-group">
+        <label className="filter-group-title">Visa Type</label>
+        <div className="checkbox-list">
+          {[
+            { value: 'Student', label: '🎓 Student Visa' },
+            { value: 'Tourist', label: '✈️ Tourist Visa' },
+            { value: 'Work', label: '💼 Work Visa' },
+            { value: 'Business', label: '🏢 Business Visa' },
+            { value: 'Hajj', label: '🕋 Hajj Visa' },
+            { value: 'Umrah', label: '🕌 Umrah Hajj' },
+          ].map((item) => (
+            <label key={item.value} className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={(localFilters.visaType || []).includes(item.value)}
+                onChange={() => toggleArr('visaType', item.value)}
+              />
+              {item.label}
+            </label>
+          ))}
         </div>
       </div>
     </aside>
