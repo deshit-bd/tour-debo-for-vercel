@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -308,7 +308,44 @@ const otherCountries = [
 export default function VisaDetailPage({ params }) {
   const routeParams = useParams();
   const visaId = routeParams?.id || params?.id || 'canada';
-  const visa = VISA_DETAILS[visaId] || VISA_DETAILS.canada;
+
+  const [customVisa, setCustomVisa] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('planner_visa_services');
+      if (saved) {
+        const list = JSON.parse(saved);
+        const found = list.find(v => v.id === visaId || (v.country && v.country.toLowerCase().replace(/[^a-z0-9]/g, '') === visaId));
+        if (found) {
+          setCustomVisa({
+            country: found.country || 'Visa Destination',
+            rating: found.rating || '5.0',
+            type: found.visaAvailableLabel || (found.visaType ? found.visaType + ' Available' : 'Visa Service Available'),
+            capital: found.capital || (found.country + ' Capital'),
+            localTime: found.localTime || 'GMT +6',
+            telephoneCode: found.telephoneCode || '+880',
+            exchangeRate: found.exchangeRate || '1 USD is equivalent to 118 BDT',
+            embassyAddress: found.embassyAddress || ('Embassy of ' + found.country + ', Dhaka, Bangladesh'),
+            visaFee: '৳' + (found.visaFee || '1,800'),
+            processingFee: '৳' + (found.processingFee || '24,000'),
+            mainImage: (found.mainImage && !found.mainImage.startsWith('blob:')) ? found.mainImage : 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1400&q=80',
+            gallery: (found.galleryImages && Array.isArray(found.galleryImages) && found.galleryImages.length > 0 && !found.galleryImages[0].startsWith('blob:')) ? found.galleryImages : [
+              'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=500&q=80',
+              'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=500&q=80',
+              'https://images.unsplash.com/photo-1530025809667-1f4bcff8e60f?auto=format&fit=crop&w=500&q=80',
+              'https://images.unsplash.com/photo-1490623970972-ae8bb3da443e?auto=format&fit=crop&w=500&q=80'
+            ],
+            matrixItems: found.matrixItems || []
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching custom visa detail:', e);
+    }
+  }, [visaId]);
+
+  const visa = customVisa || VISA_DETAILS[visaId] || VISA_DETAILS.canada;
 
   const [applicantCount, setApplicantCount] = useState(1);
   const [visaTypeSelect, setVisaTypeSelect] = useState('Tourist Visa');
@@ -320,7 +357,14 @@ export default function VisaDetailPage({ params }) {
   });
 
   const calcVisaFee = () => {
-    let base = 6500;
+    if (customVisa && customVisa.matrixItems && customVisa.matrixItems.length > 0) {
+      const match = customVisa.matrixItems.find(
+        m => m.visaType === visaTypeSelect && m.entryType === entryTypeSelect
+      );
+      if (match && match.price) return Number(match.price);
+    }
+
+    let base = Number((visa.processingFee || '24000').replace(/[^0-9]/g, '')) || 6500;
     if (visaTypeSelect === 'Medical Visa') base += 2000;
     if (visaTypeSelect === 'Business Visa') base += 5000;
     if (visaTypeSelect === 'PR Visa') base += 25000;

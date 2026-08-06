@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import FilterSidebar from '../../../components/FilterSidebar';
@@ -15,6 +16,7 @@ const VENDOR_PRODUCTS_DATA = [
 ];
 
 export default function PlannerAllProductsPage() {
+  const params = useParams();
   const [sortBy, setSortBy] = useState('lowest');
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const [favorites, setFavorites] = useState({});
@@ -104,8 +106,18 @@ export default function PlannerAllProductsPage() {
         {/* Vendor Sub Navbar */}
         <nav className="vendor-nav-bar">
           <div className="vendor-nav-links">
-            <Link href="/planner/deshit" className="vendor-nav-link">Homepage</Link>
-            <Link href="/planner/deshit/products" className="vendor-nav-link active">All Products</Link>
+            <Link href={`/planner/${params?.id || 'deshit'}`} className="vendor-nav-link">Homepage</Link>
+            <Link href={`/planner/${params?.id || 'deshit'}/products`} className="vendor-nav-link active">All Products</Link>
+          </div>
+
+          {/* Quick Add Action Buttons */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <Link
+              href={`/planner/${params?.id || 'deshit'}/add-visa`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', color: '#fff', padding: '8px 16px', borderRadius: '10px', fontSize: '0.84rem', fontWeight: 700, textDecoration: 'none', boxShadow: '0 3px 10px rgba(37,99,235,0.25)' }}
+            >
+              🌐 Add Visa Service
+            </Link>
           </div>
 
           <div className="vendor-sort-controls">

@@ -9,7 +9,7 @@ import Footer from '../../components/Footer';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useAuth } from '../../context/AuthContext';
 import { generateTicketPDF } from '../../utils/pdfGenerator';
-import { getTourById } from '../../../lib/toursData';
+import { ALL_TOURS, getTourById, resolveId } from '../../../lib/toursData';
 
 
 export default function TourDetailPage() {
@@ -19,10 +19,21 @@ export default function TourDetailPage() {
   const { user } = useAuth();
 
   const rawId = params?.id ? String(params.id) : 'paris';
-  const tour = getTourById(rawId);
+  
+  // 1. Initial state always resolves static tour so SSR HTML matches initial Client Hydration HTML 100%
+  const staticTour = ALL_TOURS.find((t) => t.id === resolveId(rawId)) || ALL_TOURS[0];
+  const [tour, setTour] = useState(staticTour);
 
-  const galleryImages = tour.images;
-  const bedPrices = tour.prices;
+  // 2. On client mount, load custom package from LocalStorage
+  useEffect(() => {
+    const customOrStatic = getTourById(rawId);
+    if (customOrStatic) {
+      setTour(customOrStatic);
+    }
+  }, [rawId]);
+
+  const galleryImages = tour.images || [];
+  const bedPrices = tour.prices || {};
 
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [ticketCount, setTicketCount] = useState(1);
@@ -156,11 +167,12 @@ export default function TourDetailPage() {
         <div className="detail-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '16px', height: '580px' }}>
           <div className="gallery-main-view" style={{ position: 'relative', height: '580px', borderRadius: '16px', overflow: 'hidden' }}>
             <Image
-              src={galleryImages[activeImageIdx]}
-              alt="Paris Experience"
+              src={galleryImages[activeImageIdx] || galleryImages[0] || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1400&q=80'}
+              alt="Tour Gallery Image"
               fill
               sizes="(max-width: 768px) 100vw, 75vw"
               priority
+              suppressHydrationWarning
               style={{ objectFit: 'cover' }}
             />
             <button className="gallery-arrow left-arrow" onClick={() => setActiveImageIdx((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.9)', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold' }}>‹</button>
@@ -181,7 +193,7 @@ export default function TourDetailPage() {
                   transition: 'all 0.2s ease',
                 }}
               >
-                <Image src={imgUrl} alt={`Thumb ${i + 1}`} fill sizes="280px" style={{ objectFit: 'cover' }} />
+                <Image src={imgUrl || galleryImages[0]} alt={`Thumb ${i + 1}`} fill sizes="280px" suppressHydrationWarning style={{ objectFit: 'cover' }} />
               </div>
             ))}
             <div
@@ -197,10 +209,12 @@ export default function TourDetailPage() {
                 border: activeImageIdx === 4 ? '2px solid #2563EB' : '2px solid transparent',
                 transition: 'all 0.2s ease',
               }}
-              onClick={() => setActiveImageIdx(4)}
+              onClick={() => setActiveImageIdx(Math.min(4, galleryImages.length - 1))}
             >
-              <Image src={galleryImages[4]} alt="Thumb 4" fill sizes="280px" style={{ objectFit: 'cover', opacity: 0.4 }} />
-              <span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '800', zIndex: 2 }}>10+</span>
+              <Image src={galleryImages[4] || galleryImages[0]} alt="Thumb 4" fill sizes="280px" suppressHydrationWarning style={{ objectFit: 'cover', opacity: 0.4 }} />
+              <span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '800', zIndex: 2 }}>
+                {galleryImages.length > 4 ? `+${galleryImages.length - 4}` : 'View'}
+              </span>
             </div>
           </div>
         </div>
@@ -369,7 +383,26 @@ export default function TourDetailPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>📍 {tour.fullLocation}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                ✈️ 🏨 🍽️ 🥾 🚌 <strong style={{ fontSize: '0.72rem', background: '#F1F5F9', color: '#64748B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>(INCLUDED)</strong>
+                {tour.amenities && tour.amenities.length > 0 ? (
+                  tour.amenities.map((item) => (
+                    <span
+                      key={item.id}
+                      title={`${item.name} (${item.included ? 'Included' : 'Excluded'})`}
+                      style={{
+                        opacity: item.included ? 1 : 0.25,
+                        filter: item.included ? 'none' : 'grayscale(100%)',
+                        fontSize: '1rem',
+                      }}
+                    >
+                      {item.icon}
+                    </span>
+                  ))
+                ) : (
+                  <>✈️ 🏨 🍽️ 🚌 ⛰️</>
+                )}
+                <strong style={{ fontSize: '0.72rem', background: '#EFF6FF', color: '#2563EB', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                  (INCLUDED)
+                </strong>
               </span>
 
               {/* Premium Segmented Toggle Switch for Fixed Date vs Open Tour */}
@@ -450,31 +483,45 @@ export default function TourDetailPage() {
           {/* Left Column: Itinerary Card & Accordions Stack */}
           <div className="left-content-column">
             
-            {/* 1. Day 1, Day 2, Day 3 Itinerary Box (PDF Page 2 Reference) */}
+            {/* 1. Dynamic Day-by-Day Itinerary Box */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', marginBottom: '16px' }}>
-              <div style={{ marginBottom: '20px' }}>
-                <h4 style={{ fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>Day 1:</h4>
-                <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                  Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
-                </p>
-              </div>
+              {tour.dayPlans && tour.dayPlans.length > 0 ? (
+                tour.dayPlans.map((dp, idx) => (
+                  <div key={idx} style={{ marginBottom: idx === tour.dayPlans.length - 1 ? 0 : '20px' }}>
+                    <h4 style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>
+                      Day {dp.day}: {dp.title}
+                    </h4>
+                    <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0, whiteSpace: 'pre-line' }}>
+                      {dp.description || 'Sightseeing, accommodation, meals, and guided activities.'}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>Day 1: Arrival & Welcome</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+                      Arrival at destination, airport transfer to hotel, check-in and evening local sightseeing walk.
+                    </p>
+                  </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <h4 style={{ fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>Day 2:</h4>
-                <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                  Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
-                </p>
-              </div>
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>Day 2: Full Day Sightseeing Tour</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+                      Guided tour of major landmarks, cultural spots, local cuisine lunch, and boat cruise experience.
+                    </p>
+                  </div>
 
-              <div>
-                <h4 style={{ fontWeight: '800', color: '#0F172A', marginBottom: '6px' }}>Day 3:</h4>
-                <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                  Lorem ipsum dolor sit amet consectetur. Id nunc purus id mi neque. Fermentum sit scelerisque pellentesque scelerisque amet adipiscing pellentesque a odio. Cras dui iaculis nec lacus ornare tristique scelerisque augue. Eget viverra aliquet euismod nulla bibendum pharetra vulputate sodales.
-                </p>
-              </div>
+                  <div>
+                    <h4 style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>Day 3: Shopping & Departure</h4>
+                    <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
+                      Morning breakfast at hotel, free time for local souvenir shopping, checkout and departure transfer.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Helper Chevron Icon SVG matching 2nd Image */}
             {/* 2. Package Details Accordion */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', marginBottom: '12px', overflow: 'hidden' }}>
               <div onClick={() => toggleAccordion('packageDetails')} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '700', color: '#0F172A' }}>
@@ -484,13 +531,13 @@ export default function TourDetailPage() {
                 </svg>
               </div>
               {openAccordions.packageDetails && (
-                <div style={{ padding: '0 20px 16px', fontSize: '0.88rem', color: '#475569' }}>
-                  Includes 4-star hotel stay, daily breakfast, museum passes, and airport shuttle service.
+                <div style={{ padding: '0 20px 16px', fontSize: '0.88rem', color: '#475569', whiteSpace: 'pre-line' }}>
+                  {tour.desc || tour.packageDetails || 'Includes 4-star hotel stay, daily breakfast, museum passes, and airport shuttle service.'}
                 </div>
               )}
             </div>
 
-            {/* 3. Cancellation Policy Accordion (Open in PDF Page 2) */}
+            {/* 3. Cancellation Policy Accordion */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', marginBottom: '12px', overflow: 'hidden' }}>
               <div onClick={() => toggleAccordion('cancellation')} style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '700', color: '#0F172A' }}>
                 <span>Cancellation Policy</span>
@@ -499,25 +546,26 @@ export default function TourDetailPage() {
                 </svg>
               </div>
               {openAccordions.cancellation && (
-                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7' }}>
-                  <p style={{ margin: '0 0 10px 0' }}>
-                    Your confirmation of the Holiday will ensure that you have read the Cancellation Policy thoroughly and accepted it.
-                  </p>
-                  <ul style={{ margin: 0, paddingLeft: '18px', listStyleType: 'disc' }}>
-                    <li>15 days prior to the travel date - 50% of total holiday cost.</li>
-                    <li>10 days prior to the travel date - 75% of total holiday cost.</li>
-                    <li>03 days prior to the travel date - 100% of holiday cost will be non-refundable.</li>
-                  </ul>
-                  <p style={{ margin: '10px 0 0 0', fontStyle: 'italic', fontSize: '0.78rem' }}>
-                    convenience fee is non-refundable for online purchases.
-                  </p>
+                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+                  {tour.cancellationPolicy || (
+                    <>
+                      <p style={{ margin: '0 0 10px 0' }}>
+                        Your confirmation of the Holiday will ensure that you have read the Cancellation Policy thoroughly and accepted it.
+                      </p>
+                      <ul style={{ margin: 0, paddingLeft: '18px', listStyleType: 'disc' }}>
+                        <li>15 days prior to the travel date - 50% of total holiday cost.</li>
+                        <li>10 days prior to the travel date - 75% of total holiday cost.</li>
+                        <li>03 days prior to the travel date - 100% of holiday cost will be non-refundable.</li>
+                      </ul>
+                    </>
+                  )}
                 </div>
               )}
             </div>
 
             {/* 4. Included & Excluded Tour Services Accordion */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', marginBottom: '12px', overflow: 'hidden', padding: '6px' }}>
-              <div onClick={() => toggleAccordion('includedExcluded')} style={{ background: '#EFF6FF', borderRadius: '10px', padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '800', color: '#0F172A' }}>
+              <div onClick={() => toggleAccordion('includedExcluded')} style={{ background: '#EFF6FF', borderRadius: '10px', padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: '700', color: '#0F172A' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.94rem' }}>🎒 Included &amp; Excluded Tour Services</span>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 0.2s ease', transform: openAccordions.includedExcluded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -527,25 +575,32 @@ export default function TourDetailPage() {
                 <div style={{ padding: '12px 6px 6px', fontSize: '0.84rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
                   {/* Left Box: Included */}
                   <div style={{ background: '#F0FDF4', padding: '12px 16px', borderRadius: '10px', border: '1px solid #BBF7D0' }}>
-                    <h5 style={{ color: '#15803D', fontWeight: '800', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✓ What's Included:</h5>
-                    <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px', color: '#166534', lineHeight: '1.5' }}>
-                      <li>All airport transfers &amp; comfortable AC vehicle transportation.</li>
-                      <li>Deluxe hotel accommodation with daily breakfast.</li>
-                      <li>All sight-seeing entry tickets &amp; guided tours.</li>
-                      <li>English speaking professional local tour guide.</li>
-                    </ul>
+                    <h5 style={{ color: '#15803D', fontWeight: '700', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✓ What's Included:</h5>
+                    <div style={{ margin: 0, color: '#166534', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                      {tour.whatsIncluded || (
+                        <ul style={{ margin: 0, paddingLeft: '18px' }}>
+                          <li>All airport transfers &amp; comfortable AC vehicle transportation.</li>
+                          <li>Deluxe hotel accommodation with daily breakfast.</li>
+                          <li>All sight-seeing entry tickets &amp; guided tours.</li>
+                          <li>English speaking professional local tour guide.</li>
+                        </ul>
+                      )}
+                    </div>
                   </div>
 
                   {/* Right Box: Excluded */}
                   <div style={{ background: '#FEF2F2', padding: '12px 16px', borderRadius: '10px', border: '1px solid #FECACA' }}>
-                    <h5 style={{ color: '#B91C1C', fontWeight: '800', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✕ What's Excluded:</h5>
-                    <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '4px', color: '#991B1B', lineHeight: '1.5' }}>
-                      <li>International airfare tickets &amp; airport tax (unless add-on purchased).</li>
-                      <li>Personal expenses, laundry, minibar, and telephone calls.</li>
-                      <li>Schengen visa processing &amp; embassy application fees.</li>
-                      <li>Driver &amp; tour guide personal tipping gratuities.</li>
-                      <li>Optional adventure activities not included in itinerary.</li>
-                    </ul>
+                    <h5 style={{ color: '#B91C1C', fontWeight: '700', margin: '0 0 6px 0', fontSize: '0.86rem' }}>✕ What's Excluded:</h5>
+                    <div style={{ margin: 0, color: '#991B1B', lineHeight: '1.6', whiteSpace: 'pre-line' }}>
+                      {tour.whatsExcluded || (
+                        <ul style={{ margin: 0, paddingLeft: '18px' }}>
+                          <li>International airfare tickets &amp; airport tax.</li>
+                          <li>Personal expenses, laundry, minibar, and telephone calls.</li>
+                          <li>Visa processing &amp; embassy application fees.</li>
+                          <li>Driver &amp; tour guide personal tipping gratuities.</li>
+                        </ul>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -560,12 +615,8 @@ export default function TourDetailPage() {
                 </svg>
               </div>
               {openAccordions.terms && (
-                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7' }}>
-                  <p style={{ margin: 0 }}>
-                    1. All travelers must hold a passport valid for at least 6 months beyond the return date.<br />
-                    2. Tour schedules and sightseeing orders are subject to minor adjustments based on local weather conditions.<br />
-                    3. Tour Dibo is not liable for delayed flights or baggage loss caused by third-party airlines.
-                  </p>
+                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+                  {tour.termsConditions || "1. All travelers must hold a valid passport.\n2. Schedules are subject to weather conditions.\n3. Third-party flight delays are not liable."}
                 </div>
               )}
             </div>
@@ -579,10 +630,8 @@ export default function TourDetailPage() {
                 </svg>
               </div>
               {openAccordions.travelTips && (
-                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7' }}>
-                  <p style={{ margin: 0 }}>
-                    💡 <strong>Pro Tips:</strong> Wear comfortable walking shoes for walking through Parisian cobblestone streets. Keep Euro cash (€) for small cafes and metro ticket kiosks. Keep digital copies of all visa documents on your phone.
-                  </p>
+                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+                  {tour.travelTips || "Wear comfortable walking shoes. Keep local currency cash for small street cafes. Keep digital copies of visa documents on your phone."}
                 </div>
               )}
             </div>
@@ -596,11 +645,8 @@ export default function TourDetailPage() {
                 </svg>
               </div>
               {openAccordions.policy && (
-                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7' }}>
-                  <p style={{ margin: 0 }}>
-                    Standard Hotel Check-In: 02:00 PM | Check-Out: 11:00 AM.<br />
-                    Child policy: Children under 5 stay free sharing existing bedding. Refund policy applies as per cancellation terms.
-                  </p>
+                <div style={{ padding: '0 20px 20px', fontSize: '0.84rem', color: '#64748B', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+                  {tour.hotelPolicy || "Standard Hotel Check-In: 02:00 PM | Check-Out: 11:00 AM. Child policy: Children under 5 stay free sharing existing bedding."}
                 </div>
               )}
             </div>
@@ -837,17 +883,32 @@ export default function TourDetailPage() {
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0F172A', textTransform: 'capitalize' }}>
-                  {selectedPackage === 'couple' ? 'Couple' : 'Single'} {formatPrice(bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 21600 : 12000))}
+                  {selectedPackage === 'couple' ? 'Couple' : 'Single'} {(() => {
+                    const priceVal = bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 18000 : 10000);
+                    return typeof priceVal === 'number' ? `৳${priceVal.toLocaleString()}` : priceVal;
+                  })()}
                 </span>
                 <span style={{ fontSize: '0.75rem', color: '#94A3B8', textDecoration: 'line-through' }}>
-                  {formatPrice(Math.round((bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 21600 : 12000)) * 1.25))}
+                  {(() => {
+                    const priceVal = bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 18000 : 10000);
+                    const origVal = bedPrices[`${selectedPackage}Original`];
+                    if (origVal && origVal > priceVal && origVal < priceVal * 10) {
+                      return `৳${origVal.toLocaleString()}`;
+                    }
+                    const rawTag = tour.discountTag || tour.discount?.tag || '20% OFF';
+                    let pct = parseInt(rawTag.replace(/[^0-9]/g, '')) || 20;
+                    if (pct >= 100 || pct <= 0) pct = 20;
+                    
+                    const calcOrig = Math.round(priceVal / (1 - pct / 100));
+                    return `৳${calcOrig.toLocaleString()}`;
+                  })()}
                 </span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                 {[
-                  { id: 'single', label: 'Single', price: bedPrices?.single || 12000 },
-                  { id: 'couple', label: 'Couple', price: bedPrices?.couple || 21600 },
+                  { id: 'single', label: 'Single', price: bedPrices?.single || 10000 },
+                  { id: 'couple', label: 'Couple', price: bedPrices?.couple || (bedPrices?.single ? Math.round(bedPrices.single * 1.8) : 18000) },
                 ].map((opt) => (
                   <div
                     key={opt.id}
@@ -865,7 +926,7 @@ export default function TourDetailPage() {
                     }}
                   >
                     <span>{opt.label}</span>
-                    <span>{formatPrice(opt.price)}</span>
+                    <span>{typeof opt.price === 'number' ? `৳${opt.price.toLocaleString()}` : opt.price}</span>
                   </div>
                 ))}
               </div>
@@ -885,11 +946,28 @@ export default function TourDetailPage() {
               </button>
             </div>
 
-            {/* Top Block 3: Coupon Voucher Banner (PDF Page 2 Reference) */}
+            {/* Top Block 3: Coupon Voucher Banner */}
             <div style={{ background: '#EFF6FF', border: '1px dashed #3B82F6', borderRadius: '16px', padding: '16px', color: '#1E40AF' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '800' }}>{formatPrice(2000)} OFF</div>
-              <div style={{ fontSize: '0.75rem', marginTop: '4px' }}>Minimum Spend: {formatPrice(10000)} | Capped At: {formatPrice(2000)}</div>
-              <div style={{ fontSize: '0.72rem', color: '#60A5FA', marginTop: '2px' }}>Valid till 31 Dec 2026</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: '800' }}>
+                {(() => {
+                  const rawTag = tour.discountTag || tour.discount?.tag || '20% OFF';
+                  let pct = parseInt(rawTag.replace(/[^0-9]/g, '')) || 20;
+                  if (pct >= 100 || pct <= 0) pct = 20;
+                  
+                  const priceVal = bedPrices?.single || 10000;
+                  const calcAmt = Math.round(priceVal * (pct / 100));
+                  return `৳${calcAmt.toLocaleString()} OFF (${pct}%)`;
+                })()}
+              </div>
+              <div style={{ fontSize: '0.75rem', marginTop: '4px' }}>
+                Minimum Spend: {(() => {
+                  const priceVal = bedPrices?.single || 10000;
+                  return `৳${priceVal.toLocaleString()}`;
+                })()}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#60A5FA', marginTop: '2px' }}>
+                {tour.discount?.expiry && tour.discount.expiry !== '31 Dec 2026' ? `Valid till ${tour.discount.expiry}` : 'Valid till Offer Expiration'}
+              </div>
             </div>
 
             {/* Bottom Block 4: Others Also Showed Interest Cards Stack (PDF Page 2 Reference) */}

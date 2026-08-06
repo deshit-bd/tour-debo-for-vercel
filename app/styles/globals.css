@@ -140,6 +140,9 @@ button {
   background: var(--primary-gradient);
   color: #ffffff;
   box-shadow: 0 4px 20px rgba(11, 87, 208, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .navbar-container {
@@ -5404,12 +5407,19 @@ button {
 /* ==========================================
    SELLER BUSINESS CENTER PORTAL STYLES
 ========================================== */
+.seller-main-wrapper {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 20px 24px 60px 0px !important;
+}
+
 .seller-layout-grid {
   display: grid;
   grid-template-columns: 270px 1fr;
-  gap: 24px;
-  max-width: 1360px;
-  margin: 0 auto;
+  gap: 20px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
   align-items: start;
 }
 
@@ -5423,7 +5433,23 @@ button {
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 20px;
+  top: 95px;
+  max-height: calc(100vh - 115px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.seller-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.seller-sidebar::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
+}
+
+.seller-sidebar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .seller-badge-box {
@@ -5654,8 +5680,8 @@ button {
 }
 
 .seller-form-group label {
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--text-dark, #334155);
 }
 
@@ -5668,7 +5694,7 @@ button {
   background: var(--bg-card, #ffffff);
   color: var(--text-dark, #0F172A);
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400;
   outline: none;
 }
 

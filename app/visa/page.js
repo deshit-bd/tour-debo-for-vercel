@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
@@ -250,6 +250,38 @@ export default function StudentVisaPage() {
   const [sortBy, setSortBy] = useState('rating');
   const [favorites, setFavorites] = useState({});
   const [showAll, setShowAll] = useState(false);
+  const [visas, setVisas] = useState(ALL_VISAS);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('planner_visa_services');
+      if (saved) {
+        const customList = JSON.parse(saved).map(item => ({
+          id: item.id || ('custom-' + Date.now()),
+          country: item.country || 'Custom Country',
+          countryType: 'Single Country',
+          rating: Number(item.rating || 5.0),
+          availability: item.visaAvailableLabel || (item.visaType ? item.visaType + ' Available' : 'Visa Available'),
+          visaType: (item.visaType || 'Tourist').replace(' Visa', ''),
+          duration: item.validity || '30 Days',
+          visaFeeBdt: Number((item.visaFee || '0').replace(/[^0-9]/g, '')) || 1800,
+          peopleServed: 1,
+          priceBdt: Number((item.processingFee || '0').replace(/[^0-9]/g, '')) || 24000,
+          oldPriceBdt: (Number((item.processingFee || '0').replace(/[^0-9]/g, '')) || 24000) * 1.2,
+          isOffer: false,
+          processingTime: item.processingTime || '5-7 Working Days',
+          flagImage: (item.mainImage && !item.mainImage.startsWith('blob:')) ? item.mainImage : 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80',
+          isCustom: true
+        }));
+
+        const customIds = new Set(customList.map(c => c.id));
+        const filteredAll = ALL_VISAS.filter(v => !customIds.has(v.id));
+        setVisas([...customList, ...filteredAll]);
+      }
+    } catch (e) {
+      console.error('Error loading saved visa services:', e);
+    }
+  }, []);
 
   const toggleFav = (e, id) => {
     e.preventDefault();
@@ -259,7 +291,7 @@ export default function StudentVisaPage() {
 
   // ── Fully functional filter engine ──────────────────
   const filteredVisas = useMemo(() => {
-    let result = ALL_VISAS.filter((v) => {
+    let result = visas.filter((v) => {
       if ((filters.rating || 1) > 1 && v.rating < filters.rating) return false;
       if (filters.maxPriceBdt && v.priceBdt > filters.maxPriceBdt) return false;
       if (
@@ -286,7 +318,7 @@ export default function StudentVisaPage() {
     else if (sortBy === 'popular') result.sort((a, b) => b.peopleServed - a.peopleServed);
 
     return result;
-  }, [filters, sortBy]);
+  }, [visas, filters, sortBy]);
 
   const displayedVisas = useMemo(() => {
     return showAll ? filteredVisas : filteredVisas.slice(0, 12);

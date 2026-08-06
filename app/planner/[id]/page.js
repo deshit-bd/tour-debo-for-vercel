@@ -1,11 +1,15 @@
-'use client';
+﻿'use client';
 
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
 export default function PlannerStorePage() {
+  const params = useParams();
+  const plannerId = params?.id || 'deshit';
+
   const productsList = Array.from({ length: 6 }).map((_, i) => ({
     id: i + 1,
     title: "Tenting at Cox's Bazar",
@@ -38,16 +42,16 @@ export default function PlannerStorePage() {
             <div className="vendor-info-meta">
               <h2>DeshIT - BD</h2>
               <ul>
-                <li>👥 999 Followers</li>
-                <li>👍 90% Positive Review</li>
-                <li>🏖️ 100% Successful Tours</li>
-                <li>✔ Bronze Planner</li>
+                <li>999 Followers</li>
+                <li>90% Positive Review</li>
+                <li>100% Successful Tours</li>
+                <li>Bronze Planner</li>
               </ul>
             </div>
           </div>
 
           <div className="vendor-center-actions">
-            <button className="btn-vendor-chat">💬 Chat Now</button>
+            <button className="btn-vendor-chat">Chat Now</button>
             <button className="btn-vendor-follow">+ Follow</button>
           </div>
 
@@ -58,7 +62,6 @@ export default function PlannerStorePage() {
               </div>
               <small>Positive Tourist Review</small>
             </div>
-
             <div className="vendor-stat-circle">
               <div className="circle-wrap">
                 <span className="percent-text">90%</span>
@@ -71,18 +74,21 @@ export default function PlannerStorePage() {
         {/* Vendor Sub Navbar */}
         <nav className="vendor-nav-bar">
           <div className="vendor-nav-links">
-            <span className="categories-dropdown">∨ Categories</span>
-            <Link href="/planner/deshit" className="vendor-nav-link active">Homepage</Link>
-            <Link href="/planner/deshit/products" className="vendor-nav-link">All Products</Link>
+            <span className="categories-dropdown">Categories</span>
+            <Link href={`/planner/${plannerId}`} className="vendor-nav-link active">Homepage</Link>
+            <Link href={`/planner/${plannerId}/products`} className="vendor-nav-link">All Products</Link>
           </div>
-
-          <div className="vendor-search-box">
-            <input type="text" placeholder="Search" />
-            <button className="btn-vendor-search">🔍</button>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <Link
+              href={`/planner/${plannerId}/add-visa`}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', color: '#fff', padding: '8px 16px', borderRadius: '10px', fontSize: '0.84rem', fontWeight: 700, textDecoration: 'none', boxShadow: '0 3px 10px rgba(37,99,235,0.25)' }}
+            >
+              Add Visa Service
+            </Link>
           </div>
         </nav>
 
-        {/* Products Section 1: 3-Column Grid */}
+        {/* Products Section 1 */}
         <div className="tours-3col-grid" style={{ marginBottom: '30px' }}>
           {productsList.slice(0, 3).map((tour) => (
             <div key={tour.id} className="tour-card-figma">
@@ -95,16 +101,14 @@ export default function PlannerStorePage() {
                   unoptimized
                   className="tour-card-img"
                 />
-                <button className="heart-circle-btn">♡</button>
+                <button className="heart-circle-btn">&#9825;</button>
                 <span className="badge-duration">{tour.duration}</span>
               </div>
-
               <div className="tour-card-content">
                 <div className="title-rating-row">
                   <h3>{tour.title}</h3>
-                  <span className="star-rating">★ {tour.rating}</span>
+                  <span className="star-rating">&#9733; {tour.rating}</span>
                 </div>
-
                 <div className="price-row">
                   <small>Starting From</small>
                   <div className="price-tag">
@@ -113,26 +117,23 @@ export default function PlannerStorePage() {
                     <span className="discount-tag">20% OFF</span>
                   </div>
                 </div>
-
                 <p className="tour-snippet">{tour.snippet}</p>
-
                 <div className="icons-features-row">
-                  <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚶</span><span>⛰️</span>
+                  <span>Flights</span><span>Hotel</span><span>Meals</span><span>Guide</span>
                 </div>
-
                 <div className="interest-counter">
-                  👥 {tour.interested} People Showed Interest!
+                  {tour.interested} People Showed Interest!
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Middle Wide Skiing / Adventure Promotion Banner */}
+        {/* Middle Banner */}
         <div className="planner-middle-banner">
           <Image
             src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1400&q=80"
-            alt="Skiing Banner"
+            alt="Adventure Banner"
             fill
             sizes="(max-width: 768px) 100vw, 1360px"
             unoptimized
@@ -140,7 +141,7 @@ export default function PlannerStorePage() {
           />
         </div>
 
-        {/* Products Section 2: 3-Column Grid */}
+        {/* Products Section 2 */}
         <div className="tours-3col-grid">
           {productsList.slice(3, 6).map((tour) => (
             <div key={tour.id} className="tour-card-figma">
@@ -153,16 +154,14 @@ export default function PlannerStorePage() {
                   unoptimized
                   className="tour-card-img"
                 />
-                <button className="heart-circle-btn">♡</button>
+                <button className="heart-circle-btn">&#9825;</button>
                 <span className="badge-duration">{tour.duration}</span>
               </div>
-
               <div className="tour-card-content">
                 <div className="title-rating-row">
                   <h3>{tour.title}</h3>
-                  <span className="star-rating">★ {tour.rating}</span>
+                  <span className="star-rating">&#9733; {tour.rating}</span>
                 </div>
-
                 <div className="price-row">
                   <small>Starting From</small>
                   <div className="price-tag">
@@ -171,15 +170,12 @@ export default function PlannerStorePage() {
                     <span className="discount-tag">20% OFF</span>
                   </div>
                 </div>
-
                 <p className="tour-snippet">{tour.snippet}</p>
-
                 <div className="icons-features-row">
-                  <span>✈️</span><span>🏨</span><span>🍽️</span><span>🚶</span><span>⛰️</span>
+                  <span>Flights</span><span>Hotel</span><span>Meals</span><span>Guide</span>
                 </div>
-
                 <div className="interest-counter">
-                  👥 {tour.interested} People Showed Interest!
+                  {tour.interested} People Showed Interest!
                 </div>
               </div>
             </div>
@@ -187,11 +183,7 @@ export default function PlannerStorePage() {
         </div>
       </main>
 
-      {/* Floating Messages Button */}
       <div className="floating-messages-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
         <span>Messages</span>
       </div>
 

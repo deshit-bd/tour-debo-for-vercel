@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -84,7 +84,51 @@ export default function GuideDetailPage({ params }) {
   const rawId = routeParams?.id || params?.id || 'dhaka';
   const guideId = String(rawId).toLowerCase();
 
-  const guide = GUIDE_DETAILS[guideId] || GUIDE_DETAILS[guideId.replace('-', '')] || {
+  const [customGuide, setCustomGuide] = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('planner_tour_guides');
+      if (saved) {
+        const list = JSON.parse(saved);
+        const found = list.find(g => g.id === rawId || g.id === guideId || (g.title && g.title.toLowerCase().replace(/[^a-z0-9]/g, '').includes(guideId)));
+        if (found) {
+          setCustomGuide({
+            title: found.title || 'Explore Destination',
+            location: found.location || 'Bangladesh',
+            rating: found.rating || '4.8',
+            guideName: found.guideName || 'Local Expert',
+            avatar: (found.avatarImage && !found.avatarImage.startsWith('blob:')) ? found.avatarImage : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+            hero: (found.coverImage && !found.coverImage.startsWith('blob:')) ? found.coverImage : 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80',
+            thumbs: (found.galleryImages && Array.isArray(found.galleryImages) && found.galleryImages.length > 0 && !found.galleryImages[0].startsWith('blob:')) ? found.galleryImages : [
+              'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=300&q=80',
+              'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=300&q=80',
+              'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=300&q=80',
+              'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80',
+            ],
+            coveredSpots: found.coveredSpots || 'Heritage Sites & Local Attractions',
+            includedSummary: found.includedSummary || 'Flights, hotel, meals and transport included',
+            completedTours: found.completedTours || '112+ Tours',
+            responseTime: found.responseTime || '< 1 Hour',
+            experience: found.experience || '5+ Years',
+            satisfaction: found.satisfaction || '99% Rating',
+            duration: found.duration || '3 Days / 2 Nights',
+            description: found.description || 'Explore Old Dhaka heritage lanes, Ahsan Manzil, Buriganga river life, and iconic local food stops with a verified city guide.',
+            service: found.service || 'Private city tour, historical landmark walk, street food curation, riverfront guidance and personal photography support.',
+            policy: found.policy || 'Free Cancellation: Cancel up to 24 hours prior to tour start for a 100% full refund.',
+            price1Person: Number(found.price1Person) || 1500,
+            price2Person: Number(found.price2Person) || 2500,
+            price3Person: Number(found.price3Person) || 3200,
+            languages: found.languages || { Bengali: 5, English: 4, Hindi: 3 }
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching custom guide detail:', e);
+    }
+  }, [guideId, rawId]);
+
+  const guide = customGuide || GUIDE_DETAILS[guideId] || GUIDE_DETAILS[guideId.replace('-', '')] || {
     title: `Explore ${guideId.charAt(0).toUpperCase() + guideId.slice(1)}`,
     location: `${guideId.charAt(0).toUpperCase() + guideId.slice(1)}, Bangladesh`,
     rating: '4.8',
@@ -109,10 +153,14 @@ export default function GuideDetailPage({ params }) {
     cancellation: true,
   });
 
+  const p1 = guide.price1Person || 1500;
+  const p2 = guide.price2Person || 2500;
+  const p3 = guide.price3Person || 3200;
+
   const tierOptions = [
-    { tier: 1, name: 'Single', label: '1 Person Tour Rate', rate: 1500, originalPrice: 1800 },
-    { tier: 2, name: 'Couple', label: '2 Persons Variety', rate: 2500, originalPrice: 3000 },
-    { tier: 3, name: 'Group', label: '3 Persons Variety', rate: 3200, originalPrice: 4000 },
+    { tier: 1, name: 'Single', label: '1 Person Tour Rate', rate: p1, originalPrice: Math.round(p1 * 1.2) },
+    { tier: 2, name: 'Couple', label: '2 Persons Variety', rate: p2, originalPrice: Math.round(p2 * 1.2) },
+    { tier: 3, name: 'Group', label: '3 Persons Variety', rate: p3, originalPrice: Math.round(p3 * 1.25) },
   ];
 
   const selectedOption = tierOptions.find((o) => o.tier === selectedTier) || tierOptions[1];
@@ -229,10 +277,10 @@ export default function GuideDetailPage({ params }) {
                   📍 Covered Spots: {guide.coveredSpots || 'Ratargul Swamp, Jaflong, Sreemangal & Bholaganj'}
                 </span>
                 <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '3px 10px', fontSize: '0.74rem', fontWeight: '600', color: '#334155' }}>
-                  Flights, hotel, meals and transport included
+                  {guide.includedSummary || 'Flights, hotel, meals and transport included'}
                 </span>
                 <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '3px 10px', fontSize: '0.74rem', fontWeight: '600', color: '#334155' }}>
-                  3 Days / 2 Nights
+                  {guide.duration || '3 Days / 2 Nights'}
                 </span>
                 <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '3px 10px', fontSize: '0.74rem', fontWeight: '600', color: '#334155' }}>
                   144 people showed interest
@@ -253,19 +301,19 @@ export default function GuideDetailPage({ params }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', background: '#F8FAFC', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>COMPLETED TOURS</span>
-                <strong style={{ fontSize: '0.96rem', color: '#2563EB', fontWeight: '800' }}>112+ Tours</strong>
+                <strong style={{ fontSize: '0.96rem', color: '#2563EB', fontWeight: '800' }}>{guide.completedTours || '112+ Tours'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>RESPONSE TIME</span>
-                <strong style={{ fontSize: '0.96rem', color: '#059669', fontWeight: '800' }}>&lt; 1 Hour</strong>
+                <strong style={{ fontSize: '0.96rem', color: '#059669', fontWeight: '800' }}>{guide.responseTime || '< 1 Hour'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>EXPERIENCE</span>
-                <strong style={{ fontSize: '0.96rem', color: '#7C3AED', fontWeight: '800' }}>5+ Years</strong>
+                <strong style={{ fontSize: '0.96rem', color: '#7C3AED', fontWeight: '800' }}>{guide.experience || '5+ Years'}</strong>
               </div>
               <div>
                 <span style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: '700', textTransform: 'uppercase', display: 'block' }}>SATISFACTION</span>
-                <strong style={{ fontSize: '0.96rem', color: '#D97706', fontWeight: '800' }}>99% Rating</strong>
+                <strong style={{ fontSize: '0.96rem', color: '#D97706', fontWeight: '800' }}>{guide.satisfaction || '99% Rating'}</strong>
               </div>
             </div>
 
@@ -326,7 +374,7 @@ export default function GuideDetailPage({ params }) {
               </div>
               {openAccordions.cancellation && (
                 <div className="accordion-body" style={{ marginTop: '6px', fontSize: '0.82rem', color: '#475569', lineHeight: '1.45' }}>
-                  <p style={{ margin: '0 0 4px 0' }}>• <strong>Free Cancellation:</strong> Cancel up to 24 hours prior to tour start for a 100% full refund to your Tour Dibo wallet.</p>
+                  <p style={{ margin: '0 0 4px 0' }}>• <strong>Free Cancellation:</strong> {guide.policy || 'Cancel up to 24 hours prior to tour start for a 100% full refund to your Tour Dibo wallet.'}</p>
                   <p style={{ margin: 0 }}>• <strong>Verified Guide Guarantee:</strong> Guide NID, Utility Bill, and Live Selfie are 100% verified by Tour Dibo Trust & Safety team.</p>
                 </div>
               )}

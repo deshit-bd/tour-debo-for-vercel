@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -10,15 +10,38 @@ export default function ManagePackagesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
 
-  const initialPackages = [
-    { id: 1, title: "Tenting at Cox's Bazar Beach", type: "Travel Package", mode: "Flexible", price: "$200", sales: 144, rating: "4.7 ★", status: "Active" },
-    { id: 2, title: "Sajek Valley Resort & Helipad Tour", type: "Travel Package", mode: "Fixed", price: "$350", sales: 89, rating: "4.9 ★", status: "Active" },
-    { id: 3, title: "Canada Express Tourist Visa Service", type: "Visa Processing", mode: "Fixed", price: "$450", sales: 210, rating: "4.8 ★", status: "Active" },
-    { id: 4, title: "Paris Eiffel Tower Guided Excursion", type: "Tour Guide Service", mode: "Flexible", price: "$120/hr", sales: 65, rating: "5.0 ★", status: "Active" },
-    { id: 5, title: "Sylhet Ratargul & Jaflong Monsoon Trip", type: "Travel Package", mode: "Flexible", price: "$150", sales: 112, rating: "4.6 ★", status: "Active" },
+  const samplePackages = [
+    { id: 'parasailing', title: "Cox's Bazar : Parasailing Adventure", type: "Travel Package", mode: "Flexible", price: "৳21,600", sales: 144, rating: "4.7 ★", status: "Active" },
+    { id: 'sajek', title: "Sajek Valley Resort & Helipad Tour", type: "Travel Package", mode: "Fixed", price: "৳18,000", sales: 89, rating: "4.9 ★", status: "Active" },
+    { id: 'paris', title: "Paris : City of Love Excursion", type: "Travel Package", mode: "Fixed", price: "৳4,176,000", sales: 210, rating: "5.0 ★", status: "Active" },
+    { id: 'sundarbans', title: "Sundarbans Mangrove Forest Cruise", type: "Travel Package", mode: "Flexible", price: "৳24,000", sales: 112, rating: "4.8 ★", status: "Active" },
   ];
 
-  const [packages, setPackages] = useState(initialPackages);
+  const [packages, setPackages] = useState(samplePackages);
+
+  // Load custom packages from LocalStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('tour_dibo_custom_packages');
+      if (saved) {
+        const customItems = JSON.parse(saved);
+        const formattedCustom = customItems.map(item => ({
+          id: item.id,
+          title: item.title,
+          type: item.type || 'Travel Package',
+          mode: item.mode || 'Fixed Date',
+          price: item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : `$${item.price}`,
+          sales: item.sales || 0,
+          rating: '5.0 ★ (New)',
+          status: item.status || 'Active',
+          isCustom: true,
+        }));
+        setPackages([...formattedCustom, ...samplePackages]);
+      }
+    } catch (e) {
+      console.error('Error loading custom packages from localStorage:', e);
+    }
+  }, []);
 
   const filteredPackages = packages.filter(pkg => {
     const matchesSearch = pkg.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -26,15 +49,26 @@ export default function ManagePackagesPage() {
     return matchesSearch && matchesType;
   });
 
-  const handleDelete = (id) => {
-    setPackages(packages.filter(p => p.id !== id));
+  const handleDelete = (id, isCustom) => {
+    const updated = packages.filter(p => p.id !== id);
+    setPackages(updated);
+
+    if (isCustom) {
+      try {
+        const saved = JSON.parse(localStorage.getItem('tour_dibo_custom_packages') || '[]');
+        const filteredSaved = saved.filter(p => p.id !== id);
+        localStorage.setItem('tour_dibo_custom_packages', JSON.stringify(filteredSaved));
+      } catch (err) {
+        console.error('Failed to update localStorage after deletion:', err);
+      }
+    }
   };
 
   return (
     <div className="figma-page-shell">
       <Navbar />
 
-      <main className="figma-main-content">
+      <main className="figma-main-content seller-main-wrapper">
         <div className="seller-layout-grid">
           <SellerSidebar />
 
@@ -42,13 +76,13 @@ export default function ManagePackagesPage() {
             <div className="seller-card">
               <div className="seller-card-title">
                 <div>
-                  <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Manage Package Ads</h2>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Manage Package Ads</h2>
                   <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '4px 0 0 0' }}>
-                    View, search, edit, or update your published tour packages and services.
+                    View, search, preview, or publish your tour packages and services.
                   </p>
                 </div>
-                <Link href="/business-center/packages/add" className="btn-seller-primary">
-                  Create New Package
+                <Link href="/business-center/packages/add" className="btn-seller-primary" style={{ fontWeight: 600 }}>
+                  + Create New Package
                 </Link>
               </div>
 
@@ -59,7 +93,7 @@ export default function ManagePackagesPage() {
                   placeholder="Search packages by title..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ flex: 1, minWidth: '220px', padding: '10px 14px', borderRadius: '12px', border: '1px solid #CBD5E1', outline: 'none' }}
+                  style={{ flex: 1, minWidth: '220px', padding: '10px 14px', borderRadius: '12px', border: '1px solid #CBD5E1', outline: 'none', fontWeight: 400 }}
                 />
                 <select
                   value={filterType}
@@ -68,7 +102,7 @@ export default function ManagePackagesPage() {
                 >
                   <option value="All">All Categories</option>
                   <option value="Travel Package">Travel Packages</option>
-                  <option value="Visa Processing">Visa Processing</option>
+                  <option value="Visa Processing Service">Visa Processing Services</option>
                   <option value="Tour Guide Service">Tour Guide Services</option>
                 </select>
               </div>
@@ -90,20 +124,42 @@ export default function ManagePackagesPage() {
                 <tbody>
                   {filteredPackages.map(pkg => (
                     <tr key={pkg.id}>
-                      <td style={{ fontWeight: 800 }}>{pkg.title}</td>
+                      <td style={{ fontWeight: 600 }}>
+                        <div>{pkg.title}</div>
+                        {pkg.isCustom && (
+                          <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 600, display: 'inline-block', marginTop: '2px' }}>
+                            Published Package
+                          </span>
+                        )}
+                      </td>
                       <td>{pkg.type}</td>
                       <td><span className="status-pill pending">{pkg.mode}</span></td>
-                      <td style={{ color: '#2563EB', fontWeight: 800 }}>{pkg.price}</td>
+                      <td style={{ color: '#2563EB', fontWeight: 600 }}>{pkg.price}</td>
                       <td>{pkg.sales} Bookings</td>
                       <td>{pkg.rating}</td>
                       <td><span className="status-pill success">{pkg.status}</span></td>
                       <td>
-                        <button
-                          onClick={() => handleDelete(pkg.id)}
-                          style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
-                        >
-                          Delete
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <Link
+                            href={`/business-center/packages/add?edit=${pkg.id}`}
+                            style={{ background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', textDecoration: 'none' }}
+                          >
+                            Edit ✏️
+                          </Link>
+                          <Link
+                            href={`/tours/${pkg.id}`}
+                            target="_blank"
+                            style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', textDecoration: 'none' }}
+                          >
+                            View Live
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(pkg.id, pkg.isCustom)}
+                            style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -118,3 +174,4 @@ export default function ManagePackagesPage() {
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -122,12 +122,50 @@ export default function TourGuidesPage() {
   const [sortBy, setSortBy] = useState('lowest');
   const [favorites, setFavorites] = useState({});
   const [filters, setFilters] = useState(defaultFilterState);
+  const [guides, setGuides] = useState(INITIAL_GUIDES);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('planner_tour_guides');
+      if (saved) {
+        const customList = JSON.parse(saved).map((item) => ({
+          id: item.id || ('guide-' + Date.now()),
+          title: item.title || 'Professional Local Tour Guide',
+          locationTag: item.location || 'Bangladesh',
+          rating: item.rating || '5.0',
+          guideName: item.guideName ? (item.guideName.startsWith('With ') ? item.guideName : 'With ' + item.guideName) : 'With Local Expert',
+          languages: item.languagesList ? item.languagesList.join(', ') : 'English, Bengali',
+          coveredSpots: item.coveredSpots || 'Heritage Sites, Local Landmarks & Cultural Spots',
+          price: Number(item.price1Person) || 150,
+          priceNote: `(${item.packageType || 'Single'}) ৳${item.price2Person || '2500'} couple`,
+          discount: '15% OFF',
+          desc: item.description || 'Experienced local tour guide for custom trips and cultural tours.',
+          coverImage: (item.coverImage && !item.coverImage.startsWith('blob:')) ? item.coverImage : 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80',
+          avatarImage: (item.avatarImage && !item.avatarImage.startsWith('blob:')) ? item.avatarImage : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+          completedCount: 'Verified Guide',
+          countryType: 'Single Country',
+          packageType: item.packageType || 'Family',
+          duration: item.duration || 'Full Day',
+          included: item.service || 'Sightseeing, local guidance & photography support',
+          showedInterest: '45 people showed interest',
+          visitedCount: '45 people visited',
+          isCustom: true
+        }));
+
+        const customIds = new Set(customList.map(c => c.id));
+        const filteredInitial = INITIAL_GUIDES.filter(g => !customIds.has(g.id));
+        setGuides([...customList, ...filteredInitial]);
+      }
+    } catch (e) {
+      console.error('Error loading custom tour guides:', e);
+    }
+  }, []);
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const filteredGuides = INITIAL_GUIDES.filter((guide) => {
+  const filteredGuides = guides.filter((guide) => {
     if (parseFloat(guide.rating) < filters.rating) return false;
     if (guide.price > filters.maxPrice) return false;
     if (filters.onlyOffer && !guide.discount) return false;

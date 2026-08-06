@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,20 +10,32 @@ import FilterSidebar from '../components/FilterSidebar';
 import { useCurrency } from '../context/CurrencyContext';
 import { ALL_TOURS } from '../../lib/toursData';
 
-
-
 function TourListingContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
   const { formatPrice } = useCurrency();
 
-  const [sortBy, setSortBy] = useState('lowest');
+  const [allToursList, setAllToursList] = useState(ALL_TOURS);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('tour_dibo_custom_packages');
+      if (saved) {
+        const customItems = JSON.parse(saved);
+        setAllToursList([...customItems, ...ALL_TOURS]);
+      }
+    } catch (e) {
+      console.error('Failed to load custom packages on /tours page:', e);
+    }
+  }, []);
+
+  const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const [favorites, setFavorites] = useState({});
   const [activeImageIndex, setActiveImageIndex] = useState({});
   const [filters, setFilters] = useState({
     rating: 1,
-    maxPrice: 500,
+    maxPrice: 5000000,
     startingPoint: searchQuery,
     onlyOffer: false,
     localTour: false,
@@ -37,10 +49,9 @@ function TourListingContent() {
     sightseeing: [],
   });
 
-
   // Dynamic filtering & sorting engine
   const filteredTours = useMemo(() => {
-    return ALL_TOURS.filter((tour) => {
+    return allToursList.filter((tour) => {
       if (filters.rating && tour.rating < filters.rating) return false;
       if (filters.maxPrice && tour.price > filters.maxPrice) return false;
       if (
@@ -70,8 +81,12 @@ function TourListingContent() {
       if (filters.accommodation?.length > 0 && !filters.accommodation.includes(tour.accommodation)) return false;
       if (filters.sightseeing?.length > 0 && !filters.sightseeing.includes(tour.sightseeing)) return false;
       return true;
-    }).sort((a, b) => (sortBy === 'lowest' ? a.price - b.price : b.price - a.price));
-  }, [filters, sortBy]);
+    }).sort((a, b) => {
+      if (sortBy === 'lowest') return a.price - b.price;
+      if (sortBy === 'highest') return b.price - a.price;
+      return 0;
+    });
+  }, [allToursList, filters, sortBy]);
 
   const toggleFavorite = (id) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -122,6 +137,7 @@ function TourListingContent() {
                   color: 'var(--text-dark)',
                 }}
               >
+                <option value="newest">Newest First ▾</option>
                 <option value="lowest">Price (lowest) ▾</option>
                 <option value="highest">Price (highest) ▾</option>
               </select>
@@ -357,8 +373,21 @@ function TourListingContent() {
                         <div className="price-box">
                           <small style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)' }}>Starting From</small>
                           <div className="price-numbers" style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
-                            <span className="current-price" style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--primary-blue)' }}>{formatPrice(item.price)}</span>
-                            <span className="strike-price" style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through' }}>{formatPrice(item.oldPrice)}</span>
+                            <span className="current-price" style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary-blue)' }}>
+                              {item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : formatPrice(item.price)}
+                            </span>
+                            {(() => {
+                              const orig = item.prices?.singleOriginal;
+                              const curr = item.prices?.single || item.price;
+                              if (orig && curr && orig > curr && orig < curr * 10) {
+                                return (
+                                  <span className="strike-price" style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                                    ৳{orig.toLocaleString()}
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         </div>
                       </div>
@@ -366,19 +395,55 @@ function TourListingContent() {
 
                     <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', margin: '2px 0' }}>
                       <span className="duration-pill" style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
-                      {item.isOffer && <span className="discount-tag" style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#DC2626', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>20% OFF</span>}
+                      {item.isOffer && (
+                        <span className="discount-tag" style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#DC2626', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
+                          {(() => {
+                            if (item.discountTag && item.discountTag !== '100% OFF' && !item.discountTag.includes('100%')) {
+                              return item.discountTag;
+                            }
+                            const orig = item.prices?.singleOriginal;
+                            const curr = item.prices?.single || item.price;
+                            if (orig && curr && orig > curr && orig < curr * 10) {
+                              const pct = Math.round(((orig - curr) / orig) * 100);
+                              return `${pct}% OFF`;
+                            }
+                            return '20% OFF';
+                          })()}
+                        </span>
+                      )}
                       <span style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
                     </div>
 
                     <p className="tour-description-text" style={{ fontSize: '0.88rem', color: 'var(--text-body)', margin: '2px 0' }}>{item.desc}</p>
 
                     <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #F1F5F9', marginTop: '2px' }}>
-                      <div className="icons-features-row" style={{ display: 'flex', gap: '10px', fontSize: '1rem' }}>
-                        <span title="Flight (Included)">✈️</span>
-                        <span title="Hotel (Included)">🏨</span>
-                        <span title="Meals (Included)">🍽️</span>
-                        <span title="Transport (Included)">🚌</span>
-                        <span title="Sightseeing (Included)">⛰️</span>
+                      <div className="icons-features-row" style={{ display: 'flex', gap: '8px', fontSize: '1rem', alignItems: 'center' }}>
+                        {item.amenities ? (
+                          item.amenities.map((a) => (
+                            <span
+                              key={a.id}
+                              title={`${a.name} (${a.included ? 'INCLUDED' : 'EXCLUDED'})`}
+                              style={{
+                                opacity: a.included ? 1 : 0.25,
+                                filter: a.included ? 'none' : 'grayscale(100%)',
+                                transition: 'all 0.2s ease',
+                              }}
+                            >
+                              {a.icon}
+                            </span>
+                          ))
+                        ) : (
+                          <>
+                            <span title="Flight (INCLUDED)">✈️</span>
+                            <span title="Hotel (INCLUDED)">🏨</span>
+                            <span title="Meals (INCLUDED)">🍽️</span>
+                            <span title="Transport (INCLUDED)">🚌</span>
+                            <span title="Sightseeing (INCLUDED)">⛰️</span>
+                          </>
+                        )}
+                        <span style={{ fontSize: '0.72rem', background: '#EFF6FF', color: '#2563EB', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                          (INCLUDED)
+                        </span>
                       </div>
                       <div className="interest-counter" style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: '600' }}>
                         <span className="users-icon">👥</span> 144 People Showed Interest!
