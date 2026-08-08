@@ -42,7 +42,7 @@ export default function BusinessCenterDashboard() {
       <Navbar />
 
       <RoleGuard allowedRoles={['PLANNER']}>
-        <main className="figma-main-content">
+        <main className="figma-main-content seller-main-wrapper">
           <div className="seller-layout-grid">
             <SellerSidebar />
 
@@ -81,17 +81,17 @@ export default function BusinessCenterDashboard() {
                 <div className="seller-metrics-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
                   <div className="metric-card" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
                     <span className="label">Total Sales (Total Income)</span>
-                    <span className="value" style={{ color: '#1D4ED8' }}>$45,200</span>
+                    <span className="value" style={{ color: '#1D4ED8' }}>৳4,52,000</span>
                     <span className="subtext">↑ +14.2% from last month</span>
                   </div>
                   <div className="metric-card" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
                     <span className="label">Hold Amount (Hold Balance)</span>
-                    <span className="value" style={{ color: '#B45309' }}>$3,400</span>
+                    <span className="value" style={{ color: '#B45309' }}>৳34,000</span>
                     <span className="subtext">Pending Tour Completion</span>
                   </div>
                   <div className="metric-card" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
                     <span className="label">Total Disbursed</span>
-                    <span className="value" style={{ color: '#047857' }}>$38,500</span>
+                    <span className="value" style={{ color: '#047857' }}>৳3,85,000</span>
                     <button
                       onClick={() => setShowDisburseModal(true)}
                       style={{
@@ -111,7 +111,7 @@ export default function BusinessCenterDashboard() {
                   </div>
                   <div className="metric-card" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
                     <span className="label">Admin Commission</span>
-                    <span className="value" style={{ color: '#475569' }}>$3,300</span>
+                    <span className="value" style={{ color: '#475569' }}>৳33,000</span>
                     <span className="subtext">10% Platform Fee</span>
                   </div>
                   <div className="metric-card">
@@ -139,7 +139,7 @@ export default function BusinessCenterDashboard() {
 
                 <div className="seller-graph-grid">
                   <div className="graph-box">
-                    <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '10px' }}>Monthly Income &amp; Sales Graph ($)</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '10px' }}>Monthly Income &amp; Sales Graph (৳)</div>
                     <div className="graph-bars">
                       {graphData.map((item) => (
                         <div key={item.label} className="graph-bar-col">
@@ -192,7 +192,7 @@ export default function BusinessCenterDashboard() {
                       <td>Sanjid Rahman</td>
                       <td>Tenting at Cox's Bazar</td>
                       <td>15 Feb 2026</td>
-                      <td>$200</td>
+                      <td>৳20,000</td>
                       <td><span className="status-pill success">Approved</span></td>
                     </tr>
                     <tr>
@@ -200,7 +200,7 @@ export default function BusinessCenterDashboard() {
                       <td>Anika Tabassum</td>
                       <td>Sajek Valley Helipad Tour</td>
                       <td>18 Feb 2026</td>
-                      <td>$350</td>
+                      <td>৳35,000</td>
                       <td><span className="status-pill pending">Order Placed</span></td>
                     </tr>
                     <tr>
@@ -208,7 +208,7 @@ export default function BusinessCenterDashboard() {
                       <td>Tanvir Hasan</td>
                       <td>Paris Eiffel Tower &amp; Museum</td>
                       <td>22 Feb 2026</td>
-                      <td>$1,200</td>
+                      <td>৳1,20,000</td>
                       <td><span className="status-pill success">Approved</span></td>
                     </tr>
                   </tbody>
@@ -248,11 +248,11 @@ export default function BusinessCenterDashboard() {
               <form onSubmit={handleDisburseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
                   <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '4px' }}>Available Disburse Balance</label>
-                  <strong style={{ fontSize: '1.3rem', color: '#047857' }}>$38,500.00</strong>
+                  <strong style={{ fontSize: '1.3rem', color: '#047857' }}>৳3,85,000.00</strong>
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '4px' }}>Disburse Amount ($) *</label>
+                  <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '4px' }}>Disburse Amount (৳) *</label>
                   <input
                     type="number"
                     value={disburseAmount}

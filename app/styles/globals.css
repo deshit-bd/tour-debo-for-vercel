@@ -5426,21 +5426,22 @@ button {
 .seller-sidebar {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-light, #E2E8F0);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  padding: 20px 16px 28px 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   position: sticky;
   top: 95px;
-  max-height: calc(100vh - 115px);
+  max-height: calc(100vh - 135px);
+  margin-bottom: 30px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
 .seller-sidebar::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
 }
 
 .seller-sidebar::-webkit-scrollbar-thumb {
@@ -5456,108 +5457,105 @@ button {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   color: #ffffff;
   padding: 16px;
-  border-radius: 16px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   gap: 12px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
 }
 
 .seller-badge-icon {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   display: grid;
   place-items: center;
   font-size: 1.3rem;
+  backdrop-filter: blur(4px);
 }
 
 .seller-badge-info h4 {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 800;
   margin: 0;
+  color: #ffffff;
 }
 
 .seller-level-pill {
   display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  background: #F59E0B;
-  color: #000000;
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+  color: #ffffff;
   padding: 2px 8px;
   border-radius: 999px;
   margin-top: 4px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
-.seller-holiday-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  background: var(--bg-page, #F8FAFC);
-  border: 1px solid var(--border-light, #E2E8F0);
-  border-radius: 14px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.toggle-switch {
-  width: 44px;
-  height: 24px;
-  background: #CBD5E1;
-  border-radius: 999px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.toggle-switch.active {
-  background: #10B981;
-}
-
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  background: #ffffff;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-.toggle-switch.active::after {
-  transform: translateX(20px);
+.seller-nav-group-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 12px 12px 4px 12px;
 }
 
 .seller-nav-menu {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding-bottom: 24px;
 }
 
 .seller-nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 9px 12px;
   border-radius: 12px;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-dark, #334155);
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
-.seller-nav-item:hover,
+.seller-nav-item:hover {
+  background: #F8FAFC;
+  color: #2563EB;
+  transform: translateX(4px);
+}
+
 .seller-nav-item.active {
-  background: var(--primary-blue-light, #EFF6FF);
-  color: var(--primary-blue, #2563EB);
+  background: linear-gradient(90deg, #EFF6FF 0%, #DBEAFE 100%);
+  color: #1D4ED8;
+  font-weight: 800;
+  box-shadow: inset 3px 0 0 #2563EB;
 }
 
 .seller-nav-item .icon {
-  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+  color: #475569;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.seller-nav-item:hover .icon,
+.seller-nav-item.active .icon {
+  background: #2563EB;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
 .seller-main-content {
@@ -5713,19 +5711,21 @@ button {
 
 .seller-table th {
   background: var(--bg-page, #F8FAFC);
-  padding: 12px 16px;
+  padding: 10px 14px;
   text-align: left;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 800;
   color: var(--text-muted, #64748B);
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .seller-table td {
-  padding: 14px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border-light, #E2E8F0);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .status-pill {

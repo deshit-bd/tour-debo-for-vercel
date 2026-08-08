@@ -24,7 +24,7 @@ export default function RevenuePage() {
     <div className="figma-page-shell">
       <Navbar />
 
-      <main className="figma-main-content">
+      <main className="figma-main-content seller-main-wrapper">
         <div className="seller-layout-grid">
           <SellerSidebar />
 
@@ -43,22 +43,22 @@ export default function RevenuePage() {
               <div className="seller-metrics-grid">
                 <div className="metric-card">
                   <span className="label">Total Earned Income</span>
-                  <span className="value">$45,200</span>
+                  <span className="value">৳4,52,000</span>
                   <span className="subtext">Gross Revenue</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Hold Amount (Available)</span>
-                  <span className="value" style={{ color: '#2563EB' }}>$3,400</span>
+                  <span className="value" style={{ color: '#2563EB' }}>৳34,000</span>
                   <span className="subtext" style={{ color: '#10B981' }}>Ready for Payout</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Total Disbursed</span>
-                  <span className="value">$38,500</span>
+                  <span className="value">৳3,85,000</span>
                   <span className="subtext">Paid via Bank Transfer</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Admin Commission</span>
-                  <span className="value" style={{ color: '#DC2626' }}>$3,300</span>
+                  <span className="value" style={{ color: '#DC2626' }}>৳33,000</span>
                   <span className="subtext">10% Platform Fee</span>
                 </div>
               </div>
@@ -72,13 +72,13 @@ export default function RevenuePage() {
 
               {requested && (
                 <div style={{ background: '#D1FAE5', color: '#065F46', padding: '14px 18px', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 800, marginBottom: '20px' }}>
-                  ✓ Disburse Request Submitted! $3,400 will be transferred to your bank account within 24-48 hours.
+                  ✓ Disburse Request Submitted! ৳34,000 will be transferred to your bank account within 24-48 hours.
                 </div>
               )}
 
               <form onSubmit={handleDisburseRequest} className="seller-form-grid">
                 <div className="seller-form-group">
-                  <label>Payout Amount ($) *</label>
+                  <label>Payout Amount (৳) *</label>
                   <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
                 </div>
 
@@ -139,21 +139,21 @@ export default function RevenuePage() {
                     <td>#PAY-771</td>
                     <td>10 Jan 2026</td>
                     <td>Dutch-Bangla Bank (115.120.***)</td>
-                    <td>$12,500</td>
+                    <td>৳1,25,000</td>
                     <td><span className="status-pill success">Disbursed</span></td>
                   </tr>
                   <tr>
                     <td>#PAY-642</td>
                     <td>15 Dec 2025</td>
                     <td>City Bank Ltd (210.144.***)</td>
-                    <td>$18,000</td>
+                    <td>৳1,80,000</td>
                     <td><span className="status-pill success">Disbursed</span></td>
                   </tr>
                   <tr>
                     <td>#PAY-519</td>
                     <td>01 Nov 2025</td>
                     <td>Brac Bank (150.110.***)</td>
-                    <td>$8,000</td>
+                    <td>৳80,000</td>
                     <td><span className="status-pill success">Disbursed</span></td>
                   </tr>
                 </tbody>

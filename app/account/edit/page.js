@@ -20,12 +20,33 @@ export default function EditProfilePage() {
   });
   const [saved, setSaved] = useState(false);
 
+  // Password Change States
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSave = (e) => {
     e.preventDefault();
+    setPasswordError('');
+
+    // If new password is entered, validate match
+    if (newPassword || confirmPassword) {
+      if (newPassword.length < 6) {
+        setPasswordError('New password must be at least 6 characters long.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setPasswordError('New password and confirm password do not match.');
+        return;
+      }
+    }
+
     setSaved(true);
     setTimeout(() => {
       router.push('/account/profile');
@@ -159,6 +180,62 @@ export default function EditProfilePage() {
                   {/* Address Segment Component */}
                   <AddressSegment />
 
+                  {/* Change Password & Security Section */}
+                  <div style={{ marginTop: '32px', background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '24px', borderRadius: '16px' }}>
+                    <div style={{ marginBottom: '16px' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Account Security</span>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 0 0' }}>Change Account Password</h3>
+                      <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '2px 0 0 0' }}>Enter your current password and choose a new secure password.</p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Current Password</label>
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>New Password</label>
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#475569', display: 'block', marginBottom: '6px' }}>Confirm New Password</label>
+                        <input
+                          type="password"
+                          placeholder="••••••••"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem', outline: 'none' }}
+                        />
+                      </div>
+                    </div>
+
+                    {passwordError && (
+                      <div style={{ color: '#DC2626', fontSize: '0.82rem', fontWeight: 700, marginTop: '10px' }}>
+                        ⚠️ {passwordError}
+                      </div>
+                    )}
+
+                    {passwordSuccess && (
+                      <div style={{ color: '#047857', fontSize: '0.85rem', fontWeight: 800, marginTop: '10px', background: '#ECFDF5', padding: '8px 12px', borderRadius: '8px', border: '1px solid #A7F3D0' }}>
+                        ✓ Password updated successfully!
+                      </div>
+                    )}
+                  </div>
+
                   <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
                     <button
                       type="submit"
@@ -174,7 +251,7 @@ export default function EditProfilePage() {
                         boxShadow: '0 2px 8px rgba(0,151,178,0.2)',
                       }}
                     >
-                      SAVE CHANGES
+                      SAVE PROFILE & PASSWORD
                     </button>
                     <button
                       type="button"

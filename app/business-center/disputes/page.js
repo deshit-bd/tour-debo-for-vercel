@@ -7,15 +7,15 @@ import SellerSidebar from '../components/SellerSidebar';
 
 export default function DisputesPage() {
   const disputesList = [
-    { id: 'DSP-102', orderId: '#ORD-8821', customer: 'Imran Kabir', issue: 'Cancellation Refund Request (20 days before tour)', amount: '$300', status: 'Under Review by Admin', date: '20 Jan 2026' },
-    { id: 'DSP-098', orderId: '#ORD-7412', customer: 'Nusrat Jahan', issue: 'Bus AC Breakdown Complaint', amount: '$50 Penalty', status: 'Resolved (Partial Refund)', date: '05 Jan 2026' },
+    { id: 'DSP-102', orderId: '#ORD-8821', customer: 'Imran Kabir', issue: 'Cancellation Refund Request (20 days before tour)', amount: '৳30,000', status: 'Under Review by Admin', date: '20 Jan 2026' },
+    { id: 'DSP-098', orderId: '#ORD-7412', customer: 'Nusrat Jahan', issue: 'Bus AC Breakdown Complaint', amount: '৳5,000 Penalty', status: 'Resolved (Partial Refund)', date: '05 Jan 2026' },
   ];
 
   return (
     <div className="figma-page-shell">
       <Navbar />
 
-      <main className="figma-main-content">
+      <main className="figma-main-content seller-main-wrapper">
         <div className="seller-layout-grid">
           <SellerSidebar />
 

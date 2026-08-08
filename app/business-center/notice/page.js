@@ -36,56 +36,58 @@ export default function SellerNoticePage() {
   return (
     <div className="figma-page-shell">
       <Navbar />
-      <div className="seller-container">
-        <SellerSidebar />
-        <main className="seller-main-content">
-          <header className="seller-header">
-            <div>
-              <h1 className="seller-page-title">Seller Notice Board</h1>
-              <p className="seller-page-subtitle">Official announcements, platform policy updates, and operational notices.</p>
-            </div>
-          </header>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
-            {notices.map((notice) => (
-              <div
-                key={notice.id}
-                style={{
-                  background: notice.urgent ? '#FEF2F2' : '#ffffff',
-                  border: notice.urgent ? '1px solid #FECACA' : '1px solid #E5E7EB',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span
-                      style={{
-                        background: notice.urgent ? '#DC2626' : '#2563EB',
-                        color: '#fff',
-                        padding: '4px 10px',
-                        borderRadius: '20px',
-                        fontSize: '0.75rem',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {notice.category}
-                    </span>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: 0 }}>
-                      {notice.title}
-                    </h3>
-                  </div>
-                  <span style={{ fontSize: '0.82rem', color: '#6B7280' }}>{notice.date}</span>
-                </div>
-                <p style={{ fontSize: '0.92rem', color: '#374151', lineHeight: '1.6', margin: 0 }}>
-                  {notice.content}
-                </p>
+      <main className="figma-main-content seller-main-wrapper">
+        <div className="seller-layout-grid">
+          <SellerSidebar />
+          <div className="seller-main-content">
+            <header className="seller-header">
+              <div>
+                <h1 className="seller-page-title">Seller Notice Board</h1>
+                <p className="seller-page-subtitle">Official announcements, platform policy updates, and operational notices.</p>
               </div>
-            ))}
+            </header>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
+              {notices.map((notice) => (
+                <div
+                  key={notice.id}
+                  style={{
+                    background: notice.urgent ? '#FEF2F2' : '#ffffff',
+                    border: notice.urgent ? '1px solid #FECACA' : '1px solid #E5E7EB',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span
+                        style={{
+                          background: notice.urgent ? '#DC2626' : '#2563EB',
+                          color: '#fff',
+                          padding: '4px 10px',
+                          borderRadius: '20px',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {notice.category}
+                      </span>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: 0 }}>
+                        {notice.title}
+                      </h3>
+                    </div>
+                    <span style={{ fontSize: '0.82rem', color: '#6B7280' }}>{notice.date}</span>
+                  </div>
+                  <p style={{ fontSize: '0.92rem', color: '#374151', lineHeight: '1.6', margin: 0 }}>
+                    {notice.content}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
       <Footer />
     </div>
   );

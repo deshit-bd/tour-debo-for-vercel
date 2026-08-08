@@ -380,8 +380,6 @@ export default function AddPackagePage() {
                     <label>Main Product Service *</label>
                     <select value={mainProduct} onChange={(e) => setMainProduct(e.target.value)}>
                       <option value="Travel Package">Travel Package</option>
-                      <option value="Visa Processing Service">Visa Processing Service</option>
-                      <option value="Tour Guide Service">Tour Guide Service</option>
                     </select>
                   </div>
 

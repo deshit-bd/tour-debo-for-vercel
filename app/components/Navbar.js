@@ -371,66 +371,89 @@ export default function Navbar() {
                     gap: '6px',
                   }}
                 >
-                <div style={{ padding: '6px 10px', fontSize: '0.75rem', background: '#F1F5F9', borderRadius: '8px', color: '#475569', fontWeight: 'bold' }}>
-                  Role: {user?.role === 'PLANNER' ? '⚡ Planner / Seller' : '👤 Tourist / Customer'}
+                <div style={{ padding: '6px 10px', fontSize: '0.75rem', background: user?.role === 'PLANNER' ? '#EFF6FF' : '#F1F5F9', borderRadius: '8px', color: user?.role === 'PLANNER' ? '#1D4ED8' : '#475569', fontWeight: 'bold' }}>
+                  Role: {user?.role === 'PLANNER' ? '⚡ Platinum Planner' : '👤 Verified Tourist'}
                 </div>
 
                 {user?.role === 'PLANNER' ? (
-                  <Link
-                    href="/business-center"
-                    onClick={() => setShowAccountMenu(false)}
-                    style={{
-                      padding: '8px 12px',
-                      fontSize: '0.82rem',
-                      fontWeight: '700',
-                      borderRadius: '8px',
-                      background: '#EFF6FF',
-                      color: '#2563EB',
-                      textDecoration: 'none',
-                      display: 'block',
-                    }}
-                  >
-                    🏢 Go to Seller Business Center
-                  </Link>
+                  <>
+                    <Link
+                      href="/business-center"
+                      onClick={() => setShowAccountMenu(false)}
+                      style={{
+                        padding: '8px 12px',
+                        fontSize: '0.82rem',
+                        fontWeight: '800',
+                        borderRadius: '8px',
+                        background: '#2563EB',
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        display: 'block',
+                      }}
+                    >
+                      🏢 Business Center Dashboard
+                    </Link>
+
+                    <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '4px 0' }} />
+
+                    <Link href="/business-center/packages" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      📦 Manage Tour Packages
+                    </Link>
+                    <Link href="/business-center/orders" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      🛒 Orders &amp; Bookings
+                    </Link>
+                    <Link href="/business-center/revenue" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      💳 Revenue &amp; Payouts
+                    </Link>
+                    <Link href="/business-center/reviews" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      ⭐️ Customer Reviews
+                    </Link>
+                    <Link href="/business-center/profile" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      ⚙️ Planner Profile &amp; Security
+                    </Link>
+
+                  </>
                 ) : (
-                  <Link
-                    href="/business-center/profile"
-                    onClick={() => setShowAccountMenu(false)}
-                    style={{
-                      padding: '8px 12px',
-                      fontSize: '0.82rem',
-                      fontWeight: '700',
-                      borderRadius: '8px',
-                      background: '#FEF3C7',
-                      color: '#B45309',
-                      textDecoration: 'none',
-                      display: 'block',
-                    }}
-                  >
-                    📝 Apply for Seller Account (KYC)
-                  </Link>
+                  <>
+                    <Link href="/account/profile" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      👤 My Profile
+                    </Link>
+                    <Link href="/account/bookings" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      🎟️ My Bookings
+                    </Link>
+                    <Link href="/account/points" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      🎁 My Points
+                    </Link>
+                    <Link href="/account/refunds" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      🔄 Appeals &amp; Refunds
+                    </Link>
+                    <Link href="/account/vouchers" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      💳 Vouchers &amp; Payments
+                    </Link>
+                    <Link href="/account/messages" onClick={() => setShowAccountMenu(false)} style={{ padding: '7px 12px', fontSize: '0.82rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
+                      💬 Message Center
+                    </Link>
+
+                    <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '4px 0' }} />
+
+                    <Link
+                      href="/business-center/profile"
+                      onClick={() => setShowAccountMenu(false)}
+                      style={{
+                        padding: '8px 12px',
+                        fontSize: '0.8rem',
+                        fontWeight: '700',
+                        borderRadius: '8px',
+                        background: '#FEF3C7',
+                        color: '#B45309',
+                        textDecoration: 'none',
+                        display: 'block',
+                      }}
+                    >
+                      📝 Become a Seller / Planner (KYC)
+                    </Link>
+                  </>
                 )}
-
-                <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '4px 0' }} />
-
-                <Link href="/account/profile" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  👤 My Profile
-                </Link>
-                <Link href="/account/bookings" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  🎟️ My Bookings
-                </Link>
-                <Link href="/account/points" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  🎁 My Points
-                </Link>
-                <Link href="/account/refunds" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  🔄 Appeals & Refunds
-                </Link>
-                <Link href="/account/vouchers" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  💳 Vouchers & Payments
-                </Link>
-                <Link href="/account/messages" onClick={() => setShowAccountMenu(false)} style={{ padding: '8px 12px', fontSize: '0.85rem', fontWeight: '600', borderRadius: '8px', display: 'block' }}>
-                  💬 Message Center
-                </Link>
 
                 <hr style={{ border: 'none', borderTop: '1px solid #E2E8F0', margin: '4px 0' }} />
 
