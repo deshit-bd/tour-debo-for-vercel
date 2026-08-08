@@ -94,9 +94,9 @@ export default function PlannerAddVisaPage() {
       <main className="figma-main-content" style={{ maxWidth: '1100px', margin: '0 auto', padding: '28px 20px 60px' }}>
 
         <div style={{ display: 'flex', gap: '6px', fontSize: '0.82rem', color: '#64748B', marginBottom: '14px', alignItems: 'center' }}>
-          <Link href={/planner/\} style={{ color: '#2563EB', fontWeight: 600 }}>Planner</Link>
+          <Link href={`/planner/${plannerId}`} style={{ color: '#2563EB', fontWeight: 600 }}>Planner</Link>
           <span>›</span>
-          <Link href={/planner/\/products} style={{ color: '#2563EB', fontWeight: 600 }}>All Products</Link>
+          <Link href={`/planner/${plannerId}/products`} style={{ color: '#2563EB', fontWeight: 600 }}>All Products</Link>
           <span>›</span>
           <span>Add VISA Service</span>
         </div>
@@ -106,7 +106,7 @@ export default function PlannerAddVisaPage() {
             <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>Add VISA Processing Service</h1>
             <p style={{ fontSize: '0.88rem', color: '#64748B', marginTop: '6px' }}>Configure VISA country, type, validity, pricing matrix, documents and policies.</p>
           </div>
-          <Link href={/planner/\/products} style={{ background: '#F1F5F9', color: '#475569', padding: '9px 16px', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', border: '1px solid #E2E8F0' }}>
+          <Link href={`/planner/${plannerId}/products`} style={{ background: '#F1F5F9', color: '#475569', padding: '9px 16px', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', border: '1px solid #E2E8F0' }}>
             Back to Products
           </Link>
         </div>
@@ -325,7 +325,7 @@ export default function PlannerAddVisaPage() {
 
           {/* Submit */}
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-            <Link href={/planner/\/products} style={{ background: '#F1F5F9', color: '#475569', border: '1px solid #E2E8F0', padding: '13px 24px', borderRadius: '12px', fontWeight: 600, fontSize: '0.95rem', textDecoration: 'none' }}>
+            <Link href={`/planner/${plannerId}/products`} style={{ background: '#F1F5F9', color: '#475569', border: '1px solid #E2E8F0', padding: '13px 24px', borderRadius: '12px', fontWeight: 600, fontSize: '0.95rem', textDecoration: 'none' }}>
               Cancel
             </Link>
             <button type="submit" style={{ background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#fff', border: 'none', padding: '13px 32px', borderRadius: '12px', fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer', boxShadow: '0 6px 16px rgba(37,99,235,0.25)' }}>
