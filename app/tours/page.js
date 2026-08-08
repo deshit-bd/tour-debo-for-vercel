@@ -243,14 +243,18 @@ function TourListingContent() {
         ) : (
           <div className="tour-horizontal-list">
             {filteredTours.map((item) => {
-              const itemImages = (item.images && item.images.length > 0) ? item.images : [item.image];
+              const fallbackCover = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
               const currentImgIdx = activeImageIndex[item.id] || 0;
+              const rawImg = (item.images && item.images.length > 0) ? item.images[currentImgIdx] : item.image;
+              const displaySrc = (!rawImg || typeof rawImg !== 'string' || rawImg.startsWith('blob:')) ? fallbackCover : rawImg;
+              const itemImages = (item.images && item.images.length > 0) ? item.images : [displaySrc];
+
               return (
                 <Link key={item.id} href={`/tours/${item.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                 <div className="tour-card-horizontal">
                   <div className="horizontal-img-box" style={{ position: 'relative', minHeight: '220px', width: '100%', height: '100%', overflow: 'hidden' }}>
                     <Image
-                      src={itemImages[currentImgIdx] || item.image}
+                      src={displaySrc}
                       alt={item.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 320px"

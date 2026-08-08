@@ -222,166 +222,170 @@ export default function TourDetailPage() {
         {/* Header Summary Section (PDF Page 2 Reference) */}
         <div className="detail-header-card" style={{ marginTop: '24px', background: '#fff', borderRadius: '16px', padding: '24px', border: '1px solid #E2E8F0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <h1 style={{ fontSize: '2.1rem', fontWeight: '800', color: '#1E293B', margin: 0, fontFamily: 'sans-serif' }}>
                 {tour.titlePrefix}<span style={{ fontStyle: 'italic', fontWeight: '400', color: '#334155' }}>{tour.titleSub}</span>
               </h1>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
                 <span style={{ color: '#FFB800', fontSize: '1rem' }}>★★★★★</span>
                 <strong style={{ fontSize: '0.95rem', color: '#0F172A' }}>{tour.rating}</strong>
                 <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>(Ratings)</span>
-              </div>
-            </div>
 
-            {/* Share & Wishlist Icons (PDF Reference) */}
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              
-              {/* Curved Solid Blue Share Arrow Icon with Interactive Dropdown Popup */}
-              <div style={{ position: 'relative' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowShareModal(!showShareModal)}
-                  title="Share Tour"
-                  style={{
-                    background: showShareModal ? '#EFF6FF' : 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '8px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#2563EB">
-                    <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z" />
-                  </svg>
-                </button>
+                {/* Share & Wishlist Icons Moved Beside Ratings */}
+                <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', marginLeft: '6px' }}>
+                  {/* Share Arrow Icon with Popover */}
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowShareModal(!showShareModal)}
+                      title="Share Tour"
+                      style={{
+                        background: showShareModal ? '#EFF6FF' : '#F1F5F9',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '6px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563EB">
+                        <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z" />
+                      </svg>
+                    </button>
 
-                {/* Daraz-Style Share Modal / Popover */}
-                {showShareModal && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '48px',
-                      right: '0',
-                      background: '#ffffff',
-                      borderRadius: '16px',
-                      boxShadow: '0 16px 40px rgba(15, 23, 42, 0.2)',
-                      border: '1px solid #E2E8F0',
-                      padding: '20px',
-                      width: '310px',
-                      zIndex: 100,
-                    }}
-                  >
-                    {/* Header */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                      <strong style={{ fontSize: '0.95rem', color: '#0F172A', fontWeight: '800' }}>Share Package</strong>
-                      <button
-                        type="button"
-                        onClick={() => setShowShareModal(false)}
-                        style={{ border: 'none', background: '#F1F5F9', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', color: '#64748B', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    {/* Daraz-Style Share Modal / Popover */}
+                    {showShareModal && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '40px',
+                          left: '0',
+                          background: '#ffffff',
+                          borderRadius: '16px',
+                          boxShadow: '0 16px 40px rgba(15, 23, 42, 0.2)',
+                          border: '1px solid #E2E8F0',
+                          padding: '20px',
+                          width: '310px',
+                          zIndex: 100,
+                        }}
                       >
-                        ✕
-                      </button>
-                    </div>
-
-                    {/* Social Icons Row (Daraz Circular Grid) */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px', textAlign: 'center' }}>
-                      {/* Facebook */}
-                      <a
-                        href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setShowShareModal(false)}
-                        style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                      >
-                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(24,119,242,0.3)' }}>
-                          f
+                        {/* Header */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                          <strong style={{ fontSize: '0.95rem', color: '#0F172A', fontWeight: '800' }}>Share Package</strong>
+                          <button
+                            type="button"
+                            onClick={() => setShowShareModal(false)}
+                            style={{ border: 'none', background: '#F1F5F9', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', color: '#64748B', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >
+                            ✕
+                          </button>
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Facebook</span>
-                      </a>
 
-                      {/* WhatsApp */}
-                      <a
-                        href={`https://api.whatsapp.com/send?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}%20${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setShowShareModal(false)}
-                        style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                      >
-                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#25D366', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(37,211,102,0.3)' }}>
-                          💬
+                        {/* Social Icons Row */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px', textAlign: 'center' }}>
+                          {/* Facebook */}
+                          <a
+                            href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setShowShareModal(false)}
+                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                          >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(24,119,242,0.3)' }}>
+                              f
+                            </div>
+                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Facebook</span>
+                          </a>
+
+                          {/* WhatsApp */}
+                          <a
+                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}%20${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setShowShareModal(false)}
+                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                          >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#25D366', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(37,211,102,0.3)' }}>
+                              💬
+                            </div>
+                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>WhatsApp</span>
+                          </a>
+
+                          {/* Twitter (X) */}
+                          <a
+                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setShowShareModal(false)}
+                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                          >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0F172A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '800', boxShadow: '0 4px 10px rgba(15,23,42,0.3)' }}>
+                              𝕏
+                            </div>
+                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Twitter</span>
+                          </a>
+
+                          {/* Email */}
+                          <a
+                            href={`mailto:?subject=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&body=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                            onClick={() => setShowShareModal(false)}
+                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                          >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EA4335', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(234,67,53,0.3)' }}>
+                              ✉️
+                            </div>
+                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Email</span>
+                          </a>
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>WhatsApp</span>
-                      </a>
 
-                      {/* Twitter (X) */}
-                      <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setShowShareModal(false)}
-                        style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                      >
-                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0F172A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '800', boxShadow: '0 4px 10px rgba(15,23,42,0.3)' }}>
-                          𝕏
+                        {/* Copy Link Input Capsule */}
+                        <div>
+                          <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748B', display: 'block', marginBottom: '6px' }}>Page Link</span>
+                          <div style={{ display: 'flex', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '3px' }}>
+                            <input
+                              type="text"
+                              readOnly
+                              value={typeof window !== 'undefined' ? window.location.href : ''}
+                              style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px 10px', fontSize: '0.78rem', color: '#475569', outline: 'none' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={handleCopyLink}
+                              style={{ background: '#2563EB', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                            >
+                              Copy
+                            </button>
+                          </div>
                         </div>
-                        <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Twitter</span>
-                      </a>
-
-                      {/* Email */}
-                      <a
-                        href={`mailto:?subject=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&body=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                        onClick={() => setShowShareModal(false)}
-                        style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                      >
-                        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EA4335', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(234,67,53,0.3)' }}>
-                          ✉️
-                        </div>
-                        <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Email</span>
-                      </a>
-                    </div>
-
-                    {/* Copy Link Input Capsule (Daraz Style) */}
-                    <div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748B', display: 'block', marginBottom: '6px' }}>Page Link</span>
-                      <div style={{ display: 'flex', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '3px' }}>
-                        <input
-                          type="text"
-                          readOnly
-                          value={typeof window !== 'undefined' ? window.location.href : ''}
-                          style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px 10px', fontSize: '0.78rem', color: '#475569', outline: 'none' }}
-                        />
-                        <button
-                          type="button"
-                          onClick={handleCopyLink}
-                          style={{ background: '#2563EB', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                        >
-                          Copy
-                        </button>
                       </div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Wishlist Heart Icon */}
-              <button
-                onClick={() => setInWishlist(!inWishlist)}
-                title="Save to Wishlist"
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', fontSize: '1.2rem', color: inWishlist ? '#E11D48' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                {inWishlist ? '❤️' : '♡'}
-              </button>
+                  {/* Wishlist Heart Icon */}
+                  <button
+                    onClick={() => setInWishlist(!inWishlist)}
+                    title="Save to Wishlist"
+                    style={{ background: '#F1F5F9', border: 'none', cursor: 'pointer', width: '30px', height: '30px', borderRadius: '50%', fontSize: '1rem', color: inWishlist ? '#E11D48' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    {inWishlist ? '❤️' : '♡'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Meta Icons Line 1 & Line 2 (PDF Page 2 Reference) */}
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.86rem', color: '#475569' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>📍 {tour.fullLocation}</span>
+
+              {tour.transportRoute && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEF3C7', color: '#B45309', padding: '4px 12px', borderRadius: '999px', fontSize: '0.82rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                  🚍 Route: {tour.transportRoute}
+                </span>
+              )}
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {tour.amenities && tour.amenities.length > 0 ? (
                   tour.amenities.map((item) => (
@@ -888,7 +892,7 @@ export default function TourDetailPage() {
                     return typeof priceVal === 'number' ? `৳${priceVal.toLocaleString()}` : priceVal;
                   })()}
                 </span>
-                <span style={{ fontSize: '0.75rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                <span style={{ fontSize: '0.9rem', color: '#475569', fontWeight: '700', textDecoration: 'line-through', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', border: '1px solid #CBD5E1' }}>
                   {(() => {
                     const priceVal = bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 18000 : 10000);
                     const origVal = bedPrices[`${selectedPackage}Original`];

@@ -132,8 +132,8 @@ function BookingsContent() {
                         Review
                       </button>
                     )}
-                    <Link href="/tours/paris" className="link-details-btn">
-                      Details
+                    <Link href={`/account/bookings/${item.id}`} className="link-details-btn">
+                      Details &amp; Receipt
                     </Link>
                   </div>
                 </div>

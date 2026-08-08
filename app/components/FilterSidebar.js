@@ -308,9 +308,43 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
         </div>
       </div>
 
+      {/* Starting Country */}
+      <div className="filter-group">
+        <label className="filter-group-title">Starting Country</label>
+        <div className="select-location-input">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          <select
+            value={localFilters.startingCountry || 'Bangladesh'}
+            onChange={(e) => updateFilters('startingCountry', e.target.value)}
+            style={{
+              border: 'none',
+              outline: 'none',
+              width: '100%',
+              background: 'transparent',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              color: '#0F172A',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="Bangladesh">🇧🇩 Bangladesh</option>
+            <option value="India">🇮🇳 India</option>
+            <option value="Nepal">🇳🇵 Nepal</option>
+            <option value="Thailand">🇹🇭 Thailand</option>
+            <option value="UAE">🇦🇪 UAE</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="USA">🇺🇸 USA</option>
+          </select>
+        </div>
+      </div>
+
       {/* Starting Point */}
       <div className="filter-group">
-        <label className="filter-group-title">{mode === 'visa' ? 'Search Country' : 'Starting Point'}</label>
+        <label className="filter-group-title">{mode === 'visa' ? 'Search Country' : 'Starting Point (City)'}</label>
         <div className="select-location-input">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" strokeWidth="2.5">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />

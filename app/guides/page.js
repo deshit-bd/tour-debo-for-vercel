@@ -202,6 +202,22 @@ export default function TourGuidesPage() {
       <Navbar />
 
       <main className="figma-main-content">
+        {/* Tour Guide Store Marketplace Hero Banner */}
+        <div style={{ background: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #0284C7 100%)', color: '#ffffff', borderRadius: '24px', padding: '30px 36px', marginBottom: '24px', boxShadow: '0 12px 36px rgba(37, 99, 235, 0.25)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '220px', height: '220px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
+          <div style={{ position: 'relative', zIndex: 2, maxWidth: '780px' }}>
+            <span style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#FEF08A', backdropFilter: 'blur(8px)', padding: '5px 14px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.6px', border: '1px solid rgba(255,255,255,0.25)' }}>
+              ✨ Official Tour Guide Store Marketplace
+            </span>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: '14px 0 8px 0', color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.15)' }}>
+              Hire Verified Local Tour Guides
+            </h1>
+            <p style={{ fontSize: '0.92rem', color: '#E0F2FE', margin: 0, lineHeight: 1.55 }}>
+              Connect directly with background-checked local tour guides across Cox's Bazar, Sajek, Sylhet, Sundarbans &amp; Heritage spots. Enjoy 100% personalized itineraries, photography support &amp; private tours.
+            </p>
+          </div>
+        </div>
+
         <div className="listing-layout-grid">
           {/* Left Column: Fully Functional Filter Sidebar */}
           <FilterSidebar filters={filters} onFilterChange={setFilters} hideCountryType={true} />

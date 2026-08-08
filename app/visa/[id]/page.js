@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -306,8 +306,13 @@ const otherCountries = [
 ];
 
 export default function VisaDetailPage({ params }) {
+  const router = useRouter();
   const routeParams = useParams();
   const visaId = routeParams?.id || params?.id || 'canada';
+
+  const handleApplyVisa = (totalAmount) => {
+    router.push(`/checkout?tourId=${visaId}&package=${encodeURIComponent(visaTypeSelect + ' (' + entryTypeSelect + ')')}&count=${applicantCount}&price=${totalAmount}`);
+  };
 
   const [customVisa, setCustomVisa] = useState(null);
 
@@ -533,57 +538,98 @@ export default function VisaDetailPage({ params }) {
               <Link href="/planner/deshit" className="btn-view-shop" style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>View Shop</Link>
             </div>
 
-            <div className="booking-price-card" style={{ background: '#fff', padding: '20px', borderRadius: '16px', border: '2px solid #2563EB' }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '12px' }}>Configure VISA Type & Entry Options</h4>
+            {(() => {
+              const primaryVisaFeeNum = Number((visa.visaFee || '1800').replace(/[^0-9]/g, '')) || 1800;
+              const currentProcFee = calcVisaFee();
+              const regProcFee = Math.round(currentProcFee * 1.25);
+              const procDiscount = regProcFee - currentProcFee;
+              const totalPerApplicant = primaryVisaFeeNum + currentProcFee;
+              const grandTotal = totalPerApplicant * applicantCount;
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>VISA Type (Dropdown)</label>
-                  <select
-                    value={visaTypeSelect}
-                    onChange={(e) => setVisaTypeSelect(e.target.value)}
-                    style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #D1D5DB' }}
-                  >
-                    <option value="Tourist Visa">Tourist Visa</option>
-                    <option value="Medical Visa">Medical Visa</option>
-                    <option value="Business Visa">Business Visa</option>
-                    <option value="PR Visa">PR Visa (Permanent Resident)</option>
-                  </select>
+              return (
+                <div className="booking-price-card" style={{ background: '#fff', padding: '18px', borderRadius: '16px', border: '1.5px solid #2563EB', boxShadow: '0 6px 20px rgba(37,99,235,0.06)' }}>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '12px', color: '#0F172A' }}>Configure VISA Type &amp; Entry Options</h4>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#475569' }}>VISA Type (Dropdown)</label>
+                      <select
+                        value={visaTypeSelect}
+                        onChange={(e) => setVisaTypeSelect(e.target.value)}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.82rem', fontWeight: 600 }}
+                      >
+                        <option value="Tourist Visa">Tourist Visa</option>
+                        <option value="Medical Visa">Medical Visa</option>
+                        <option value="Business Visa">Business Visa</option>
+                        <option value="PR Visa">PR Visa (Permanent Resident)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#475569' }}>Entry Type</label>
+                      <select
+                        value={entryTypeSelect}
+                        onChange={(e) => setEntryTypeSelect(e.target.value)}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.82rem', fontWeight: 600 }}
+                      >
+                        <option value="Single Entry">Single Entry</option>
+                        <option value="Double Entry">Double Entry</option>
+                        <option value="Multiple Entry">Multiple Entry</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Fee Breakdown Stack */}
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* 1. Default Primary Visa Fee */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem' }}>
+                      <span style={{ color: '#64748B', fontWeight: 600 }}>Default Primary Visa Fee:</span>
+                      <strong style={{ color: '#0F172A', fontSize: '0.82rem' }}>৳{primaryVisaFeeNum.toLocaleString()}</strong>
+                    </div>
+
+                    {/* 2. Processing Fee with Discounted Price */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem', borderTop: '1px dashed #CBD5E1', paddingTop: '6px' }}>
+                      <span style={{ color: '#64748B', fontWeight: 600 }}>Processing Service Fee:</span>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ textDecoration: 'line-through', color: '#94A3B8', fontSize: '0.72rem', marginRight: '4px' }}>৳{regProcFee.toLocaleString()}</span>
+                        <strong style={{ color: '#166534', background: '#DCFCE7', padding: '1px 5px', borderRadius: '4px', fontSize: '0.78rem' }}>
+                          ৳{currentProcFee.toLocaleString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    {/* Discount Savings Tag */}
+                    <div style={{ textAlign: 'right', fontSize: '0.68rem', color: '#15803D', fontWeight: 700, margin: '-3px 0 0 0' }}>
+                      You Save ৳{procDiscount.toLocaleString()} on Processing Fee!
+                    </div>
+
+                    {/* 3. Total Calculated Fee */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1.5px solid #CBD5E1', paddingTop: '8px', marginTop: '2px' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0F172A' }}>Calculated Fee ({visaTypeSelect} - {entryTypeSelect}):</span>
+                      <div className="fee-big-text" style={{ color: '#2563EB', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                        ৳{totalPerApplicant.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="counter-row">
+                    <button className="counter-btn" onClick={() => setApplicantCount(Math.max(1, applicantCount - 1))}>−</button>
+                    <span className="count-number" style={{ fontSize: '0.82rem' }}>{applicantCount} Applicant{applicantCount > 1 ? 's' : ''}</span>
+                    <button className="counter-btn" onClick={() => setApplicantCount(applicantCount + 1)}>+</button>
+                  </div>
+
+                  <div className="booking-buttons-stack" style={{ marginTop: '14px' }}>
+                    <button
+                      className="btn-book-now"
+                      onClick={() => handleApplyVisa(grandTotal)}
+                      style={{ background: '#2563EB', color: '#fff', width: '100%', padding: '11px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.84rem', boxShadow: '0 3px 10px rgba(37,99,235,0.25)', border: 'none' }}
+                    >
+                      Submit VISA Application (Total: ৳{grandTotal.toLocaleString()})
+                    </button>
+                  </div>
                 </div>
-
-                <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Entry Type</label>
-                  <select
-                    value={entryTypeSelect}
-                    onChange={(e) => setEntryTypeSelect(e.target.value)}
-                    style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #D1D5DB' }}
-                  >
-                    <option value="Single Entry">Single Entry</option>
-                    <option value="Double Entry">Double Entry</option>
-                    <option value="Multiple Entry">Multiple Entry</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="price-card-header" style={{ marginBottom: '16px' }}>
-                <small>Calculated Fee ({visaTypeSelect} - {entryTypeSelect}):</small>
-                <div className="fee-big-text" style={{ color: '#2563EB', fontSize: '1.6rem', fontWeight: 'bold' }}>
-                  ৳{calcVisaFee().toLocaleString()}
-                </div>
-              </div>
-
-              <div className="counter-row">
-                <button className="counter-btn" onClick={() => setApplicantCount(Math.max(1, applicantCount - 1))}>−</button>
-                <span className="count-number">{applicantCount} Applicants</span>
-                <button className="counter-btn" onClick={() => setApplicantCount(applicantCount + 1)}>+</button>
-              </div>
-
-              <div className="booking-buttons-stack" style={{ marginTop: '16px' }}>
-                <button className="btn-book-now" style={{ background: '#2563EB', color: '#fff', width: '100%', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' }}>
-                  ⚡ Submit VISA Application (Total: ৳{(calcVisaFee() * applicantCount).toLocaleString()})
-                </button>
-              </div>
-            </div>
+              );
+            })()}
 
             <div className="others-interest-section">
               <h4>Other Countries</h4>

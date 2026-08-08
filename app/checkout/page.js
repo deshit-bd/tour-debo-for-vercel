@@ -343,6 +343,46 @@ function CheckoutContent() {
                   </label>
                 </div>
 
+                {/* Profile Completion Verification for Booking Confirmation */}
+                <div style={{ background: '#F8FAFC', border: '1.5px solid #CBD5E1', borderRadius: '16px', padding: '18px', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '1.1rem' }}>📋</span>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                      Booking Confirmation Profile Info
+                    </h4>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: '#64748B', margin: '0 0 14px 0' }}>
+                    Required for official ticket issuance &amp; insurance coverage:
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <input
+                      type="text"
+                      placeholder="Passenger Full Name *"
+                      value={cardName}
+                      onChange={(e) => setCardName(e.target.value)}
+                      style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="NID or Passport Number *"
+                      style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
+                    />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <input
+                        type="text"
+                        placeholder="Mobile Phone *"
+                        style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Emergency Contact *"
+                        style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Payment Details Inputs */}
                 <div className="payment-details-form">
                   <h4 className="details-form-title">Payment Details</h4>
