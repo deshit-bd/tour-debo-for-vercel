@@ -377,16 +377,16 @@ export default function TourDetailPage() {
             </div>
           </div>
 
-          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.86rem', color: '#475569' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>📍 {tour.fullLocation}</span>
+          <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.96rem', color: '#334155' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: '600', fontSize: '0.98rem' }}>📍 {tour.fullLocation}</span>
 
               {tour.transportRoute && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEF3C7', color: '#B45309', padding: '4px 12px', borderRadius: '999px', fontSize: '0.82rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#FEF3C7', color: '#B45309', padding: '5px 14px', borderRadius: '999px', fontSize: '0.9rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
                   🚍 Route: {tour.transportRoute}
                 </span>
               )}
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {tour.amenities && tour.amenities.length > 0 ? (
                   tour.amenities.map((item) => (
                     <span
@@ -395,34 +395,34 @@ export default function TourDetailPage() {
                       style={{
                         opacity: item.included ? 1 : 0.25,
                         filter: item.included ? 'none' : 'grayscale(100%)',
-                        fontSize: '1rem',
+                        fontSize: '1.2rem',
                       }}
                     >
                       {item.icon}
                     </span>
                   ))
                 ) : (
-                  <>✈️ 🏨 🍽️ 🚌 ⛰️</>
+                  <span style={{ fontSize: '1.2rem' }}>✈️ 🏨 🍽️ 🚌 ⛰️</span>
                 )}
-                <strong style={{ fontSize: '0.72rem', background: '#EFF6FF', color: '#2563EB', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                <strong style={{ fontSize: '0.8rem', background: '#EFF6FF', color: '#2563EB', padding: '3px 8px', borderRadius: '6px', fontWeight: 'bold' }}>
                   (INCLUDED)
                 </strong>
               </span>
 
               {/* Premium Segmented Toggle Switch for Fixed Date vs Open Tour */}
-              <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: '3px', borderRadius: '24px', border: '1px solid #E2E8F0', alignItems: 'center' }}>
+              <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: '4px', borderRadius: '24px', border: '1px solid #CBD5E1', alignItems: 'center' }}>
                 <button
                   type="button"
                   onClick={() => setTourType('fixed')}
                   style={{
                     border: 'none',
-                    padding: '6px 14px',
+                    padding: '7px 16px',
                     borderRadius: '20px',
-                    fontSize: '0.78rem',
+                    fontSize: '0.88rem',
                     fontWeight: '700',
                     cursor: 'pointer',
                     background: tourType === 'fixed' ? '#2563EB' : 'transparent',
-                    color: tourType === 'fixed' ? '#ffffff' : '#64748B',
+                    color: tourType === 'fixed' ? '#ffffff' : '#475569',
                     boxShadow: tourType === 'fixed' ? '0 2px 8px rgba(37,99,235,0.3)' : 'none',
                     transition: 'all 0.2s ease-in-out',
                     display: 'inline-flex',
@@ -437,13 +437,13 @@ export default function TourDetailPage() {
                   onClick={() => setTourType('open')}
                   style={{
                     border: 'none',
-                    padding: '6px 14px',
+                    padding: '7px 16px',
                     borderRadius: '20px',
-                    fontSize: '0.78rem',
+                    fontSize: '0.88rem',
                     fontWeight: '700',
                     cursor: 'pointer',
                     background: tourType === 'open' ? '#059669' : 'transparent',
-                    color: tourType === 'open' ? '#ffffff' : '#64748B',
+                    color: tourType === 'open' ? '#ffffff' : '#475569',
                     boxShadow: tourType === 'open' ? '0 2px 8px rgba(5,150,105,0.3)' : 'none',
                     transition: 'all 0.2s ease-in-out',
                     display: 'inline-flex',
@@ -458,20 +458,20 @@ export default function TourDetailPage() {
 
             {/* Flexible Date Picker Box when Open Tour is active */}
             {tourType === 'open' && (
-              <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#065F46', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '12px 18px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.92rem', fontWeight: '700', color: '#065F46', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   🗓️ Open Tour Mode: Select your desired travel start date:
                 </span>
                 <input
                   type="date"
                   value={selectedCustomDate}
                   onChange={(e) => setSelectedCustomDate(e.target.value)}
-                  style={{ padding: '6px 12px', borderRadius: '8px', border: '1.5px solid #10B981', fontSize: '0.85rem', color: '#065F46', fontWeight: 'bold', background: '#ffffff', cursor: 'pointer' }}
+                  style={{ padding: '7px 14px', borderRadius: '8px', border: '1.5px solid #10B981', fontSize: '0.9rem', color: '#065F46', fontWeight: 'bold', background: '#ffffff', cursor: 'pointer' }}
                 />
               </div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', fontSize: '0.94rem', fontWeight: '600', color: '#334155' }}>
               <span>🌤️ {tour.badge || `${tour.duration} / 2 Night`}</span>
               <span>👥 {tour.visitedCount} People Visited!</span>
               <span>👤 {tour.interestCount} People Showed Interest!</span>
@@ -948,6 +948,9 @@ export default function TourDetailPage() {
               <button onClick={handleBookNow} style={{ background: '#1E293B', color: '#fff', border: 'none', width: '100%', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.92rem' }}>
                 Book Now
               </button>
+              <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '10px 0 0 0' }}>
+                Upon clicking 'Book Now', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
+              </p>
             </div>
 
             {/* Top Block 3: Coupon Voucher Banner */}

@@ -86,10 +86,12 @@ function CheckoutContent() {
 
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [voucher, setVoucher] = useState('');
+  const [useCoins, setUseCoins] = useState(false);
   const [cardName, setCardName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiration, setExpiration] = useState('');
   const [cvv, setCvv] = useState('');
+  const [bankTxnRef, setBankTxnRef] = useState('');
   const [processing, setProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
@@ -100,9 +102,11 @@ function CheckoutContent() {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const sellerDiscount = isGuideBooking ? 0 : 15;
   const voucherDiscount = voucher.toUpperCase() === 'DESH2026' ? (isGuideBooking ? 100 / 120 : 20) : 0;
-  const partnerDiscount = isGuideBooking ? 0 : (paymentMethod === 'card' ? 10 : 5);
+  const coinsDiscount = useCoins ? (isGuideBooking ? 50 / 120 : 50 / 120) : 0;
+  const bankCashback = paymentMethod === 'bank' ? Math.round(subtotal * 0.05 * 100) / 100 : 0;
+  const partnerDiscount = isGuideBooking ? 0 : (paymentMethod === 'card' ? 10 : (paymentMethod === 'bkash' ? 5 : 0));
   const taxes = 0;
-  const grandTotal = Math.max(0, subtotal - sellerDiscount - voucherDiscount - partnerDiscount);
+  const grandTotal = Math.max(0, subtotal - sellerDiscount - voucherDiscount - partnerDiscount - coinsDiscount - bankCashback);
 
   const handlePay = () => {
     setProcessing(true);
@@ -251,7 +255,7 @@ function CheckoutContent() {
             <div className="checkout-summary-column">
               {/* Discount Banner (PDF Page 14 Feedback) */}
               <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px', color: '#92400E', fontSize: '0.82rem', fontWeight: 'bold' }}>
-                <div>🎉 Applicable Discount Breakdown:</div>
+                <div>Applicable Discount Breakdown:</div>
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
                   <span style={{ background: '#FEE2E2', color: '#991B1B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
                     Seller Discount: - {formatPrice(sellerDiscount)}
@@ -259,6 +263,16 @@ function CheckoutContent() {
                   <span style={{ background: voucherDiscount > 0 ? '#DCFCE7' : '#F1F5F9', color: voucherDiscount > 0 ? '#166534' : '#64748B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
                     Voucher Discount: {voucherDiscount > 0 ? `- ${formatPrice(voucherDiscount)}` : 'None'}
                   </span>
+                  {useCoins && (
+                    <span style={{ background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
+                      Coins Discount (Redeem TK.50): - {formatPrice(coinsDiscount)}
+                    </span>
+                  )}
+                  {paymentMethod === 'bank' && (
+                    <span style={{ background: '#DCFCE7', color: '#15803D', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
+                      Bank Transfer Cash Back (5%): - {formatPrice(bankCashback)}
+                    </span>
+                  )}
                   <span style={{ background: '#DBEAFE', color: '#1E40AF', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
                     Payment Partner Discount: - {formatPrice(partnerDiscount)}
                   </span>
@@ -281,6 +295,18 @@ function CheckoutContent() {
                     <strong>- {formatPrice(voucherDiscount)}</strong>
                   </div>
                 )}
+                {useCoins && (
+                  <div className="summary-line">
+                    <span>Coins Discount (Redeem TK.50):</span>
+                    <strong style={{ color: '#059669' }}>- {formatPrice(coinsDiscount)}</strong>
+                  </div>
+                )}
+                {paymentMethod === 'bank' && (
+                  <div className="summary-line">
+                    <span>Bank Transfer 5% Cash Back Offer:</span>
+                    <strong style={{ color: '#059669' }}>- {formatPrice(bankCashback)}</strong>
+                  </div>
+                )}
                 <div className="summary-line">
                   <span>Payment Partner Discount:</span>
                   <strong>- {formatPrice(partnerDiscount)}</strong>
@@ -296,9 +322,9 @@ function CheckoutContent() {
                 </div>
               </div>
 
-              {/* Apply Voucher Block */}
+              {/* Apply Voucher & Coins Block */}
               <div className="voucher-input-block">
-                <label className="field-title">Apply Voucher</label>
+                <label className="field-title">Voucher &amp; Code / Coins</label>
                 <div className="voucher-field-capsule">
                   <span className="voucher-percent-icon">%</span>
                   <input
@@ -311,14 +337,41 @@ function CheckoutContent() {
                     Apply
                   </button>
                 </div>
+
+                {/* Coins Redeem Toggle Switch (Feedback Reference) */}
+                <div style={{ background: useCoins ? '#ECFDF5' : '#F8FAFC', border: `1.5px solid ${useCoins ? '#10B981' : '#CBD5E1'}`, borderRadius: '12px', padding: '12px 16px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s ease' }}>
+                  <div>
+                    <strong style={{ fontSize: '0.86rem', color: '#0F172A', display: 'block' }}>Coins (Redeem Option by Toggle)</strong>
+                    <span style={{ fontSize: '0.74rem', color: useCoins ? '#047857' : '#64748B', fontWeight: '600' }}>
+                      {useCoins ? '✓ Ex. Redeem TK.50 Applied!' : 'Ex. Redeem TK.50 (Toggle ON)'}
+                    </span>
+                  </div>
+                  <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '24px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={useCoins}
+                      onChange={(e) => setUseCoins(e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundColor: useCoins ? '#10B981' : '#CBD5E1', borderRadius: '24px', transition: '0.3s'
+                    }}>
+                      <span style={{
+                        position: 'absolute', height: '18px', width: '18px', left: useCoins ? '24px' : '3px', bottom: '3px',
+                        backgroundColor: 'white', borderRadius: '50%', transition: '0.3s'
+                      }} />
+                    </span>
+                  </label>
+                </div>
               </div>
 
               {/* Select Payment Method Card */}
               <div className="payment-method-card">
                 <label className="field-title">Select Payment Method</label>
 
-                <div className="payment-radios-flex">
-                  <label className="payment-radio-label">
+                <div className="payment-radios-flex" style={{ flexWrap: 'wrap', gap: '8px' }}>
+                  <label className="payment-radio-label" style={{ border: paymentMethod === 'card' ? '2px solid #2563EB' : '1px solid #E2E8F0', background: paymentMethod === 'card' ? '#EFF6FF' : '#fff' }}>
                     <input
                       type="radio"
                       name="paymethod"
@@ -327,11 +380,11 @@ function CheckoutContent() {
                       onChange={() => setPaymentMethod('card')}
                     />
                     <div className="card-icons-wrap">
-                      💳 Credit Card
+                      Credit Card
                     </div>
                   </label>
 
-                  <label className="payment-radio-label">
+                  <label className="payment-radio-label" style={{ border: paymentMethod === 'bkash' ? '2px solid #2563EB' : '1px solid #E2E8F0', background: paymentMethod === 'bkash' ? '#EFF6FF' : '#fff' }}>
                     <input
                       type="radio"
                       name="paymethod"
@@ -341,12 +394,53 @@ function CheckoutContent() {
                     />
                     <span className="bkash-logo-text">bKash</span>
                   </label>
+
+                  <label className="payment-radio-label" style={{ border: paymentMethod === 'bank' ? '2px solid #2563EB' : '1px solid #E2E8F0', background: paymentMethod === 'bank' ? '#EFF6FF' : '#fff' }}>
+                    <input
+                      type="radio"
+                      name="paymethod"
+                      value="bank"
+                      checked={paymentMethod === 'bank'}
+                      onChange={() => setPaymentMethod('bank')}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', fontSize: '0.8rem', color: '#1E40AF' }}>
+                      Bank Transfer
+                      <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.66rem', padding: '1px 5px', borderRadius: '4px', border: '1px solid #86EFAC' }}>
+                        Cash Back Offer
+                      </span>
+                    </div>
+                  </label>
                 </div>
+
+                {paymentMethod === 'bank' && (
+                  <div style={{ background: '#F0F9FF', border: '1.5px dashed #0284C7', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px', color: '#0369A1' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <strong style={{ fontSize: '0.88rem', color: '#0C4A6E' }}>Bank Transfer Details &amp; Cash Back Offer:</strong>
+                      <span style={{ background: '#10B981', color: '#fff', fontSize: '0.72rem', fontWeight: '800', padding: '2px 8px', borderRadius: '10px' }}>
+                        Instant 5% Cash Back Applied
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', lineHeight: '1.6', color: '#334155' }}>
+                      <div><strong>Bank Name:</strong> City Bank PLC / Eastern Bank PLC</div>
+                      <div><strong>Account Name:</strong> Tour Dibo Online Ltd</div>
+                      <div><strong>Account No:</strong> 1502948102001</div>
+                      <div><strong>Routing No:</strong> 225272810 (Dhaka Branch)</div>
+                    </div>
+                    <div style={{ marginTop: '10px' }}>
+                      <input
+                        type="text"
+                        placeholder="Enter Bank Deposit Slip No / Txn Reference ID *"
+                        value={bankTxnRef}
+                        onChange={(e) => setBankTxnRef(e.target.value)}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #BAE6FD', fontSize: '0.82rem', background: '#ffffff', outline: 'none' }}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Profile Completion Verification for Booking Confirmation */}
                 <div style={{ background: '#F8FAFC', border: '1.5px solid #CBD5E1', borderRadius: '16px', padding: '18px', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '1.1rem' }}>📋</span>
                     <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
                       Booking Confirmation Profile Info
                     </h4>
@@ -421,10 +515,6 @@ function CheckoutContent() {
                     />
                   </div>
 
-                  <p className="checkout-terms-note">
-                    By Clicking "Pay"* I agree to company terms of services
-                  </p>
-
                   {/* Full-width Pay Button inside card */}
                   <button
                     className="btn-pay-blue"
@@ -434,6 +524,10 @@ function CheckoutContent() {
                   >
                     {processing ? 'Processing Payment...' : `Pay ${formatPrice(grandTotal)}`}
                   </button>
+
+                  <p style={{ fontSize: '0.74rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '12px 0 0 0' }}>
+                    Upon clicking 'Place Order', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
+                  </p>
                 </div>
               </div>
             </div>

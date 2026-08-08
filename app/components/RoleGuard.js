@@ -1,10 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 
 export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
-  const { user, loading } = useAuth();
+  const { user, loading, login, switchRole } = useAuth();
+  const [showModal, setShowModal] = useState(false);
+
+  // Modal Auth State matching Image 1 & Image 2
+  const [authRole, setAuthRole] = useState('PLANNER'); // 'USER' | 'PLANNER'
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [authEmail, setAuthEmail] = useState('planner@deshit-bd.com');
+  const [authPassword, setAuthPassword] = useState('••••••••');
+  const [authName, setAuthName] = useState('DeshIT-BD');
+  const [authMobile, setAuthMobile] = useState('+880 17 0000 0000');
+  const [authNid, setAuthNid] = useState('1995269182348123');
+  const [tradeLicense, setTradeLicense] = useState('TRAD/DNCC/019481/2024');
+  const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
     return (
@@ -51,7 +64,7 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
 
   // 2. Authorization Check: Role mismatch
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Case A: Trying to access Admin Dashboard without ADMIN role (e.g. Tourist or Planner)
+    // Case A: Trying to access Admin Dashboard without ADMIN role
     if (allowedRoles.includes('ADMIN')) {
       return (
         <div className="figma-main-content" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', padding: '40px 20px' }}>
@@ -113,9 +126,30 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
       );
     }
 
+    const handleRoleTabChange = (role) => {
+      setAuthRole(role);
+      if (role === 'PLANNER') {
+        setAuthEmail('planner@deshit-bd.com');
+        setAuthName('DeshIT-BD');
+      } else {
+        setAuthEmail('user@deshit-bd.com');
+        setAuthName('Sanjid Ibrahim');
+      }
+    };
+
+    const handleAuthSubmit = (e) => {
+      e.preventDefault();
+      setSubmitting(true);
+      setTimeout(() => {
+        login(authRole, authEmail, authName);
+        setShowModal(false);
+        setSubmitting(false);
+      }, 500);
+    };
+
     // Case B: Tourist trying to access Seller Business Center
     return (
-      <div className="figma-main-content" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', padding: '40px 20px' }}>
+      <div className="figma-main-content" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', padding: '40px 20px', position: 'relative' }}>
         <div
           style={{
             background: '#ffffff',
@@ -139,18 +173,315 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <Link
-              href="/business-center/profile"
-              className="btn-seller-primary"
-              style={{ textDecoration: 'none', justifyContent: 'center' }}
+            {/* Button 1: Triggers Welcome Back Login Modal (Image 2) */}
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('login');
+                setAuthRole('PLANNER');
+                setShowModal(true);
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                color: '#ffffff',
+                border: 'none',
+                padding: '13px 20px',
+                borderRadius: '12px',
+                fontSize: '0.92rem',
+                fontWeight: '800',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(37,99,235,0.25)',
+              }}
+            >
+              🔐 Log In to Seller Account
+            </button>
+
+            {/* Button 2 (Image 3): Triggers Create Account Modal (Image 1) */}
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('register');
+                setAuthRole('PLANNER');
+                setShowModal(true);
+              }}
+              style={{
+                background: '#F1F5F9',
+                color: '#334155',
+                border: '1px solid #CBD5E1',
+                padding: '12px 20px',
+                borderRadius: '12px',
+                fontSize: '0.88rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                textAlign: 'center',
+              }}
             >
               📝 Complete Seller Registration &amp; KYC Particulars
-            </Link>
-            <Link href="/account/profile" style={{ fontSize: '0.85rem', color: '#64748B', textDecoration: 'none', fontWeight: '700' }}>
+            </button>
+
+            <Link href="/account/profile" style={{ fontSize: '0.85rem', color: '#64748B', textDecoration: 'none', fontWeight: '700', marginTop: '4px' }}>
               ← Return to Tourist Profile
             </Link>
           </div>
         </div>
+
+        {/* 🌟 Interactive Auth Modal Popup matching Image 1 & Image 2 exactly */}
+        {showModal && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 99999,
+              display: 'grid',
+              placeItems: 'center',
+              padding: '20px',
+            }}
+          >
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: '24px',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                width: '100%',
+                maxWidth: '440px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                padding: '36px 32px 32px 32px',
+                position: 'relative',
+              }}
+            >
+              {/* Close Button ✕ */}
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '20px',
+                  border: 'none',
+                  background: 'none',
+                  fontSize: '1.4rem',
+                  color: '#0F172A',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  zIndex: 10,
+                }}
+              >
+                ✕
+              </button>
+
+              {/* Header Title & Subtitle */}
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', margin: '0 0 6px 0', textAlign: 'center', color: '#0F172A' }}>
+                {authMode === 'login' ? '🔑 Welcome Back' : '✨ Create Account'}
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', textAlign: 'center', margin: '0 0 22px 0' }}>
+                {authMode === 'login' ? 'Select your role and login to Tour Dibo' : 'Register a new account on Tour Dibo'}
+              </p>
+
+              {/* Role Choice Segment */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '6px',
+                  marginBottom: '22px',
+                  background: '#F1F5F9',
+                  padding: '4px',
+                  borderRadius: '14px',
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleRoleTabChange('USER')}
+                  style={{
+                    padding: '11px 12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    fontSize: '0.84rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    background: authRole === 'USER' ? '#2563EB' : 'transparent',
+                    color: authRole === 'USER' ? '#ffffff' : '#475569',
+                  }}
+                >
+                  👤 Tourist Mode
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleRoleTabChange('PLANNER')}
+                  style={{
+                    padding: '11px 12px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    fontSize: '0.84rem',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    background: authRole === 'PLANNER' ? '#2563EB' : 'transparent',
+                    color: authRole === 'PLANNER' ? '#ffffff' : '#475569',
+                  }}
+                >
+                  ⚡ Planner Mode
+                </button>
+              </div>
+
+              {/* Form matching Image 1 (Create Account) or Image 2 (Welcome Back) */}
+              <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {authMode === 'register' && (
+                  <>
+                    {/* Agency / Company / Planner Name */}
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                        {authRole === 'PLANNER' ? 'Agency / Company / Planner Name *' : 'Full Name *'}
+                      </label>
+                      <input
+                        type="text"
+                        value={authName}
+                        onChange={(e) => setAuthName(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                        required
+                      />
+                    </div>
+
+                    {/* Mobile Number */}
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                        Mobile Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={authMobile}
+                        onChange={(e) => setAuthMobile(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                        required
+                      />
+                    </div>
+
+                    {/* National ID (NID) Number */}
+                    <div>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                        National ID (NID) Number *
+                      </label>
+                      <input
+                        type="text"
+                        value={authNid}
+                        onChange={(e) => setAuthNid(e.target.value)}
+                        style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                        required
+                      />
+                    </div>
+
+                    {/* NID Image Uploads */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', background: '#F8FAFC', padding: '12px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                          NID Front Part Image *
+                        </label>
+                        <input type="file" accept="image/*,.pdf" style={{ fontSize: '0.75rem', width: '100%' }} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                          NID Back Part Image *
+                        </label>
+                        <input type="file" accept="image/*,.pdf" style={{ fontSize: '0.75rem', width: '100%' }} />
+                      </div>
+                    </div>
+
+                    {/* Trade License Fields (Planner Mode) */}
+                    {authRole === 'PLANNER' && (
+                      <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div>
+                          <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#1E40AF', display: 'block', marginBottom: '4px' }}>
+                            Trade License Number *
+                          </label>
+                          <input
+                            type="text"
+                            value={tradeLicense}
+                            onChange={(e) => setTradeLicense(e.target.value)}
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: '800', color: '#1E40AF', display: 'block', marginBottom: '4px' }}>
+                            Trade License Document Image Upload *
+                          </label>
+                          <input type="file" accept="image/*,.pdf" style={{ fontSize: '0.75rem', width: '100%' }} />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Email Address */}
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#475569', display: 'block', marginBottom: '4px' }}>
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', outline: 'none', fontSize: '0.9rem' }}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    background: '#2563EB',
+                    color: '#ffffff',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    fontSize: '0.95rem',
+                    fontWeight: '800',
+                    border: 'none',
+                    cursor: submitting ? 'not-allowed' : 'pointer',
+                    marginTop: '8px',
+                    boxShadow: '0 4px 14px rgba(37,99,235,0.3)',
+                  }}
+                >
+                  {submitting
+                    ? 'Processing...'
+                    : authMode === 'login'
+                    ? `Login as ${authRole === 'PLANNER' ? 'Planner' : 'Tourist'}`
+                    : 'Register Account'}
+                </button>
+
+                <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#64748B', marginTop: '6px' }}>
+                  {authMode === 'login' ? "Don't have an account? " : 'Already registered? '}
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+                    style={{ color: '#2563EB', fontWeight: '800', border: 'none', background: 'none', cursor: 'pointer' }}
+                  >
+                    {authMode === 'login' ? 'Register Now' : 'Login Here'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

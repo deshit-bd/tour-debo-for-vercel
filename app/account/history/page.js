@@ -44,7 +44,7 @@ export default function BookingHistoryPage() {
                 {topayList.map((item, idx) => (
                   <div key={idx} className="booking-card-row-figma">
                     <div className="booking-row-header">
-                      <small className="booking-id-text">Booking Id : #{item.id}</small>
+                      <small className="booking-id-text">Booking ID : #{item.id}</small>
                       <small className="booking-date-text">Booking Date : {item.date}</small>
                     </div>
 

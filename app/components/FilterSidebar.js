@@ -16,6 +16,8 @@ const defaultFilterState = {
   meal: [],
   accommodation: [],
   sightseeing: [],
+  languages: [],
+  foods: [],
 };
 
 const AVAILABLE_COUNTRIES = [
@@ -666,10 +668,48 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
       </div>
       )}
 
+      {/* Language Checkbox */}
+      {mode !== 'visa' && (
+      <div className="filter-group">
+        <label className="filter-group-title">Language Checkbox</label>
+        <div className="checkbox-list">
+          {['English', 'Bengali', 'Sylheti', 'Chakma', 'Hindi', 'French'].map((item) => (
+            <label key={item} className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={(localFilters.languages || []).includes(item)}
+                onChange={() => toggleArrayItem('languages', item)}
+              />
+              {item}
+            </label>
+          ))}
+        </div>
+      </div>
+      )}
+
+      {/* Foods (Breakfast, Lunch, Snacks, Dinner, Street Foods) */}
+      {mode !== 'visa' && (
+      <div className="filter-group">
+        <label className="filter-group-title">Foods</label>
+        <div className="checkbox-list">
+          {['Breakfast', 'Lunch', 'Snacks', 'Dinner', 'Street Foods'].map((item) => (
+            <label key={item} className="checkbox-item">
+              <input
+                type="checkbox"
+                checked={(localFilters.foods || []).includes(item)}
+                onChange={() => toggleArrayItem('foods', item)}
+              />
+              {item}
+            </label>
+          ))}
+        </div>
+      </div>
+      )}
+
       {/* Guide Languages & Specialty — tour only */}
       {mode !== 'visa' && (
       <div className="filter-group">
-        <label className="filter-group-title">Guide Languages & Specialty</label>
+        <label className="filter-group-title">Guide Specialty</label>
         <div style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid #CBD5E1', padding: '6px 12px', marginTop: '6px' }}>
           <select
             value={(localFilters.sightseeing || [])[0] || ''}
@@ -688,7 +728,7 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
               cursor: 'pointer',
             }}
           >
-            <option value="">All Languages & Specialties ▾</option>
+            <option value="">All Specialties ▾</option>
             <option value="English Guide">English Guide</option>
             <option value="Bengali Guide">Bengali Guide</option>
             <option value="Sylheti Guide">Sylheti Guide</option>

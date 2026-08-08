@@ -55,7 +55,7 @@ export default function FollowedToursPage() {
                 {followedTours.map((item, idx) => (
                   <div key={idx} className="booking-card-row-figma">
                     <div className="booking-row-header">
-                      <small className="booking-id-text">Booking Id : #{item.id}</small>
+                      <small className="booking-id-text">Booking ID : #{item.id}</small>
                     </div>
 
                     <div className="booking-row-body">

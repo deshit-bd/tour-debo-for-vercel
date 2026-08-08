@@ -23,8 +23,8 @@ function SidebarInner() {
   const isToBeStartedActive = isBookingsPage && rawStatus === 'tostarted';
   const isCancelledActive = isBookingsPage && rawStatus === 'cancelled';
 
-  const isMyPointsActive = pathname === '/account/points' && fromParam !== 'earn';
-  const isEarnWithUsActive = pathname === '/account/points' && fromParam === 'earn';
+  const isMyPointsActive = pathname === '/account/points';
+  const isEarnWithUsActive = pathname.startsWith('/business-center');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'sticky', top: '16px', zIndex: 10, width: '100%', maxWidth: '270px', flexShrink: 0 }}>
@@ -150,7 +150,7 @@ function SidebarInner() {
 
         {/* 9. Earn With Us */}
         <div className="sidebar-menu-group">
-          <Link href="/account/points?from=earn" {...navProps} style={{ textDecoration: 'none', fontSize: '0.92rem', fontWeight: '800', color: isEarnWithUsActive ? '#2563EB' : '#1E293B', display: 'block', padding: '4px 10px' }}>
+          <Link href="/business-center" {...navProps} style={{ textDecoration: 'none', fontSize: '0.92rem', fontWeight: '800', color: isEarnWithUsActive ? '#2563EB' : '#1E293B', display: 'block', padding: '4px 10px' }}>
             Earn With Us
           </Link>
         </div>

@@ -114,6 +114,8 @@ const defaultFilterState = {
   meal: [],
   accommodation: [],
   sightseeing: [],
+  languages: [],
+  foods: [],
 };
 
 export default function TourGuidesPage() {
@@ -181,6 +183,22 @@ export default function TourGuidesPage() {
     }
     if (filters.packageType.length > 0 && !filters.packageType.includes(guide.packageType)) {
       return false;
+    }
+    // Languages Checkbox filter
+    if (filters.languages && filters.languages.length > 0) {
+      const guideLangs = (guide.languages || '').toLowerCase();
+      const matches = filters.languages.some((lang) => guideLangs.includes(lang.toLowerCase()));
+      if (!matches) return false;
+    }
+    // Foods Checkbox filter
+    if (filters.foods && filters.foods.length > 0) {
+      const guideText = ((guide.included || '') + ' ' + (guide.desc || '')).toLowerCase();
+      const matches = filters.foods.some((food) => {
+        const f = food.toLowerCase();
+        if (f === 'street foods') return guideText.includes('street food') || guideText.includes('food');
+        return guideText.includes(f) || guideText.includes('meal') || guideText.includes('breakfast');
+      });
+      if (!matches) return false;
     }
     if (filters.sightseeing && filters.sightseeing.length > 0) {
       const selectedLang = filters.sightseeing[0].toLowerCase();

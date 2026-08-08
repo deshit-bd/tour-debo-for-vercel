@@ -626,6 +626,9 @@ export default function VisaDetailPage({ params }) {
                     >
                       Submit VISA Application (Total: ৳{grandTotal.toLocaleString()})
                     </button>
+                    <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '10px 0 0 0' }}>
+                      Upon clicking 'Book Now', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
+                    </p>
                   </div>
                 </div>
               );
