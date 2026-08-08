@@ -67,7 +67,7 @@ export default function PlannerAddVisaPage() {
     e.preventDefault();
     if (!country) { alert('Please select a Destination Country!'); return; }
     try {
-      const data = { id: isa-{country.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-{Date.now()}, country, visaAvailableLabel, visaType, validity, entryType, processingTime, rating, capital, localTime, telephoneCode, exchangeRate, embassyAddress, visaFee, processingFee, matrixPrices, stickerStudentDocs, generalDocs, description, conditions, policy, importantNotes, mainImage, galleryImages, plannerId, publishedAt: new Date().toISOString() };
+      const data = { id: `visa-${country.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`, country, visaAvailableLabel, visaType, validity, entryType, processingTime, rating, capital, localTime, telephoneCode, exchangeRate, embassyAddress, visaFee, processingFee, matrixPrices, stickerStudentDocs, generalDocs, description, conditions, policy, importantNotes, mainImage, galleryImages, plannerId, publishedAt: new Date().toISOString() };
       const existing = JSON.parse(localStorage.getItem('planner_visa_services') || '[]');
       localStorage.setItem('planner_visa_services', JSON.stringify([data, ...existing]));
     } catch (e) { console.error(e); }
