@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '../../components/Navbar';
@@ -7,6 +8,16 @@ import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
 
 export default function MyRefundsPage() {
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyId = (id) => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
   const refundsList = [
     { id: '8849201948102', date: '12 Jan 2026', name: 'Tenting at Cox\'s Bazar', qty: 3, status: 'Full Refunded' },
     { id: '8849201948103', date: '15 Feb 2026', name: 'Sajek Valley Tour', qty: 2, status: 'In Review' },
@@ -40,7 +51,27 @@ export default function MyRefundsPage() {
                 {refundsList.map((item, idx) => (
                   <div key={idx} className="booking-card-row-figma">
                     <div className="booking-row-header">
-                      <small className="booking-id-text">Booking ID : #{item.id}</small>
+                      <small
+                        className="booking-id-text"
+                        onClick={() => handleCopyId(item.id)}
+                        title="Click to copy Booking ID"
+                        style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', userSelect: 'all' }}
+                      >
+                        Booking ID : #{item.id}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: copiedId === item.id ? '#16A34A' : '#64748B', fontWeight: 'bold' }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={copiedId === item.id ? '#16A34A' : '#64748B'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            {copiedId === item.id ? (
+                              <polyline points="20 6 9 17 4 12" />
+                            ) : (
+                              <>
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                              </>
+                            )}
+                          </svg>
+                          {copiedId === item.id ? 'Copied!' : ''}
+                        </span>
+                      </small>
                       <small className="booking-date-text">Booking Date : {item.date}</small>
                     </div>
 
@@ -56,7 +87,9 @@ export default function MyRefundsPage() {
 
                       <div className="booking-status-badge green-badge">{item.status}</div>
 
-                      <Link href="/account/dispute" className="link-details-btn">Details</Link>
+                      <div className="booking-actions-cell">
+                        <Link href="/account/dispute" className="link-details-btn">Details</Link>
+                      </div>
                     </div>
                   </div>
                 ))}

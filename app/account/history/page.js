@@ -9,6 +9,15 @@ import AccountSidebar from '../../components/AccountSidebar';
 
 export default function BookingHistoryPage() {
   const [activeTab, setActiveTab] = useState('topay');
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyId = (id) => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   const topayList = [
     { id: '8849201948102', date: '12 Jan 2026', name: 'Tenting at Cox\'s Bazar', qty: 3, status: 'To Pay' },
@@ -44,7 +53,27 @@ export default function BookingHistoryPage() {
                 {topayList.map((item, idx) => (
                   <div key={idx} className="booking-card-row-figma">
                     <div className="booking-row-header">
-                      <small className="booking-id-text">Booking ID : #{item.id}</small>
+                      <small
+                        className="booking-id-text"
+                        onClick={() => handleCopyId(item.id)}
+                        title="Click to copy Booking ID"
+                        style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', userSelect: 'all' }}
+                      >
+                        Booking ID : #{item.id}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: copiedId === item.id ? '#16A34A' : '#64748B', fontWeight: 'bold' }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={copiedId === item.id ? '#16A34A' : '#64748B'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            {copiedId === item.id ? (
+                              <polyline points="20 6 9 17 4 12" />
+                            ) : (
+                              <>
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                              </>
+                            )}
+                          </svg>
+                          {copiedId === item.id ? 'Copied!' : ''}
+                        </span>
+                      </small>
                       <small className="booking-date-text">Booking Date : {item.date}</small>
                     </div>
 
@@ -60,7 +89,9 @@ export default function BookingHistoryPage() {
 
                       <div className="booking-status-badge topay-badge">{item.status}</div>
 
-                      <Link href="/checkout" className="link-details-btn">Pay Now</Link>
+                      <div className="booking-actions-cell">
+                        <Link href="/checkout" className="link-details-btn">Pay Now</Link>
+                      </div>
                     </div>
                   </div>
                 ))}

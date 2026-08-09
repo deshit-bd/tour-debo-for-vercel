@@ -196,29 +196,6 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
               🔐 Log In to Seller Account
             </button>
 
-            {/* Button 2 (Image 3): Triggers Create Account Modal (Image 1) */}
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode('register');
-                setAuthRole('PLANNER');
-                setShowModal(true);
-              }}
-              style={{
-                background: '#F1F5F9',
-                color: '#334155',
-                border: '1px solid #CBD5E1',
-                padding: '12px 20px',
-                borderRadius: '12px',
-                fontSize: '0.88rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                textAlign: 'center',
-              }}
-            >
-              📝 Complete Seller Registration &amp; KYC Particulars
-            </button>
-
             <Link href="/account/profile" style={{ fontSize: '0.85rem', color: '#64748B', textDecoration: 'none', fontWeight: '700', marginTop: '4px' }}>
               ← Return to Tourist Profile
             </Link>
@@ -274,59 +251,14 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
               </button>
 
               {/* Header Title & Subtitle */}
-              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', margin: '0 0 6px 0', textAlign: 'center', color: '#0F172A' }}>
-                {authMode === 'login' ? '🔑 Welcome Back' : '✨ Create Account'}
+              <h3 style={{ fontSize: '1.45rem', fontWeight: '800', margin: '0 0 6px 0', textAlign: 'center', color: '#0F172A' }}>
+                {authMode === 'login' ? '💼 Tour Planner Portal' : '✨ Join as Tour Planner'}
               </h3>
-              <p style={{ fontSize: '0.88rem', color: '#64748B', textAlign: 'center', margin: '0 0 22px 0' }}>
-                {authMode === 'login' ? 'Select your role and login to Tour Dibo' : 'Register a new account on Tour Dibo'}
+              <p style={{ fontSize: '0.86rem', color: '#64748B', textAlign: 'center', margin: '0 0 24px 0', lineHeight: 1.45 }}>
+                {authMode === 'login'
+                  ? 'Welcome back! Sign in to manage your tours, visas & business dashboard'
+                  : 'Create your agency account to list packages, manage bookings & reach tourists'}
               </p>
-
-              {/* Role Choice Segment */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '6px',
-                  marginBottom: '22px',
-                  background: '#F1F5F9',
-                  padding: '4px',
-                  borderRadius: '14px',
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => handleRoleTabChange('USER')}
-                  style={{
-                    padding: '11px 12px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    fontSize: '0.84rem',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    background: authRole === 'USER' ? '#2563EB' : 'transparent',
-                    color: authRole === 'USER' ? '#ffffff' : '#475569',
-                  }}
-                >
-                  👤 Tourist Mode
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRoleTabChange('PLANNER')}
-                  style={{
-                    padding: '11px 12px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    fontSize: '0.84rem',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    background: authRole === 'PLANNER' ? '#2563EB' : 'transparent',
-                    color: authRole === 'PLANNER' ? '#ffffff' : '#475569',
-                  }}
-                >
-                  ⚡ Planner Mode
-                </button>
-              </div>
 
               {/* Form matching Image 1 (Create Account) or Image 2 (Welcome Back) */}
               <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -464,12 +396,12 @@ export default function RoleGuard({ allowedRoles = ['PLANNER'], children }) {
                   {submitting
                     ? 'Processing...'
                     : authMode === 'login'
-                    ? `Login as ${authRole === 'PLANNER' ? 'Planner' : 'Tourist'}`
-                    : 'Register Account'}
+                    ? 'Login to Planner Portal'
+                    : 'Register as Tour Planner'}
                 </button>
 
                 <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#64748B', marginTop: '6px' }}>
-                  {authMode === 'login' ? "Don't have an account? " : 'Already registered? '}
+                  {authMode === 'login' ? "Don't have a planner account? " : 'Already registered? '}
                   <button
                     type="button"
                     onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}

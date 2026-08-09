@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 const defaultFilterState = {
   rating: 1,
   maxPrice: 300,
+  maxDays: 30,
   startingPoint: '',
   onlyOffer: false,
   localTour: false,
@@ -220,17 +221,47 @@ const AVAILABLE_COUNTRIES = [
   { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' },
 ];
 
+const AVAILABLE_LANGUAGES = [
+  'English', 'Bengali', 'Sylheti', 'Chakma', 'Marma', 'Garo', 'Santali', 'Tripura (Kokborok)', 'Hajong', 'Tanchangya',
+  'Spanish', 'French', 'German', 'Chinese (Mandarin)', 'Chinese (Cantonese)', 'Japanese', 'Arabic', 'Hindi', 'Russian', 'Portuguese',
+  'Italian', 'Korean', 'Turkish', 'Dutch', 'Vietnamese', 'Thai', 'Urdu', 'Persian (Farsi)', 'Malay', 'Indonesian',
+  'Swedish', 'Polish', 'Greek', 'Hebrew', 'Filipino (Tagalog)', 'Czech', 'Romanian', 'Hungarian', 'Danish', 'Finnish',
+  'Norwegian', 'Ukrainian', 'Tamil', 'Telugu', 'Marathi', 'Gujarati', 'Punjabi', 'Swahili', 'Amharic', 'Somali',
+  'Afrikaans', 'Nepali', 'Sinhala', 'Burmese', 'Khmer', 'Lao', 'Tibetan', 'Mongolian', 'Kazakh', 'Uzbek',
+  'Azerbaijani', 'Georgian', 'Armenian', 'Tajik', 'Turkmen', 'Kyrgyz', 'Pashto', 'Kurdish (Kurmanji)', 'Kurdish (Sorani)', 'Balochi',
+  'Sindhi', 'Kashmiri', 'Assamese', 'Odia', 'Malayalam', 'Kannada', 'Bhojpuri', 'Maithili', 'Magahi', 'Chhattisgarhi',
+  'Haryanvi', 'Rajasthani', 'Konkani', 'Manipuri (Meitei)', 'Mizo', 'Nagamese', 'Khasi', 'Bodo', 'Dogri', 'Dhivehi',
+  'Javanese', 'Sundanese', 'Madurese', 'Minangkabau', 'Buginese', 'Balinese', 'Cebuano', 'Ilocano', 'Hiligaynon', 'Bikol',
+  'Maori', 'Samoan', 'Tongan', 'Fijian', 'Tahitian', 'Hawaiian', 'Chamorro', 'Palauan', 'Marshallese', 'Bislama',
+  'Tok Pisin', 'Irish (Gaeilge)', 'Scottish Gaelic', 'Welsh', 'Breton', 'Basque (Euskara)', 'Catalan', 'Galician', 'Corsican', 'Sardinian',
+  'Maltese', 'Icelandic', 'Faroese', 'Luxembourgish', 'Frisian', 'Yiddish', 'Ladino', 'Esperanto', 'Latin', 'Ancient Greek',
+  'Albanian', 'Macedonian', 'Bulgarian', 'Serbian', 'Croatian', 'Bosnian', 'Slovenian', 'Slovak', 'Belarusian', 'Lithuanian',
+  'Latvian', 'Estonian', 'Finnish (Suomi)', 'Saami', 'Tatar', 'Bashkir', 'Chuvash', 'Chechen', 'Avar', 'Ossetian',
+  'Abkhaz', 'Circassian', 'Uyghur', 'Dungan', 'Hakka', 'Min Nan (Hokkien)', 'Wu (Shanghainese)', 'Xiang', 'Gan', 'Zulu',
+  'Xhosa', 'Yoruba', 'Igbo', 'Hausa', 'Oromo', 'Tigrinya', 'Shona', 'Chichewa (Nyanja)', 'Kinyarwanda', 'Kirundi',
+  'Luganda', 'Lingala', 'Kikongo', 'Wolof', 'Bambara', 'Fulani (Fula)', 'Akan (Twi)', 'Ewe', 'Ga', 'Fon',
+  'Sango', 'Malagasy', 'Seychellois Creole', 'Mauritian Creole', 'Haitian Creole', 'Papiamento', 'Quechua', 'Aymara', 'Guarani', 'Nahuatl',
+  'Mayan (K\'iche\')', 'Mapudungun', 'Navajo', 'Cherokee', 'Inuktitut', 'Greenlandic (Kalaallisut)', 'Dari', 'Tajiki', 'Karen', 'Shan', 'Mon'
+];
+
 export default function FilterSidebar({ filters = defaultFilterState, onFilterChange, mode = 'tour', hideCountryType = false }) {
   const [localFilters, setLocalFilters] = useState(filters);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
   const countryDropdownRef = useRef(null);
 
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [langSearch, setLangSearch] = useState('');
+  const langDropdownRef = useRef(null);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target)) {
         setIsCountryDropdownOpen(false);
+      }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target)) {
+        setIsLangDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -256,7 +287,9 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
   const handleReset = () => {
     setLocalFilters(defaultFilterState);
     setIsCountryDropdownOpen(false);
+    setIsLangDropdownOpen(false);
     setCountrySearch('');
+    setLangSearch('');
     if (onFilterChange) {
       onFilterChange(defaultFilterState);
     }
@@ -583,62 +616,31 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
       </div>
       )}
 
-      {/* Package Duration — tour only */}
+      {/* Package Duration Range Slider — tour only */}
       {mode !== 'visa' && (
       <div className="filter-group">
-        <label className="filter-group-title">Package Duration</label>
-        <div className="checkbox-list">
-          {['3 Days', '5 Days', '7 Days'].map((item) => (
-            <label key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.duration || []).includes(item)}
-                onChange={() => toggleArrayItem('duration', item)}
-              />
-              {item}
-            </label>
-          ))}
+        <label className="filter-group-title" style={{ fontSize: '0.83rem', whiteSpace: 'nowrap' }}>
+          Package Duration ({localFilters.maxDays || 30} Days)
+        </label>
+        <div className="price-slider-wrap">
+          <input
+            type="range"
+            min="1"
+            max="30"
+            step="1"
+            value={localFilters.maxDays || 30}
+            onChange={(e) => updateFilters('maxDays', Number(e.target.value))}
+            className="custom-range-input"
+          />
+          <div className="price-labels">
+            <span>1 Day</span>
+            <span>30 Days</span>
+          </div>
         </div>
       </div>
       )}
 
-      {/* Transportation — tour only */}
-      {mode !== 'visa' && (
-      <div className="filter-group">
-        <label className="filter-group-title">Transportation</label>
-        <div className="checkbox-list">
-          {['Include', 'Partial Include', 'Exclude'].map((item) => (
-            <label key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.transportation || []).includes(item)}
-                onChange={() => toggleArrayItem('transportation', item)}
-              />
-              {item}
-            </label>
-          ))}
-        </div>
-      </div>
-      )}
 
-      {/* Meal — tour only */}
-      {mode !== 'visa' && (
-      <div className="filter-group">
-        <label className="filter-group-title">Meal</label>
-        <div className="checkbox-list">
-          {['Breakfast', 'Lunch', 'Dinner', 'All Include'].map((item) => (
-            <label key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.meal || []).includes(item)}
-                onChange={() => toggleArrayItem('meal', item)}
-              />
-              {item}
-            </label>
-          ))}
-        </div>
-      </div>
-      )}
 
       {/* Accommodation Type — tour only */}
       {mode !== 'visa' && (
@@ -668,21 +670,141 @@ export default function FilterSidebar({ filters = defaultFilterState, onFilterCh
       </div>
       )}
 
-      {/* Language Checkbox */}
+      {/* Languages Typeable Multi-Select Combobox Dropdown */}
       {mode !== 'visa' && (
       <div className="filter-group">
-        <label className="filter-group-title">Language Checkbox</label>
-        <div className="checkbox-list">
-          {['English', 'Bengali', 'Sylheti', 'Chakma', 'Hindi', 'French'].map((item) => (
-            <label key={item} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={(localFilters.languages || []).includes(item)}
-                onChange={() => toggleArrayItem('languages', item)}
-              />
-              {item}
-            </label>
-          ))}
+        <label className="filter-group-title">Languages</label>
+        <div ref={langDropdownRef} style={{ marginTop: '6px', position: 'relative' }}>
+          {/* Typeable Search Input Capsule */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              background: '#ffffff',
+              border: '1px solid #CBD5E1',
+              borderRadius: '10px',
+              padding: '2px 10px',
+              boxShadow: isLangDropdownOpen ? '0 0 0 3px rgba(37,99,235,0.15)' : 'none',
+              borderColor: isLangDropdownOpen ? '#2563EB' : '#CBD5E1',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <input
+              type="text"
+              placeholder={
+                (localFilters.languages || []).length > 0
+                  ? `Search (${localFilters.languages.length} selected)...`
+                  : 'Type language name (e.g. English, French)...'
+              }
+              value={langSearch}
+              onFocus={() => setIsLangDropdownOpen(true)}
+              onChange={(e) => {
+                setLangSearch(e.target.value);
+                setIsLangDropdownOpen(true);
+              }}
+              style={{
+                width: '100%',
+                border: 'none',
+                outline: 'none',
+                padding: '8px 0',
+                fontSize: '0.82rem',
+                color: '#1E293B',
+                fontWeight: '500',
+                background: 'transparent',
+              }}
+            />
+
+            <span
+              onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
+              style={{ cursor: 'pointer', fontSize: '0.7rem', color: '#64748B', paddingLeft: '6px' }}
+            >
+              {isLangDropdownOpen ? '▲' : '▼'}
+            </span>
+          </div>
+
+          {/* Scrollable Checkbox List Popup */}
+          {isLangDropdownOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '105%',
+                left: 0,
+                right: 0,
+                background: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 12px 32px rgba(15,23,42,0.18)',
+                border: '1px solid #E2E8F0',
+                padding: '8px',
+                zIndex: 50,
+                maxHeight: '210px',
+                overflowY: 'auto',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {AVAILABLE_LANGUAGES.filter((lang) => {
+                  const q = langSearch.toLowerCase().trim();
+                  if (!q) return true;
+                  return lang.toLowerCase().includes(q);
+                }).map((lang) => {
+                  const isSelected = (localFilters.languages || []).includes(lang);
+                  return (
+                    <label
+                      key={lang}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        background: isSelected ? '#EFF6FF' : 'transparent',
+                        fontSize: '0.82rem',
+                        fontWeight: isSelected ? '700' : '500',
+                        color: isSelected ? '#1D4ED8' : '#334155',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleArrayItem('languages', lang)}
+                      />
+                      <span>{lang}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Selected Language Pill Badges for Clear Visual Feedback */}
+          {(localFilters.languages || []).length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px' }}>
+              {localFilters.languages.map((lang) => (
+                <span
+                  key={lang}
+                  style={{
+                    background: '#DBEAFE',
+                    color: '#1E40AF',
+                    fontSize: '0.72rem',
+                    fontWeight: '700',
+                    padding: '2px 8px',
+                    borderRadius: '999px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  🌐 {lang}
+                  <span
+                    onClick={() => toggleArrayItem('languages', lang)}
+                    style={{ cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' }}
+                  >
+                    ✕
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       )}

@@ -355,6 +355,20 @@ export default function VisaDetailPage({ params }) {
   const [applicantCount, setApplicantCount] = useState(1);
   const [visaTypeSelect, setVisaTypeSelect] = useState('Tourist Visa');
   const [entryTypeSelect, setEntryTypeSelect] = useState('Single Entry');
+  const [voucher, setVoucher] = useState('');
+  const [voucherApplied, setVoucherApplied] = useState(false);
+  const [useCoins, setUseCoins] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleCopyLink = () => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
   const [openAccordions, setOpenAccordions] = useState({
     stickerVisa: true,
     requiredDocs: false,
@@ -418,19 +432,181 @@ export default function VisaDetailPage({ params }) {
         </div>
 
         <div className="visa-header-card">
-          <div className="detail-title-row">
-            <div className="title-and-rating">
-              <h1>{visa.country}</h1>
-              <div className="stars-row">
-                <span className="star-gold">★★★★★</span>
-                <span className="rating-score">{visa.rating}</span>
-                <small className="rating-count">(Ratings)</small>
+          <div className="detail-title-row" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '800', color: '#0F172A' }}>{visa.country}</h1>
+            
+            {/* Rating Stars & Inline Large Action Buttons */}
+            <div className="stars-row" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginTop: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="star-gold" style={{ color: '#FFB800', fontSize: '1rem' }}>★★★★★</span>
+                <strong className="rating-score" style={{ fontSize: '0.95rem', color: '#0F172A' }}>{visa.rating}</strong>
+                <small className="rating-count" style={{ fontSize: '0.82rem', color: '#64748B' }}>(Ratings)</small>
               </div>
-            </div>
 
-            <div className="action-buttons-group">
-              <button className="btn-icon-circle" aria-label="Share">&#8599;</button>
-              <button className="btn-icon-circle" aria-label="Wishlist">♡</button>
+              {/* Share & Wishlist Buttons Inline right beside Ratings */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                {/* Share Button with Popover */}
+                <div style={{ position: 'relative' }}>
+                  <button
+                    onClick={() => setShowShareModal(!showShareModal)}
+                    title="Share Visa Page"
+                    style={{
+                      background: showShareModal ? '#DCFCE7' : '#EFF6FF',
+                      border: showShareModal ? '1px solid #86EFAC' : '1px solid #BFDBFE',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: '#2563EB',
+                      transition: 'all 0.2s ease-in-out',
+                      boxShadow: '0 2px 6px rgba(37,99,235,0.1)',
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                    </svg>
+                  </button>
+
+                  {/* Share Modal / Popover */}
+                  {showShareModal && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '36px',
+                        left: '0',
+                        background: '#ffffff',
+                        borderRadius: '20px',
+                        boxShadow: '0 20px 45px rgba(15, 23, 42, 0.22)',
+                        border: '1px solid #E2E8F0',
+                        padding: '22px 20px',
+                        width: '310px',
+                        zIndex: 999,
+                        animation: 'modalFadeIn 0.2s ease-out',
+                      }}
+                    >
+                      {/* Header */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                        <strong style={{ fontSize: '1rem', color: '#0F172A', fontWeight: '800' }}>Share Package</strong>
+                        <button
+                          type="button"
+                          onClick={() => setShowShareModal(false)}
+                          style={{ border: 'none', background: '#F1F5F9', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', color: '#64748B', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* Social Icons Row */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px', textAlign: 'center' }}>
+                        {/* Facebook */}
+                        <a
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShowShareModal(false)}
+                          style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                        >
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(24,119,242,0.3)' }}>
+                            f
+                          </div>
+                          <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Facebook</span>
+                        </a>
+
+                        {/* WhatsApp */}
+                        <a
+                          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(visa.country + ' Visa Package')}%20${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShowShareModal(false)}
+                          style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                        >
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#25D366', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(37,211,102,0.3)' }}>
+                            💬
+                          </div>
+                          <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>WhatsApp</span>
+                        </a>
+
+                        {/* Twitter (X) */}
+                        <a
+                          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(visa.country + ' Visa Package')}&url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setShowShareModal(false)}
+                          style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                        >
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0F172A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '800', boxShadow: '0 4px 10px rgba(15,23,42,0.3)' }}>
+                            𝕏
+                          </div>
+                          <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Twitter</span>
+                        </a>
+
+                        {/* Email */}
+                        <a
+                          href={`mailto:?subject=${encodeURIComponent(visa.country + ' Visa Package')}&body=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                          onClick={() => setShowShareModal(false)}
+                          style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                        >
+                          <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EA4335', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(234,67,53,0.3)' }}>
+                            ✉️
+                          </div>
+                          <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Email</span>
+                        </a>
+                      </div>
+
+                      {/* Copy Link Input Capsule */}
+                      <div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748B', display: 'block', marginBottom: '6px' }}>Page Link</span>
+                        <div style={{ display: 'flex', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '3px' }}>
+                          <input
+                            type="text"
+                            readOnly
+                            value={typeof window !== 'undefined' ? window.location.href : ''}
+                            style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px 10px', fontSize: '0.78rem', color: '#475569', outline: 'none' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleCopyLink}
+                            style={{ background: copiedLink ? '#16A34A' : '#2563EB', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease' }}
+                          >
+                            {copiedLink ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Wishlist Heart Button */}
+                <button
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  title={isFavorite ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  style={{
+                    background: isFavorite ? '#FFE4E6' : '#FEF2F2',
+                    border: isFavorite ? '1px solid #FDA4AF' : '1px solid #FECDD3',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#E11D48',
+                    transition: 'all 0.2s ease-in-out',
+                    boxShadow: isFavorite ? '0 3px 10px rgba(225,29,72,0.22)' : '0 2px 6px rgba(225,29,72,0.1)',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorite ? '#E11D48' : 'none'} stroke="#E11D48" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -552,7 +728,7 @@ export default function VisaDetailPage({ params }) {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
                     <div>
-                      <label style={{ fontSize: '0.75rem', fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#475569' }}>VISA Type (Dropdown)</label>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 'bold', display: 'block', marginBottom: '3px', color: '#475569' }}>VISA Type</label>
                       <select
                         value={visaTypeSelect}
                         onChange={(e) => setVisaTypeSelect(e.target.value)}
@@ -581,9 +757,9 @@ export default function VisaDetailPage({ params }) {
 
                   {/* Fee Breakdown Stack */}
                   <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {/* 1. Default Primary Visa Fee */}
+                    {/* 1. Visa Fee */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem' }}>
-                      <span style={{ color: '#64748B', fontWeight: 600 }}>Default Primary Visa Fee:</span>
+                      <span style={{ color: '#64748B', fontWeight: 600 }}>Visa Fee:</span>
                       <strong style={{ color: '#0F172A', fontSize: '0.82rem' }}>৳{primaryVisaFeeNum.toLocaleString()}</strong>
                     </div>
 
@@ -591,7 +767,7 @@ export default function VisaDetailPage({ params }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem', borderTop: '1px dashed #CBD5E1', paddingTop: '6px' }}>
                       <span style={{ color: '#64748B', fontWeight: 600 }}>Processing Service Fee:</span>
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{ textDecoration: 'line-through', color: '#94A3B8', fontSize: '0.72rem', marginRight: '4px' }}>৳{regProcFee.toLocaleString()}</span>
+                        <span style={{ textDecoration: 'line-through', color: '#15803D', background: '#F0FDF4', border: '1.5px solid #86EFAC', borderRadius: '6px', padding: '2px 8px', fontSize: '0.88rem', fontWeight: '800', marginRight: '6px' }}>৳{regProcFee.toLocaleString()}</span>
                         <strong style={{ color: '#166534', background: '#DCFCE7', padding: '1px 5px', borderRadius: '4px', fontSize: '0.78rem' }}>
                           ৳{currentProcFee.toLocaleString()}
                         </strong>
@@ -626,7 +802,7 @@ export default function VisaDetailPage({ params }) {
                     >
                       Submit VISA Application (Total: ৳{grandTotal.toLocaleString()})
                     </button>
-                    <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '10px 0 0 0' }}>
+                    <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'left', lineHeight: '1.4', margin: '10px 0 0 0' }}>
                       Upon clicking 'Book Now', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
                     </p>
                   </div>

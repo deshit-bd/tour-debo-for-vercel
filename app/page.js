@@ -196,6 +196,11 @@ export default function HomePage() {
                       {t.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
                   </div>
+                  <div style={{ margin: '4px 0' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                      🚌 Route: {t.transportRoute || `${t.startingPoint || 'Dhaka'} - ${t.location} - ${t.startingPoint || 'Dhaka'}`}
+                    </span>
+                  </div>
                   <p className="tour-snippet">{t.desc}</p>
                   <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
@@ -249,6 +254,11 @@ export default function HomePage() {
                       <span className="discount-tag">20% OFF</span>
                     </div>
                   </div>
+                  <div style={{ margin: '4px 0' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                      🚌 Route: {o.transportRoute || `${o.startingPoint || 'Dhaka'} - ${o.location} - ${o.startingPoint || 'Dhaka'}`}
+                    </span>
+                  </div>
                   <p className="tour-snippet">{o.desc}</p>
                   <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ fontSize: '0.76rem', color: '#475569', fontWeight: '700', background: '#F1F5F9', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
@@ -301,6 +311,11 @@ export default function HomePage() {
                       <span className="strike-price">{formatPrice(t.oldPrice)}</span>
                       {t.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
+                  </div>
+                  <div style={{ margin: '4px 0' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                      🚌 Route: {t.transportRoute || `${t.startingPoint || 'Dhaka'} - ${t.location} - ${t.startingPoint || 'Dhaka'}`}
+                    </span>
                   </div>
                   <p className="tour-snippet">{t.desc}</p>
                   <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -360,6 +375,11 @@ export default function HomePage() {
                       <span className="strike-price">{formatPrice(tour.oldPrice)}</span>
                       {tour.isOffer && <span className="discount-tag">20% OFF</span>}
                     </div>
+                  </div>
+                  <div style={{ margin: '4px 0' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                      🚌 Route: {tour.transportRoute || `${tour.startingPoint || 'Dhaka'} - ${tour.location} - ${tour.startingPoint || 'Dhaka'}`}
+                    </span>
                   </div>
                   <p className="tour-snippet">{tour.desc}</p>
                   <div className="icons-features-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

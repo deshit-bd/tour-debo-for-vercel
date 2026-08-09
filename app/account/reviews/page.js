@@ -13,6 +13,15 @@ function ReviewContent() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('toreview'); // 'toreview' | 'history'
   const [activeModalItem, setActiveModalItem] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyId = (id) => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -176,8 +185,25 @@ function ReviewContent() {
                     </div>
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '700' }}>
+                      <span
+                        onClick={() => handleCopyId(item.id)}
+                        title="Click to copy Booking ID"
+                        style={{ cursor: 'pointer', fontSize: '0.74rem', color: '#64748B', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px', userSelect: 'all' }}
+                      >
                         Booking ID : #{item.id}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: copiedId === item.id ? '#16A34A' : '#64748B', fontWeight: 'bold' }}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={copiedId === item.id ? '#16A34A' : '#64748B'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            {copiedId === item.id ? (
+                              <polyline points="20 6 9 17 4 12" />
+                            ) : (
+                              <>
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                              </>
+                            )}
+                          </svg>
+                          {copiedId === item.id ? 'Copied!' : ''}
+                        </span>
                       </span>
                       <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: '800', color: '#0F172A', lineHeight: 1.3 }}>
                         {item.name}

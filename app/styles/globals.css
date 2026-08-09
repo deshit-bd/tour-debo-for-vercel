@@ -5788,3 +5788,228 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Ultra-Premium Tabular Bookings Data Table
+   ========================================================================== */
+.premium-table-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+  width: 100%;
+}
+
+.premium-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.premium-bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 680px;
+}
+
+.premium-bookings-table thead tr {
+  background: #F8FAFC;
+  border-bottom: 1.5px solid #E2E8F0;
+}
+
+.premium-bookings-table th {
+  padding: 14px 18px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.premium-bookings-table td {
+  padding: 16px 18px;
+  vertical-align: middle;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.premium-table-row {
+  transition: background 0.15s ease;
+}
+
+.premium-table-row:last-child td {
+  border-bottom: none;
+}
+
+.premium-table-row:hover {
+  background: #F8FAFC;
+}
+
+.package-cell-flex {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.booking-thumb-box {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.package-meta-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.booking-item-name {
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.3;
+  display: block;
+}
+
+.package-sub-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+.rating-pill {
+  color: #D97706;
+  font-weight: 700;
+}
+
+.dot-sep {
+  color: #CBD5E1;
+}
+
+.booking-id-tag {
+  cursor: pointer;
+  color: #475569;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #F1F5F9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #E2E8F0;
+  transition: all 0.15s ease;
+}
+
+.booking-id-tag:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+}
+
+.copy-feedback-text {
+  font-size: 0.72rem;
+  color: #16A34A;
+  font-weight: 800;
+}
+
+.date-tag {
+  color: #64748B;
+  font-weight: 600;
+}
+
+.qty-value-badge {
+  display: inline-block;
+  background: #F1F5F9;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.booking-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.green-badge {
+  background: #DCFCE7 !important;
+  color: #15803D !important;
+  border: 1px solid #BBF7D0 !important;
+}
+
+.topay-badge {
+  background: #FEF3C7 !important;
+  color: #B45309 !important;
+  border: 1px solid #FDE68A !important;
+}
+
+.gray-badge {
+  background: #F1F5F9 !important;
+  color: #334155 !important;
+  border: 1px solid #CBD5E1 !important;
+}
+
+.red-badge {
+  background: #FEE2E2 !important;
+  color: #DC2626 !important;
+  border: 1px solid #FCA5A5 !important;
+}
+
+.actions-flex-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-action-review {
+  background: #FF6B00;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-action-review:hover {
+  background: #E05D00;
+}
+
+.btn-action-details {
+  background: #0066FF;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.btn-action-details:hover {
+  background: #0052CC;
+}

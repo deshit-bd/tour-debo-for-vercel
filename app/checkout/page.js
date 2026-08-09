@@ -92,6 +92,7 @@ function CheckoutContent() {
   const [expiration, setExpiration] = useState('');
   const [cvv, setCvv] = useState('');
   const [bankTxnRef, setBankTxnRef] = useState('');
+  const [bankSlipFile, setBankSlipFile] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
@@ -261,7 +262,7 @@ function CheckoutContent() {
                     Seller Discount: - {formatPrice(sellerDiscount)}
                   </span>
                   <span style={{ background: voucherDiscount > 0 ? '#DCFCE7' : '#F1F5F9', color: voucherDiscount > 0 ? '#166534' : '#64748B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
-                    Voucher Discount: {voucherDiscount > 0 ? `- ${formatPrice(voucherDiscount)}` : 'None'}
+                    Voucher Discount: {voucherDiscount > 0 ? `- ${formatPrice(voucherDiscount)}` : formatPrice(0)}
                   </span>
                   {useCoins && (
                     <span style={{ background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: '700' }}>
@@ -279,74 +280,85 @@ function CheckoutContent() {
                 </div>
               </div>
 
-              {/* Amount Summary Card */}
+              {/* Booking Summary Card */}
               <div className="summary-breakdown-card">
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '900', color: '#0F172A', margin: '0 0 12px 0', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+                  Booking Summary
+                </h4>
+                
                 <div className="summary-line">
-                  <span>Subtotal Amount:</span>
+                  <span>Subtotal:</span>
                   <strong>{formatPrice(subtotal)}</strong>
                 </div>
+
                 <div className="summary-line">
                   <span>Seller Discount:</span>
-                  <strong>- {formatPrice(sellerDiscount)}</strong>
+                  <strong style={{ color: '#DC2626' }}>- {formatPrice(sellerDiscount)}</strong>
                 </div>
-                {voucherDiscount > 0 && (
-                  <div className="summary-line">
-                    <span>Voucher Discount ({voucher.toUpperCase()}):</span>
-                    <strong>- {formatPrice(voucherDiscount)}</strong>
-                  </div>
-                )}
-                {useCoins && (
-                  <div className="summary-line">
-                    <span>Coins Discount (Redeem TK.50):</span>
-                    <strong style={{ color: '#059669' }}>- {formatPrice(coinsDiscount)}</strong>
-                  </div>
-                )}
+
+                <div className="summary-line">
+                  <span>Voucher &amp; Code:</span>
+                  <strong style={{ color: voucherDiscount > 0 ? '#166534' : '#64748B' }}>
+                    {voucherDiscount > 0 ? `- ${formatPrice(voucherDiscount)}` : formatPrice(0)}
+                  </strong>
+                </div>
+
+                <div className="summary-line">
+                  <span>Coins (Redeem TK. 50):</span>
+                  <strong style={{ color: useCoins ? '#166534' : '#64748B' }}>
+                    {useCoins ? `- ${formatPrice(coinsDiscount)}` : formatPrice(0)}
+                  </strong>
+                </div>
+
                 {paymentMethod === 'bank' && (
                   <div className="summary-line">
                     <span>Bank Transfer 5% Cash Back Offer:</span>
-                    <strong style={{ color: '#059669' }}>- {formatPrice(bankCashback)}</strong>
+                    <strong style={{ color: '#166534' }}>- {formatPrice(bankCashback)}</strong>
                   </div>
                 )}
+
                 <div className="summary-line">
                   <span>Payment Partner Discount:</span>
-                  <strong>- {formatPrice(partnerDiscount)}</strong>
+                  <strong style={{ color: '#DC2626' }}>- {formatPrice(partnerDiscount)}</strong>
                 </div>
+
                 <div className="summary-line">
-                  <span>Platform Fee:</span>
+                  <span>Platform Fees:</span>
                   <strong>{formatPrice(0)}</strong>
                 </div>
 
                 <div className="summary-total-banner">
-                  <span>TOTAL :</span>
+                  <span>Total :</span>
                   <strong>{formatPrice(grandTotal)}</strong>
                 </div>
               </div>
 
-              {/* Apply Voucher & Coins Block */}
-              <div className="voucher-input-block">
-                <label className="field-title">Voucher &amp; Code / Coins</label>
-                <div className="voucher-field-capsule">
-                  <span className="voucher-percent-icon">%</span>
+              {/* Apply Voucher & Coins Interactive Block */}
+              <div className="voucher-input-block" style={{ marginTop: '16px' }}>
+                <label className="field-title" style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '8px', color: '#334155' }}>Voucher &amp; Code / Coins</label>
+                <div className="voucher-field-capsule" style={{ display: 'flex', background: '#ffffff', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '4px' }}>
+                  <span className="voucher-percent-icon" style={{ padding: '6px 10px', color: '#64748B', fontWeight: 'bold' }}>%</span>
                   <input
                     type="text"
                     placeholder="Enter Voucher here (e.g. DESH2026)"
                     value={voucher}
                     onChange={(e) => setVoucher(e.target.value)}
+                    style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px', fontSize: '0.82rem', outline: 'none' }}
                   />
-                  <button onClick={() => setVoucher('DESH2026')} style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
+                  <button onClick={() => setVoucher('DESH2026')} style={{ background: 'var(--primary-blue)', color: '#fff', border: 'none', padding: '6px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
                     Apply
                   </button>
                 </div>
 
-                {/* Coins Redeem Toggle Switch (Feedback Reference) */}
+                {/* Coins Redeem Toggle Switch */}
                 <div style={{ background: useCoins ? '#ECFDF5' : '#F8FAFC', border: `1.5px solid ${useCoins ? '#10B981' : '#CBD5E1'}`, borderRadius: '12px', padding: '12px 16px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'all 0.2s ease' }}>
                   <div>
-                    <strong style={{ fontSize: '0.86rem', color: '#0F172A', display: 'block' }}>Coins (Redeem Option by Toggle)</strong>
+                    <strong style={{ fontSize: '0.84rem', color: '#0F172A', display: 'block' }}>Coins (Redeem TK. 50)</strong>
                     <span style={{ fontSize: '0.74rem', color: useCoins ? '#047857' : '#64748B', fontWeight: '600' }}>
-                      {useCoins ? '✓ Ex. Redeem TK.50 Applied!' : 'Ex. Redeem TK.50 (Toggle ON)'}
+                      {useCoins ? `✓ Applied: - ${formatPrice(coinsDiscount)}` : 'Redeem TK. 50 (Toggle ON)'}
                     </span>
                   </div>
-                  <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '24px', cursor: 'pointer' }}>
+                  <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '22px', cursor: 'pointer', flexShrink: 0 }}>
                     <input
                       type="checkbox"
                       checked={useCoins}
@@ -355,10 +367,10 @@ function CheckoutContent() {
                     />
                     <span style={{
                       position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      backgroundColor: useCoins ? '#10B981' : '#CBD5E1', borderRadius: '24px', transition: '0.3s'
+                      backgroundColor: useCoins ? '#10B981' : '#CBD5E1', borderRadius: '22px', transition: '0.3s'
                     }}>
                       <span style={{
-                        position: 'absolute', height: '18px', width: '18px', left: useCoins ? '24px' : '3px', bottom: '3px',
+                        position: 'absolute', height: '16px', width: '16px', left: useCoins ? '23px' : '3px', bottom: '3px',
                         backgroundColor: 'white', borderRadius: '50%', transition: '0.3s'
                       }} />
                     </span>
@@ -426,7 +438,7 @@ function CheckoutContent() {
                       <div><strong>Account No:</strong> 1502948102001</div>
                       <div><strong>Routing No:</strong> 225272810 (Dhaka Branch)</div>
                     </div>
-                    <div style={{ marginTop: '10px' }}>
+                    <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <input
                         type="text"
                         placeholder="Enter Bank Deposit Slip No / Txn Reference ID *"
@@ -434,6 +446,53 @@ function CheckoutContent() {
                         onChange={(e) => setBankTxnRef(e.target.value)}
                         style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #BAE6FD', fontSize: '0.82rem', background: '#ffffff', outline: 'none' }}
                       />
+
+                      {/* Deposit Slip File / Image Attachment Uploader */}
+                      <label
+                        htmlFor="bankSlipUpload"
+                        style={{
+                          display: 'block',
+                          background: '#ffffff',
+                          border: '1.5px dashed #0284C7',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: '600', color: '#0369A1' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                          </svg>
+                          <span>{bankSlipFile ? `Attached: ${bankSlipFile.name}` : 'Attach Deposit Slip / Receipt (Image or PDF) *'}</span>
+                        </div>
+                        <input
+                          id="bankSlipUpload"
+                          type="file"
+                          accept="image/*,.pdf"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setBankSlipFile(e.target.files[0]);
+                            }
+                          }}
+                          style={{ display: 'none' }}
+                        />
+                        {bankSlipFile && (
+                          <div style={{ marginTop: '8px', paddingTop: '6px', borderTop: '1px dashed #BAE6FD', fontSize: '0.74rem', color: '#15803D', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>✓ {bankSlipFile.name} ({(bankSlipFile.size / 1024).toFixed(1)} KB)</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setBankSlipFile(null);
+                              }}
+                              style={{ background: 'transparent', border: 'none', color: '#DC2626', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.72rem' }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+                      </label>
                     </div>
                   </div>
                 )}
@@ -525,7 +584,7 @@ function CheckoutContent() {
                     {processing ? 'Processing Payment...' : `Pay ${formatPrice(grandTotal)}`}
                   </button>
 
-                  <p style={{ fontSize: '0.74rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '12px 0 0 0' }}>
+                  <p style={{ fontSize: '0.74rem', color: '#64748B', textAlign: 'left', lineHeight: '1.4', margin: '12px 0 0 0' }}>
                     Upon clicking 'Place Order', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
                   </p>
                 </div>

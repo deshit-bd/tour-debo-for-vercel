@@ -18,28 +18,13 @@ export default function SellerLoginPage() {
   const [name, setName] = useState('Green Bengal Tours & Travels');
   const [loading, setLoading] = useState(false);
 
-  const handleRoleChange = (role) => {
-    setAuthRole(role);
-    if (role === 'PLANNER') {
-      setEmail('planner@deshit-bd.com');
-      setName('Green Bengal Tours & Travels');
-    } else {
-      setEmail('user@deshit-bd.com');
-      setName('Sanjid Ibrahim');
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
 
     setTimeout(() => {
-      login(authRole, email, name);
-      if (authRole === 'PLANNER') {
-        router.push('/business-center');
-      } else {
-        router.push('/account/profile');
-      }
+      login('PLANNER', email, name || 'Green Bengal Tours & Travels');
+      router.push('/business-center');
     }, 600);
   };
 
@@ -94,76 +79,28 @@ export default function SellerLoginPage() {
           </Link>
 
           {/* Title & Subtitle */}
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '800', margin: '0 0 6px 0', textAlign: 'center', color: '#0F172A' }}>
-            {authMode === 'login' ? '🔑 Welcome Back' : '✨ Create Account'}
+          <h3 style={{ fontSize: '1.45rem', fontWeight: '800', margin: '0 0 6px 0', textAlign: 'center', color: '#0F172A' }}>
+            {authMode === 'login' ? '💼 Tour Planner Portal' : '✨ Join as Tour Planner'}
           </h3>
-          <p style={{ fontSize: '0.88rem', color: '#64748B', textAlign: 'center', margin: '0 0 22px 0', lineHeight: 1.4 }}>
-            {authMode === 'login' ? 'Select your role and login to Tour Dibo' : 'Register a new account on Tour Dibo'}
+          <p style={{ fontSize: '0.86rem', color: '#64748B', textAlign: 'center', margin: '0 0 24px 0', lineHeight: 1.45 }}>
+            {authMode === 'login'
+              ? 'Welcome back! Sign in to manage your tours, visas & business dashboard'
+              : 'Create your agency account to list packages, manage bookings & reach tourists'}
           </p>
-
-          {/* Role Choice Buttons Segment */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '6px',
-              marginBottom: '22px',
-              background: '#F1F5F9',
-              padding: '4px',
-              borderRadius: '14px',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => handleRoleChange('USER')}
-              style={{
-                padding: '11px 12px',
-                borderRadius: '10px',
-                border: 'none',
-                fontSize: '0.84rem',
-                fontWeight: '800',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                background: authRole === 'USER' ? '#2563EB' : 'transparent',
-                color: authRole === 'USER' ? '#ffffff' : '#475569',
-                boxShadow: authRole === 'USER' ? '0 2px 8px rgba(37,99,235,0.25)' : 'none',
-              }}
-            >
-              👤 Tourist Mode
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleRoleChange('PLANNER')}
-              style={{
-                padding: '11px 12px',
-                borderRadius: '10px',
-                border: 'none',
-                fontSize: '0.84rem',
-                fontWeight: '800',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                background: authRole === 'PLANNER' ? '#2563EB' : 'transparent',
-                color: authRole === 'PLANNER' ? '#ffffff' : '#475569',
-                boxShadow: authRole === 'PLANNER' ? '0 2px 8px rgba(37,99,235,0.25)' : 'none',
-              }}
-            >
-              ⚡ Planner Mode
-            </button>
-          </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {authMode === 'register' && (
               <div>
                 <label style={{ fontSize: '0.82rem', fontWeight: '800', color: '#334155', display: 'block', marginBottom: '6px' }}>
-                  {authRole === 'PLANNER' ? 'Agency / Planner Name *' : 'Full Name *'}
+                  Agency / Tour Planner Name *
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  placeholder="e.g. Green Bengal Tours & Travels"
                   style={{
                     width: '100%',
                     padding: '11px 14px',
@@ -187,6 +124,7 @@ export default function SellerLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                placeholder="planner@example.com"
                 style={{
                   width: '100%',
                   padding: '11px 14px',
@@ -241,12 +179,12 @@ export default function SellerLoginPage() {
               {loading
                 ? 'Authenticating...'
                 : authMode === 'login'
-                ? `Login as ${authRole === 'PLANNER' ? 'Planner' : 'Tourist'}`
-                : 'Register Account'}
+                ? 'Login to Planner Portal'
+                : 'Register as Tour Planner'}
             </button>
 
             <div style={{ textAlign: 'center', fontSize: '0.82rem', color: '#64748B', marginTop: '6px' }}>
-              {authMode === 'login' ? "Don't have an account? " : 'Already registered? '}
+              {authMode === 'login' ? "Don't have a planner account? " : 'Already registered? '}
               <button
                 type="button"
                 onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}

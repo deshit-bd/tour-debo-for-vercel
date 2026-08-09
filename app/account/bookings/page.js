@@ -14,6 +14,15 @@ function BookingsContent() {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('status') || 'all';
   const [reviewModalItem, setReviewModalItem] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyId = (id) => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   const changeTab = (status) => {
     router.push(`/account/bookings?status=${status}`);
@@ -80,67 +89,101 @@ function BookingsContent() {
           <button className={`sub-tab ${activeTab === 'cancelled' ? 'active' : ''}`} onClick={() => changeTab('cancelled')}>Cancelled</button>
         </div>
 
-        {/* Booking List Cards */}
-        <div className="bookings-cards-stack">
-          {filteredBookings.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94A3B8' }}>
-              <p style={{ fontSize: '0.95rem' }}>No bookings found for this category.</p>
+        {/* Premium Bookings Table */}
+        {filteredBookings.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '50px 20px', color: '#94A3B8', background: '#ffffff', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+            <p style={{ fontSize: '0.95rem', margin: 0 }}>No bookings found for this category.</p>
+          </div>
+        ) : (
+          <div className="premium-table-card">
+            <div className="premium-table-scroll">
+              <table className="premium-bookings-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '44%', textAlign: 'left' }}>Package &amp; Booking Info</th>
+                    <th style={{ width: '15%', textAlign: 'center' }}>Quantity</th>
+                    <th style={{ width: '17%', textAlign: 'center' }}>Status</th>
+                    <th style={{ width: '24%', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBookings.map((item, idx) => (
+                    <tr key={item.id || idx} className="premium-table-row">
+                      {/* Column 1: Package Info */}
+                      <td>
+                        <div className="package-cell-flex">
+                          <div className="booking-thumb-box">
+                            <Image src={item.image} alt={item.name} fill className="thumb-img" />
+                          </div>
+                          <div className="package-meta-box">
+                            <span className="booking-item-name">{item.name}</span>
+                            <div className="package-sub-meta">
+                              <span className="rating-pill">★ {item.rating} Rating</span>
+                              <span className="dot-sep">•</span>
+                              <span
+                                className="booking-id-tag"
+                                onClick={() => handleCopyId(item.id)}
+                                title="Click to copy Booking ID"
+                              >
+                                ID: #{item.id}
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={copiedId === item.id ? '#16A34A' : '#64748B'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  {copiedId === item.id ? (
+                                    <polyline points="20 6 9 17 4 12" />
+                                  ) : (
+                                    <>
+                                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                    </>
+                                  )}
+                                </svg>
+                                {copiedId === item.id && <span className="copy-feedback-text">Copied!</span>}
+                              </span>
+                              <span className="dot-sep">•</span>
+                              <span className="date-tag">{item.date}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Column 2: Quantity */}
+                      <td style={{ textAlign: 'center' }}>
+                        <span className="qty-value-badge">Quantity - {item.qty}</span>
+                      </td>
+
+                      {/* Column 3: Status */}
+                      <td style={{ textAlign: 'center' }}>
+                        <span className={`booking-status-badge ${
+                          item.status === 'Completed' ? 'green-badge' :
+                          item.status === 'Payment Due' || item.status === 'To Pay' ? 'topay-badge' :
+                          item.status === 'Cancelled' ? 'red-badge' : 'gray-badge'
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
+
+                      {/* Column 4: Actions */}
+                      <td style={{ textAlign: 'right' }}>
+                        <div className="actions-flex-group">
+                          {item.status === 'Completed' && (
+                            <button
+                              onClick={() => setReviewModalItem(item)}
+                              className="btn-action-review"
+                            >
+                              Review
+                            </button>
+                          )}
+                          <Link href={`/account/bookings/${item.id}`} className="btn-action-details">
+                            Details &amp; Receipt
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ) : (
-            filteredBookings.map((item, idx) => (
-              <div key={idx} className="booking-card-row-figma">
-                <div className="booking-row-header">
-                  <small className="booking-id-text">Booking ID : #{item.id}</small>
-                  <small className="booking-date-text">Booking Date : {item.date}</small>
-                </div>
-
-                <div className="booking-row-body">
-                  <div className="booking-item-cell" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div className="booking-thumb-box">
-                      <Image src={item.image} alt={item.name} fill className="thumb-img" />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <span className="booking-item-name">{item.name}</span>
-                      <span style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                        ★ {item.rating} Rating
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="booking-qty">Quantity - {item.qty}</div>
-
-                  <div className={`booking-status-badge ${item.status === 'Completed' ? 'green-badge' : item.status === 'Payment Due' || item.status === 'To Pay' ? 'topay-badge' : item.status === 'Cancelled' ? 'red-badge' : 'gray-badge'}`}>
-                    {item.status}
-                  </div>
-
-                  {/* Action buttons: Review for Completed orders, or Details link */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    {item.status === 'Completed' && (
-                      <button
-                        onClick={() => setReviewModalItem(item)}
-                        style={{
-                          background: '#FF6B00',
-                          color: '#fff',
-                          border: 'none',
-                          padding: '8px 14px',
-                          borderRadius: '8px',
-                          fontSize: '0.82rem',
-                          fontWeight: 'bold',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Review
-                      </button>
-                    )}
-                    <Link href={`/account/bookings/${item.id}`} className="link-details-btn">
-                      Details &amp; Receipt
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Review Modal Window */}

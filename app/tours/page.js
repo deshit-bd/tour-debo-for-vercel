@@ -75,6 +75,10 @@ function TourListingContent() {
       }
 
       if (filters.packageType?.length > 0 && !filters.packageType.includes(tour.packageType)) return false;
+      if (filters.maxDays && filters.maxDays < 30) {
+        const daysNum = parseInt((tour.duration || '').replace(/[^0-9]/g, '')) || 0;
+        if (daysNum > 0 && daysNum > filters.maxDays) return false;
+      }
       if (filters.duration?.length > 0 && !filters.duration.includes(tour.duration)) return false;
       if (filters.transportation?.length > 0 && !filters.transportation.includes(tour.transportation)) return false;
       if (filters.meal?.length > 0 && !filters.meal.includes(tour.meal)) return false;
@@ -215,29 +219,37 @@ function TourListingContent() {
         ) : viewMode === 'grid' ? (
           <div className="tours-grid-layout" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px', marginTop: '20px' }}>
             {filteredTours.map((item) => (
-              <div key={item.id} className="grid-tour-card" style={{ background: '#ffffff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ position: 'relative', height: '180px' }}>
-                  <Image src={item.image} alt={item.title} fill style={{ objectFit: 'cover' }} />
-                  <button
-                    onClick={() => toggleFavorite(item.id)}
-                    style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer' }}
-                  >
-                    {favorites[item.id] ? '❤️' : '♡'}
-                  </button>
-                </div>
-                <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1E293B', marginBottom: '4px' }}>{item.title}</h3>
-                    <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '8px' }}>📍 {item.location}</p>
+              <Link key={item.id} href={`/tours/${item.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}>
+                <div className="grid-tour-card" style={{ background: '#ffffff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div style={{ position: 'relative', height: '180px' }}>
+                    <Image src={item.image} alt={item.title} fill style={{ objectFit: 'cover' }} />
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(item.id); }}
+                      style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', zIndex: 2 }}
+                    >
+                      {favorites[item.id] ? '❤️' : '♡'}
+                    </button>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-                    <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>{formatPrice(item.price)}</span>
-                    <Link href={`/tours/${item.id}`} style={{ background: 'var(--primary-blue)', color: '#fff', padding: '6px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '700', textDecoration: 'none' }}>
-                      View Details
-                    </Link>
+                  <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#1E293B', marginBottom: '4px' }}>{item.title}</h3>
+                      <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '6px' }}>📍 {item.location}</p>
+                      
+                      {/* Route description badge (From Image 2) */}
+                      <div style={{ margin: '6px 0 8px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '3px 10px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                          🚌 Route: {item.transportRoute || `${item.startingPoint || 'Dhaka'} - ${item.location} - ${item.startingPoint || 'Dhaka'}`}
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+                      <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>
+                        {item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : formatPrice(item.price)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
@@ -358,26 +370,23 @@ function TourListingContent() {
                     </div>
                   </div>
 
-                  <div className="horizontal-content-box" style={{ padding: '12px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '4px' }}>
+                  <div className="horizontal-content-box" style={{ padding: '8px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '2px' }}>
                     <div className="horizontal-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
                         <div className="title-and-rating" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="tour-title-link" style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-dark)' }}>
+                          <span className="tour-title-link" style={{ fontSize: '1.12rem', fontWeight: '800', color: 'var(--text-dark)' }}>
                             {item.title}
                           </span>
-                          <span className="rating-badge" style={{ background: '#FFFBEB', color: '#B45309', padding: '2px 8px', borderRadius: '6px', fontWeight: '700', fontSize: '0.85rem' }}>★ {item.rating}</span>
+                          <span className="rating-badge" style={{ background: '#FFFBEB', color: '#B45309', padding: '2px 7px', borderRadius: '6px', fontWeight: '700', fontSize: '0.82rem' }}>★ {item.rating}</span>
                         </div>
-                        <p className="location-text" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>📍 {item.location}</p>
+                        <p className="location-text" style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '1px 0 0 0' }}>📍 {item.location}</p>
                       </div>
 
                       <div className="price-and-action" style={{ textAlign: 'right' }}>
-                        <span className="btn-view-details" style={{ background: 'var(--primary-blue)', color: '#ffffff', padding: '6px 16px', borderRadius: '8px', fontWeight: '700', fontSize: '0.85rem', display: 'inline-block', marginBottom: '3px' }}>
-                          View Details
-                        </span>
                         <div className="price-box">
-                          <small style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)' }}>Starting From</small>
-                          <div className="price-numbers" style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
-                            <span className="current-price" style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary-blue)' }}>
+                          <small style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)' }}>Starting From</small>
+                          <div className="price-numbers" style={{ display: 'flex', alignItems: 'baseline', gap: '5px', justifyContent: 'flex-end' }}>
+                            <span className="current-price" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--primary-blue)' }}>
                               {item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : formatPrice(item.price)}
                             </span>
                             {(() => {
@@ -385,7 +394,7 @@ function TourListingContent() {
                               const curr = item.prices?.single || item.price;
                               if (orig && curr && orig > curr && orig < curr * 10) {
                                 return (
-                                  <span className="strike-price" style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                                  <span className="strike-price" style={{ fontSize: '0.82rem', color: '#94A3B8', textDecoration: 'line-through' }}>
                                     ৳{orig.toLocaleString()}
                                   </span>
                                 );
@@ -397,10 +406,10 @@ function TourListingContent() {
                       </div>
                     </div>
 
-                    <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', margin: '2px 0' }}>
-                      <span className="duration-pill" style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
+                    <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', margin: '1px 0' }}>
+                      <span className="duration-pill" style={{ fontSize: '0.76rem', background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
                       {item.isOffer && (
-                        <span className="discount-tag" style={{ fontSize: '0.78rem', background: '#FEE2E2', color: '#DC2626', padding: '3px 10px', borderRadius: '6px', fontWeight: '700' }}>
+                        <span className="discount-tag" style={{ fontSize: '0.76rem', background: '#FEE2E2', color: '#DC2626', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
                           {(() => {
                             if (item.discountTag && item.discountTag !== '100% OFF' && !item.discountTag.includes('100%')) {
                               return item.discountTag;
@@ -415,12 +424,15 @@ function TourListingContent() {
                           })()}
                         </span>
                       )}
-                      <span style={{ fontSize: '0.78rem', background: '#F1F5F9', color: '#475569', padding: '3px 10px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
+                      <span style={{ fontSize: '0.76rem', background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.76rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
+                        🚌 Route: {item.transportRoute || `${item.startingPoint || 'Dhaka'} - ${item.location} - ${item.startingPoint || 'Dhaka'}`}
+                      </span>
                     </div>
 
-                    <p className="tour-description-text" style={{ fontSize: '0.88rem', color: 'var(--text-body)', margin: '2px 0' }}>{item.desc}</p>
+                    <p className="tour-description-text" style={{ fontSize: '0.84rem', color: 'var(--text-body)', margin: '1px 0', lineHeight: '1.35' }}>{item.desc}</p>
 
-                    <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #F1F5F9', marginTop: '2px' }}>
+                    <div className="horizontal-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '4px', borderTop: '1px solid #F1F5F9', marginTop: '1px' }}>
                       <div className="icons-features-row" style={{ display: 'flex', gap: '8px', fontSize: '1rem', alignItems: 'center' }}>
                         {item.amenities ? (
                           item.amenities.map((a) => (

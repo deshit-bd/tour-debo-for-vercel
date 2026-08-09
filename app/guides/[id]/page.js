@@ -147,6 +147,9 @@ export default function GuideDetailPage({ params }) {
 
   const [selectedTier, setSelectedTier] = useState(2); // 1 | 2 | 3
   const [passCount, setPassCount] = useState(1);
+  const [voucher, setVoucher] = useState('');
+  const [voucherApplied, setVoucherApplied] = useState(false);
+  const [useCoins, setUseCoins] = useState(true);
   const [openAccordions, setOpenAccordions] = useState({
     itinerary: true,
     serviceDetails: false,
@@ -383,7 +386,7 @@ export default function GuideDetailPage({ params }) {
                  {/* 4. Verified Tourist Reviews Section */}
             <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
                     ⭐ Tourist Reviews ({guide.guideName})
                   </h3>
@@ -575,7 +578,7 @@ export default function GuideDetailPage({ params }) {
                 <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
                   {selectedOption.name} <span style={{ color: '#0F172A', fontWeight: '900' }}>৳{totalPrice.toLocaleString()}</span>
                 </h3>
-                <span style={{ fontSize: '0.82rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                <span style={{ fontSize: '1.05rem', color: '#15803D', fontWeight: '800', textDecoration: 'line-through', background: '#F0FDF4', padding: '4px 12px', borderRadius: '8px', border: '1.5px solid #86EFAC' }}>
                   ৳{totalOriginalPrice.toLocaleString()}
                 </span>
               </div>
@@ -688,7 +691,7 @@ export default function GuideDetailPage({ params }) {
               >
                 Book Guide
               </button>
-              <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4', margin: '10px 0 0 0' }}>
+              <p style={{ fontSize: '0.72rem', color: '#64748B', textAlign: 'left', lineHeight: '1.4', margin: '10px 0 0 0' }}>
                 Upon clicking 'Book Now', I confirm I have read and acknowledged <Link href="/help" style={{ color: '#2563EB', textDecoration: 'underline' }}>all terms and policies</Link>.
               </p>
             </div>
