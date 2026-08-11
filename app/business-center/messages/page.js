@@ -246,62 +246,8 @@ export default function SellerMessagesPage() {
                     </div>
                   </div>
 
-                  {/* Right: Quick Reply & Auto Reply Action Controls */}
+                  {/* Right: AI Protection Badge */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    
-                    {/* Quick Reply Button & Schedule Badge */}
-                    <button
-                      type="button"
-                      onClick={() => setShowQuickReplyModal(true)}
-                      style={{
-                        background: '#EFF6FF',
-                        border: '1.5px solid #BFDBFE',
-                        color: '#1D4ED8',
-                        padding: '6px 12px',
-                        borderRadius: '10px',
-                        fontSize: '0.78rem',
-                        fontWeight: '800',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <i className="fa-solid fa-bolt" style={{ color: '#2563EB' }}></i>
-                      <span>Quick Reply</span>
-                      <span style={{ background: '#DBEAFE', color: '#1E40AF', padding: '1px 6px', borderRadius: '12px', fontSize: '0.68rem' }}>
-                        {quickReplyTemplates.length} Templates
-                      </span>
-                    </button>
-
-                    {/* Auto Reply Button & Time Schedule Badge */}
-                    <button
-                      type="button"
-                      onClick={() => setShowAutoReplyModal(true)}
-                      style={{
-                        background: autoReplyEnabled ? '#F0FDF4' : '#FEF2F2',
-                        border: autoReplyEnabled ? '1.5px solid #86EFAC' : '1.5px solid #FECACA',
-                        color: autoReplyEnabled ? '#15803D' : '#DC2626',
-                        padding: '6px 12px',
-                        borderRadius: '10px',
-                        fontSize: '0.78rem',
-                        fontWeight: '800',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <i className="fa-solid fa-robot" style={{ color: autoReplyEnabled ? '#15803D' : '#DC2626' }}></i>
-                      <span>Auto Reply</span>
-                      <span style={{ background: autoReplyEnabled ? '#DCFCE7' : '#FEE2E2', padding: '1px 6px', borderRadius: '12px', fontSize: '0.68rem', fontWeight: 800 }}>
-                        {autoReplyEnabled ? (autoReplySchedule === 'outside_hours' ? '10 PM - 8 AM' : (autoReplySchedule === 'holiday' ? '24h Holiday' : `${autoReplyStartTime}-${autoReplyEndTime}`)) : 'OFF'}
-                      </span>
-                    </button>
-
-                    {/* AI Protection Badge */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#FEF2F2', border: '1px solid #FECACA', color: '#DC2626', padding: '5px 10px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: '700' }}>
                       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2563EB', display: 'inline-block' }}></span>
                       AI Contact Protection
