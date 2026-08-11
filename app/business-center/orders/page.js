@@ -85,6 +85,9 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('All'); // 'All', '30_days', '3_months', '6_months', 'custom'
+  const [customStartDate, setCustomStartDate] = useState('2026-01-01');
+  const [customEndDate, setCustomEndDate] = useState('2026-02-28');
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   // Load from localStorage or initialize with ৳ Currency Sanitization
@@ -127,7 +130,32 @@ export default function OrdersPage() {
                         (o.customer || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                         (o.package || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchStatus = statusFilter === 'All' || o.status === statusFilter;
-    return matchSearch && matchStatus;
+    
+    // Real Date Filter Comparison Logic
+    let matchDate = true;
+    if (o.date) {
+      const orderDate = new Date(o.date);
+      const refDate = new Date('2026-08-31T23:59:59');
+
+      if (dateFilter === '30_days') {
+        const start = new Date('2026-08-01T00:00:00');
+        matchDate = orderDate >= start && orderDate <= refDate;
+      } else if (dateFilter === '3_months') {
+        const start = new Date('2026-06-01T00:00:00');
+        matchDate = orderDate >= start && orderDate <= refDate;
+      } else if (dateFilter === '6_months') {
+        const start = new Date('2026-03-01T00:00:00');
+        matchDate = orderDate >= start && orderDate <= refDate;
+      } else if (dateFilter === 'custom') {
+        if (customStartDate && customEndDate) {
+          const start = new Date(customStartDate + 'T00:00:00');
+          const end = new Date(customEndDate + 'T23:59:59');
+          matchDate = orderDate >= start && orderDate <= end;
+        }
+      }
+    }
+    
+    return matchSearch && matchStatus && matchDate;
   });
 
   const getStepIndex = (stepStr) => {
@@ -183,26 +211,68 @@ export default function OrdersPage() {
               </div>
 
               {/* Filters & Search Row */}
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  placeholder="Search by Order ID, Customer, or Package..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ flex: 1, minWidth: '240px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.88rem', outline: 'none' }}
-                />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.88rem', background: '#fff', outline: 'none' }}
-                >
-                  <option value="All">All Statuses ({orders.length})</option>
-                  <option value="Payment Received">Payment Received</option>
-                  <option value="Operator Approved">Operator Approved</option>
-                  <option value="Tour Started">Tour Started</option>
-                  <option value="Tour Ended">Tour Ended</option>
-                  <option value="Review & Dispute Window">Review & Dispute Window</option>
-                </select>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <input
+                    type="text"
+                    placeholder="Search by Order ID, Customer, or Package..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ flex: 1, minWidth: '240px', padding: '10px 14px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.88rem', outline: 'none' }}
+                  />
+                  
+                  {/* Status Filter */}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.88rem', background: '#fff', outline: 'none' }}
+                  >
+                    <option value="All">All Statuses ({orders.length})</option>
+                    <option value="Payment Received">Payment Received</option>
+                    <option value="Operator Approved">Operator Approved</option>
+                    <option value="Tour Started">Tour Started</option>
+                    <option value="Tour Ended">Tour Ended</option>
+                    <option value="Review & Dispute Window">Review & Dispute Window</option>
+                  </select>
+
+                  {/* Datewise Search Filter */}
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', background: '#F8FAFC', color: '#1E293B', fontWeight: 600, outline: 'none' }}
+                  >
+                    <option value="All">📅 All Booking Dates</option>
+                    <option value="30_days">Last 30 Days</option>
+                    <option value="3_months">Last 3 Month</option>
+                    <option value="6_months">Last 6 Month</option>
+                    <option value="custom">🗓️ Selection Calendar</option>
+                  </select>
+                </div>
+
+                {/* Custom Selection Calendar Date Range Inputs */}
+                {dateFilter === 'custom' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#FAF5FF', border: '1px solid #E9D5FF', padding: '10px 14px', borderRadius: '10px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#7E22CE' }}>Selection Calendar Range:</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#64748B' }}>From:</label>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ fontSize: '0.78rem', color: '#64748B' }}>To:</label>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.82rem' }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Orders Table */}

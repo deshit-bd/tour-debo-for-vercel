@@ -12,7 +12,7 @@ function AddGuideFormContent() {
   const editId = searchParams ? searchParams.get('edit') : null;
   const [isEditing, setIsEditing] = useState(false);
 
-  // ── 1. Guide Basic Info ──
+  // ── 1. Guide Basic Info & Slot Capacity ──
   const [guideName, setGuideName] = useState('Sanjid Rahman');
   const [title, setTitle] = useState('Explore Dhaka Heritage & Street Food Guide');
   const [location, setLocation] = useState('Dhaka, Bangladesh');
@@ -20,6 +20,8 @@ function AddGuideFormContent() {
   const [packageType, setPackageType] = useState('Family');
   const [duration, setDuration] = useState('3 Days / 2 Nights');
   const [availableDates, setAvailableDates] = useState('2026-08-10');
+  const [maxGuests, setMaxGuests] = useState('10');
+  const [bookedDates, setBookedDates] = useState(['2026-08-15', '2026-08-18']);
   const [includedSummary, setIncludedSummary] = useState('Flights, hotel, meals and transport included');
 
   // ── 2. Performance & Experience Stats ──
@@ -278,6 +280,11 @@ function AddGuideFormContent() {
                 <input type="date" value={availableDates} onChange={(e) => setAvailableDates(e.target.value)} required style={inpStyle} />
               </div>
 
+              <div>
+                <label style={lblStyle}>Maximum Guest Capacity (Persons) *</label>
+                <input type="number" min="1" max="100" value={maxGuests} onChange={(e) => setMaxGuests(e.target.value)} required style={inpStyle} placeholder="e.g. 10" />
+              </div>
+
               <div style={{ gridColumn: 'span 2' }}>
                 <label style={lblStyle}>Covered Spots & Key Destinations *</label>
                 <input type="text" value={coveredSpots} onChange={(e) => setCoveredSpots(e.target.value)} required style={inpStyle} placeholder="e.g. Old Dhaka, Ahsan Manzil, Lalbagh Fort & Buriganga River" />
@@ -287,6 +294,25 @@ function AddGuideFormContent() {
                 <label style={lblStyle}>Inclusions Badge Summary *</label>
                 <input type="text" value={includedSummary} onChange={(e) => setIncludedSummary(e.target.value)} required style={inpStyle} placeholder="e.g. Flights, hotel, meals and transport included" />
               </div>
+            </div>
+
+            {/* ── Calendar of Tour Date Availability & Maximum Guest Capacity Notice ── */}
+            <div style={{ background: '#F0F9FF', border: '1.5px solid #7DD3FC', padding: '18px 22px', borderRadius: '16px', marginBottom: '28px' }}>
+              <div style={{ fontWeight: '800', color: '#0369A1', fontSize: '0.95rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.1rem' }}>📅</span>
+                <span>Calendar of Tour Date Availability &amp; Capacity Rules:</span>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>
+                <li>
+                  <strong>Condition 1 (Free / Open):</strong> If you are not booked on a date, any customer can select that date and book your guide package for any destination.
+                </li>
+                <li>
+                  <strong>Condition 2 (Shared Group Booking - Same Location):</strong> If booked for a specific location (e.g., <em>Sajek Valley</em>), another customer wanting to go to <strong>the exact same destination</strong> can book on that date as long as total guests do not exceed your <strong>Maximum Guest Capacity ({maxGuests || 10} Persons Max)</strong>.
+                </li>
+                <li>
+                  <strong>Condition 3 (Locked / Unavailable for Different Location):</strong> If booked for a destination, customers trying to book a <strong>different location</strong> on that same date will see <strong>"🔴 Today slot not vacant (Booked for another location)"</strong>.
+                </li>
+              </ul>
             </div>
 
             {/* ── 2. Language Proficiency (5 Box Rating) ── */}

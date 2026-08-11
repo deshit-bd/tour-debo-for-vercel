@@ -11,10 +11,54 @@ export default function ManagePackagesPage() {
   const [filterType, setFilterType] = useState('All');
 
   const samplePackages = [
-    { id: 'parasailing', title: "Cox's Bazar : Parasailing Adventure", type: "Travel Package", mode: "Flexible", price: "৳21,600", sales: 144, rating: "4.7 ★", status: "Active" },
-    { id: 'sajek', title: "Sajek Valley Resort & Helipad Tour", type: "Travel Package", mode: "Fixed", price: "৳18,000", sales: 89, rating: "4.9 ★", status: "Active" },
-    { id: 'paris', title: "Paris : City of Love Excursion", type: "Travel Package", mode: "Fixed", price: "৳4,176,000", sales: 210, rating: "5.0 ★", status: "Active" },
-    { id: 'sundarbans', title: "Sundarbans Mangrove Forest Cruise", type: "Travel Package", mode: "Flexible", price: "৳24,000", sales: 112, rating: "4.8 ★", status: "Active" },
+    {
+      id: 'parasailing',
+      pkgId: '#PKG-9481',
+      title: "Cox's Bazar : Parasailing Adventure",
+      type: "Travel Package",
+      mode: "Flexible",
+      regularPrice: "৳24,000",
+      discountPrice: "৳21,600",
+      sales: 144,
+      rating: "4.7 ★",
+      status: "Active",
+    },
+    {
+      id: 'sajek',
+      pkgId: '#PKG-9482',
+      title: "Sajek Valley Resort & Helipad Tour",
+      type: "Travel Package",
+      mode: "Fixed Date",
+      regularPrice: "৳20,000",
+      discountPrice: "৳18,000",
+      sales: 89,
+      rating: "4.9 ★",
+      status: "Active",
+    },
+    {
+      id: 'paris',
+      pkgId: '#PKG-9483',
+      title: "Paris : City of Love Excursion",
+      type: "Travel Package",
+      mode: "Fixed Date",
+      regularPrice: "৳4,500,000",
+      discountPrice: "৳4,176,000",
+      sales: 210,
+      rating: "5.0 ★",
+      status: "Active",
+    },
+    {
+      id: 'sundarbans',
+      pkgId: '#PKG-9484',
+      title: "Sundarbans Mangrove Forest Cruise",
+      type: "Travel Package",
+      mode: "Flexible",
+      regularPrice: "৳28,000",
+      discountPrice: "৳24,000",
+      sales: 112,
+      rating: "4.8 ★",
+      status: "Active",
+    },
   ];
 
   const [packages, setPackages] = useState(samplePackages);
@@ -25,12 +69,14 @@ export default function ManagePackagesPage() {
       const saved = localStorage.getItem('tour_dibo_custom_packages');
       if (saved) {
         const customItems = JSON.parse(saved);
-        const formattedCustom = customItems.map(item => ({
+        const formattedCustom = customItems.map((item, idx) => ({
           id: item.id,
+          pkgId: `#PKG-949${idx + 1}`,
           title: item.title,
           type: item.type || 'Travel Package',
           mode: item.mode || 'Fixed Date',
-          price: item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : `$${item.price}`,
+          regularPrice: item.prices?.regular ? `৳${Number(item.prices.regular).toLocaleString()}` : (item.price ? `৳${Math.round(Number(item.price) * 1.15).toLocaleString()}` : '৳25,000'),
+          discountPrice: item.prices?.single ? `৳${Number(item.prices.single).toLocaleString()}` : (item.price ? `৳${Number(item.price).toLocaleString()}` : '৳21,500'),
           sales: item.sales || 0,
           rating: '5.0 ★ (New)',
           status: item.status || 'Active',
@@ -44,7 +90,7 @@ export default function ManagePackagesPage() {
   }, []);
 
   const filteredPackages = packages.filter(pkg => {
-    const matchesSearch = pkg.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = pkg.title.toLowerCase().includes(searchTerm.toLowerCase()) || (pkg.pkgId && pkg.pkgId.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = filterType === 'All' || pkg.type === filterType;
     return matchesSearch && matchesType;
   });
@@ -76,9 +122,9 @@ export default function ManagePackagesPage() {
             <div className="seller-card">
               <div className="seller-card-title">
                 <div>
-                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Manage Package Ads</h2>
+                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Manage Tour Packages</h2>
                   <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '4px 0 0 0' }}>
-                    View, search, preview, or publish your tour packages and services.
+                    View, search, preview, or publish your tour packages.
                   </p>
                 </div>
                 <Link href="/business-center/packages/add" className="btn-seller-primary" style={{ fontWeight: 600 }}>
@@ -90,7 +136,7 @@ export default function ManagePackagesPage() {
               <div style={{ display: 'flex', gap: '14px', marginBottom: '20px', flexWrap: 'wrap' }}>
                 <input
                   type="text"
-                  placeholder="Search packages by title..."
+                  placeholder="Search packages by title or ID (#PKG-9481)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{ flex: 1, minWidth: '220px', padding: '10px 14px', borderRadius: '12px', border: '1px solid #CBD5E1', outline: 'none', fontWeight: 400 }}
@@ -111,10 +157,12 @@ export default function ManagePackagesPage() {
               <table className="seller-table">
                 <thead>
                   <tr>
+                    <th>Package ID</th>
                     <th>Package Title</th>
                     <th>Category</th>
-                    <th>Ad Type</th>
-                    <th>Price</th>
+                    <th>Booking Type</th>
+                    <th>Regular Price</th>
+                    <th>Discount Price</th>
                     <th>Sales</th>
                     <th>Rating</th>
                     <th>Status</th>
@@ -124,6 +172,9 @@ export default function ManagePackagesPage() {
                 <tbody>
                   {filteredPackages.map(pkg => (
                     <tr key={pkg.id}>
+                      <td style={{ fontWeight: 700, color: '#64748B', fontSize: '0.85rem' }}>
+                        {pkg.pkgId}
+                      </td>
                       <td style={{ fontWeight: 600 }}>
                         <div>{pkg.title}</div>
                         {pkg.isCustom && (
@@ -134,7 +185,8 @@ export default function ManagePackagesPage() {
                       </td>
                       <td>{pkg.type}</td>
                       <td><span className="status-pill pending">{pkg.mode}</span></td>
-                      <td style={{ color: '#2563EB', fontWeight: 600 }}>{pkg.price}</td>
+                      <td style={{ color: '#64748B', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 500 }}>{pkg.regularPrice}</td>
+                      <td style={{ color: '#16A34A', fontWeight: 700 }}>{pkg.discountPrice}</td>
                       <td>{pkg.sales} Bookings</td>
                       <td>{pkg.rating}</td>
                       <td><span className="status-pill success">{pkg.status}</span></td>
@@ -174,4 +226,3 @@ export default function ManagePackagesPage() {
     </div>
   );
 }
-

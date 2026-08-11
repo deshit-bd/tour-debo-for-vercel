@@ -431,7 +431,7 @@ function MessageCenterContent() {
             <div key={promo.id} style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '20px' }}>
               <h4 style={{ fontSize: '1rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>{promo.title}</h4>
               <p style={{ fontSize: '0.85rem', color: '#475569', margin: '8px 0 16px 0' }}>{promo.desc}</p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8FAFC', padding: '8px 12px', borderRadius: '8px', border: '1px stroke #E2E8F0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F8FAFC', padding: '8px 12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                 <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: '600' }}>Promo Code:</span>
                 <strong style={{ color: '#2563EB', fontSize: '0.9rem' }}>{promo.code}</strong>
               </div>

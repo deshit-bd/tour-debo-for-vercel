@@ -7,76 +7,89 @@ import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import SellerSidebar from '../../components/SellerSidebar';
 
+const ALL_WORLD_COUNTRIES = [
+  'Bangladesh',
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+  'Bahamas', 'Bahrain', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+  'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic',
+  'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+  'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia',
+  'Fiji', 'Finland', 'France',
+  'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guyana',
+  'Haiti', 'Honduras', 'Hungary',
+  'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast',
+  'Jamaica', 'Japan', 'Jordan',
+  'Kazakhstan', 'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan',
+  'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+  'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar',
+  'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway',
+  'Oman',
+  'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
+  'Qatar',
+  'Romania', 'Russia', 'Rwanda',
+  'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+  'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
+  'United Arab Emirates', 'Uganda', 'Ukraine', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+  'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam',
+  'Yemen',
+  'Zambia', 'Zimbabwe'
+];
+
 const SAMPLE_VISAS_MAP = {
   'visa-usa-001': {
-    country: 'United States', capital: 'Washington, D.C.', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', validity: '90 Days', processingTime: '5-7 Working Days',
+    country: 'United States', capital: 'Washington, D.C.', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', processingTime: '5-7 Working Days',
     localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 USD is equivalent to 118 BDT', embassyAddress: 'Madani Avenue, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '2400', processingFee: '36000',
-    matrixItems: [
-      { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '6500' },
-      { id: 2, visaType: 'Tourist Visa', entryType: 'Multiple Entry', price: '18500' }
+    visaFee: '2400',
+    dynamicPricingItems: [
+      { id: 1, title: '30 Days Single Entry', regularPrice: '10000', discountType: 'percentage', discountValue: '10' },
+      { id: 2, title: '90 Days Multiple Entry', regularPrice: '36000', discountType: 'amount', discountValue: '2000' }
     ]
   },
   'visa-uk-001': {
-    country: 'United Kingdom', capital: 'London', visaType: 'Student Visa', visaAvailableLabel: 'Student Visa Available', validity: '6 Months', processingTime: '10-15 Working Days',
+    country: 'United Kingdom', capital: 'London', visaType: 'Student Visa', visaAvailableLabel: 'Student Visa Available', processingTime: '10-15 Working Days',
     localTime: 'GMT +0', telephoneCode: '+44', exchangeRate: '1 GBP is equivalent to 140 BDT', embassyAddress: 'United Nations Road, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '1800', processingFee: '31200',
-    matrixItems: [
-      { id: 1, visaType: 'Student Visa', entryType: 'Single Entry', price: '12000' },
-      { id: 2, visaType: 'Student Visa', entryType: 'Multiple Entry', price: '31200' }
-    ]
-  },
-  'visa-canada-001': {
-    country: 'Canada', capital: 'Ottawa', visaType: 'Tourist Visa', visaAvailableLabel: 'Student & Tourist Visa Available', validity: '30 Days', processingTime: '5-7 Working Days',
-    localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 CAD is equivalent to 86 BDT', embassyAddress: 'House 16A, Road 48, Gulshan 2, Dhaka 1212, Bangladesh',
-    visaFee: '1800', processingFee: '24000',
-    matrixItems: [
-      { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '6500' },
-      { id: 2, visaType: 'Tourist Visa', entryType: 'Multiple Entry', price: '18500' }
+    visaFee: '1800',
+    dynamicPricingItems: [
+      { id: 1, title: '6 Months Single Entry', regularPrice: '15000', discountType: 'percentage', discountValue: '5' },
+      { id: 2, title: '1 Year Multiple Entry', regularPrice: '35000', discountType: 'amount', discountValue: '3000' }
     ]
   },
   'visa-dubai-001': {
-    country: 'UAE (Dubai)', capital: 'Abu Dhabi', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', validity: '30 Days', processingTime: '3-5 Working Days',
+    country: 'United Arab Emirates', capital: 'Abu Dhabi', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', processingTime: '3-5 Working Days',
     localTime: 'GMT +4', telephoneCode: '+971', exchangeRate: '1 AED is equivalent to 32 BDT', embassyAddress: 'House 19, Road 143, Gulshan 2, Dhaka 1212, Bangladesh',
-    visaFee: '1800', processingFee: '23400',
-    matrixItems: [
-      { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '6500' },
-      { id: 2, visaType: 'Tourist Visa', entryType: 'Multiple Entry', price: '18500' }
+    visaFee: '1800',
+    dynamicPricingItems: [
+      { id: 1, title: '30 Days Single Entry', regularPrice: '12000', discountType: 'percentage', discountValue: '10' },
+      { id: 2, title: '60 Days Multiple Entry', regularPrice: '25000', discountType: 'amount', discountValue: '1500' }
     ]
-  },
-  'visa-malaysia-001': {
-    country: 'Malaysia', capital: 'Kuala Lumpur', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', validity: '30 Days', processingTime: '3-5 Working Days',
-    localTime: 'GMT +8', telephoneCode: '+60', exchangeRate: '1 MYR is equivalent to 25 BDT', embassyAddress: 'Gulshan Avenue, Dhaka, Bangladesh',
-    visaFee: '960', processingFee: '21600',
-    matrixItems: [
-      { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '5500' },
-      { id: 2, visaType: 'Tourist Visa', entryType: 'Multiple Entry', price: '15500' }
-    ]
-  },
-  'visa-australia-001': {
-    country: 'Australia', capital: 'Canberra', visaType: 'Student Visa', visaAvailableLabel: 'Student Visa Available', validity: '6 Months', processingTime: '15-30 Working Days',
-    localTime: 'GMT +10', telephoneCode: '+61', exchangeRate: '1 AUD is equivalent to 72 BDT', embassyAddress: 'Gulshan Avenue, Dhaka, Bangladesh',
-    visaFee: '1440', processingFee: '28800',
-    matrixItems: [
-      { id: 1, visaType: 'Student Visa', entryType: 'Single Entry', price: '14000' }
-    ]
-  },
-  'visa-japan-001': {
-    country: 'Japan', capital: 'Tokyo', visaType: 'Tourist Visa', visaAvailableLabel: 'Tourist Visa Available', validity: '30 Days', processingTime: '5-7 Working Days',
-    localTime: 'GMT +9', telephoneCode: '+81', exchangeRate: '1 JPY is equivalent to 0.78 BDT', embassyAddress: 'Plot No. 5 & 7, Dutabash Road, Baridhara, Dhaka 1212',
-    visaFee: '1200', processingFee: '22800',
-    matrixItems: [
-      { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '6500' }
-    ]
-  },
-  'visa-germany-001': {
-    country: 'Germany', capital: 'Berlin', visaType: 'Student Visa', visaAvailableLabel: 'Student Visa Available', validity: '6 Months', processingTime: '15-30 Working Days',
-    localTime: 'GMT +1', telephoneCode: '+49', exchangeRate: '1 EUR is equivalent to 128 BDT', embassyAddress: 'Madani Avenue, Baridhara, Dhaka 1212, Bangladesh',
-    visaFee: '1200', processingFee: '25200',
-    matrixItems: [
-      { id: 1, visaType: 'Student Visa', entryType: 'Single Entry', price: '12000' }
-    ]
-  },
+  }
+};
+
+const ADMIN_COUNTRY_CONFIGS = {
+  'Thailand': { capital: 'Bangkok', localTime: 'GMT +7', telephoneCode: '+66', exchangeRate: '1 THB is equivalent to 3.3 BDT', visaFee: '1800', embassyAddress: 'Royal Thai Embassy, 18 & 20 Madani Avenue, Baridhara, Dhaka 1212' },
+  'United States': { capital: 'Washington, D.C.', localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 USD is equivalent to 118 BDT', visaFee: '2400', embassyAddress: 'Embassy of the United States, Madani Avenue, Baridhara, Dhaka 1212' },
+  'United Kingdom': { capital: 'London', localTime: 'GMT +0', telephoneCode: '+44', exchangeRate: '1 GBP is equivalent to 148 BDT', visaFee: '2100', embassyAddress: 'British High Commission, United Nations Road, Baridhara, Dhaka 1212' },
+  'Canada': { capital: 'Ottawa', localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 CAD is equivalent to 87 BDT', visaFee: '2200', embassyAddress: 'High Commission of Canada, United Nations Road, Baridhara, Dhaka 1212' },
+  'Japan': { capital: 'Tokyo', localTime: 'GMT +9', telephoneCode: '+81', exchangeRate: '1 JPY is equivalent to 0.77 BDT', visaFee: '1500', embassyAddress: 'Embassy of Japan, Plot No. 5 & 7, Dutabash Road, Baridhara, Dhaka 1212' },
+  'Malaysia': { capital: 'Kuala Lumpur', localTime: 'GMT +8', telephoneCode: '+60', exchangeRate: '1 MYR is equivalent to 26.5 BDT', visaFee: '1600', embassyAddress: 'High Commission of Malaysia, House 19, Road 6, Baridhara, Dhaka 1212' },
+  'Singapore': { capital: 'Singapore', localTime: 'GMT +8', telephoneCode: '+65', exchangeRate: '1 SGD is equivalent to 88 BDT', visaFee: '1900', embassyAddress: 'Consulate of Singapore, House 8, Road 51, Gulshan 2, Dhaka 1212' },
+  'United Arab Emirates': { capital: 'Abu Dhabi', localTime: 'GMT +4', telephoneCode: '+971', exchangeRate: '1 AED is equivalent to 32 BDT', visaFee: '1800', embassyAddress: 'Embassy of the UAE, House 19, Road 143, Gulshan 2, Dhaka 1212' },
+  'India': { capital: 'New Delhi', localTime: 'GMT +5:30', telephoneCode: '+91', exchangeRate: '1 INR is equivalent to 1.41 BDT', visaFee: '800', embassyAddress: 'High Commission of India, Plot No 1-3, Park Road, Baridhara, Dhaka 1212' },
+  'Saudi Arabia': { capital: 'Riyadh', localTime: 'GMT +3', telephoneCode: '+966', exchangeRate: '1 SAR is equivalent to 31.4 BDT', visaFee: '2500', embassyAddress: 'Royal Embassy of Saudi Arabia, House 5 (NE) L, Road 83, Gulshan 2, Dhaka 1212' },
+  'Germany': { capital: 'Berlin', localTime: 'GMT +1', telephoneCode: '+49', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of Germany, 11 Madani Avenue, Baridhara, Dhaka 1212' },
+  'France': { capital: 'Paris', localTime: 'GMT +1', telephoneCode: '+33', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of France, Road 108, Gulshan 2, Dhaka 1212' },
+  'Turkey': { capital: 'Ankara', localTime: 'GMT +3', telephoneCode: '+90', exchangeRate: '1 TRY is equivalent to 3.6 BDT', visaFee: '2000', embassyAddress: 'Embassy of the Republic of Turkey, 6 Madani Avenue, Baridhara, Dhaka 1212' },
+  'Australia': { capital: 'Canberra', localTime: 'GMT +10', telephoneCode: '+61', exchangeRate: '1 AUD is equivalent to 78 BDT', visaFee: '2400', embassyAddress: 'Australian High Commission, 184 Gulshan Avenue, Gulshan 2, Dhaka 1212' },
+  'China': { capital: 'Beijing', localTime: 'GMT +8', telephoneCode: '+86', exchangeRate: '1 CNY is equivalent to 16.3 BDT', visaFee: '2200', embassyAddress: 'Embassy of China, Plot 2 & 4, Embassy Road, Baridhara, Dhaka 1212' },
+  'South Korea': { capital: 'Seoul', localTime: 'GMT +9', telephoneCode: '+82', exchangeRate: '1 KRW is equivalent to 0.086 BDT', visaFee: '1800', embassyAddress: 'Embassy of South Korea, 4 Madani Avenue, Baridhara, Dhaka 1212' },
+  'Italy': { capital: 'Rome', localTime: 'GMT +1', telephoneCode: '+39', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of Italy, Road 74/79, Plot 2/3, Gulshan 2, Dhaka 1212' },
+  'Spain': { capital: 'Madrid', localTime: 'GMT +1', telephoneCode: '+34', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of Spain, House 49, Road 90, Gulshan 2, Dhaka 1212' },
+  'New Zealand': { capital: 'Wellington', localTime: 'GMT +12', telephoneCode: '+64', exchangeRate: '1 NZD is equivalent to 72 BDT', visaFee: '2400', embassyAddress: 'Consulate of New Zealand, Plot 11, Road 44, Gulshan 2, Dhaka 1212' },
+  'Egypt': { capital: 'Cairo', localTime: 'GMT +2', telephoneCode: '+20', exchangeRate: '1 EGP is equivalent to 2.4 BDT', visaFee: '1600', embassyAddress: 'Embassy of Egypt, House 9, Road 90, Gulshan 2, Dhaka 1212' },
+  'Vietnam': { capital: 'Hanoi', localTime: 'GMT +7', telephoneCode: '+84', exchangeRate: '1 VND is equivalent to 0.0047 BDT', visaFee: '1500', embassyAddress: 'Embassy of Vietnam, House 14, Road 33, Gulshan 2, Dhaka 1212' },
+  'Indonesia': { capital: 'Jakarta', localTime: 'GMT +7', telephoneCode: '+62', exchangeRate: '1 IDR is equivalent to 0.0074 BDT', visaFee: '1400', embassyAddress: 'Embassy of Indonesia, Plot 14, Road 53, Gulshan 2, Dhaka 1212' },
+  'Qatar': { capital: 'Doha', localTime: 'GMT +3', telephoneCode: '+974', exchangeRate: '1 QAR is equivalent to 32.4 BDT', visaFee: '2000', embassyAddress: 'Embassy of Qatar, House 23, Road 108, Gulshan 2, Dhaka 1212' },
+  'Ivory Coast': { capital: 'Yamoussoukro', localTime: 'GMT +0', telephoneCode: '+225', exchangeRate: '1 XOF is equivalent to 0.19 BDT', visaFee: '1800', embassyAddress: 'Embassy of Ivory Coast, New Delhi (Honorary Consulate Dhaka 1212)' }
 };
 
 function AddVisaFormContent() {
@@ -84,33 +97,25 @@ function AddVisaFormContent() {
   const editId = searchParams ? searchParams.get('edit') : null;
   const [isEditing, setIsEditing] = useState(false);
 
-  // ── Section 1: Basic Info ──
+  // ── Section 1: Basic Info (Single Visa Type per Product) ──
   const [country, setCountry] = useState('Thailand');
   const [visaType, setVisaType] = useState('Tourist Visa');
   const [visaAvailableLabel, setVisaAvailableLabel] = useState('Tourist Visa Available');
-  const [validity, setValidity] = useState('90 Days');
-  const [entryType, setEntryType] = useState('Single Entry');
   const [processingTime, setProcessingTime] = useState('5-7 Working Days');
 
-  // Generic add-option modal
-  const [modalConfig, setModalConfig] = useState(null); // { title, fieldLabel, list, setter, valueSetter }
+  // Generic Add Option Modal
+  const [modalConfig, setModalConfig] = useState(null);
   const [modalInput, setModalInput] = useState('');
   const [modalError, setModalError] = useState('');
 
-  const DEFAULT_VISA_TYPES     = ['Tourist Visa', 'Medical Visa', 'Business Visa', 'Student Visa', 'PR Visa (Permanent Resident)', 'Transit Visa'];
-  const DEFAULT_VALIDITIES     = ['15 Days', '30 Days', '60 Days', '90 Days', '6 Months', '1 Year', '5 Years', '10 Years'];
-  const DEFAULT_ENTRY_TYPES    = ['Single Entry', 'Double Entry', 'Multiple Entry'];
-  const DEFAULT_PROC_TIMES     = ['1-2 Working Days (Express)', '3-5 Working Days', '5-7 Working Days', '10-15 Working Days', '15-30 Working Days'];
+  const DEFAULT_VISA_TYPES = ['Tourist Visa', 'Business Visa', 'Student Visa', 'Medical Visa', 'PR Visa (Permanent Resident)', 'Transit Visa', 'Work Visa'];
+  const DEFAULT_PROC_TIMES = ['1-2 Working Days (Express)', '3-5 Working Days', '5-7 Working Days', '10-15 Working Days', '15-30 Working Days'];
 
-  const [customVisaTypes,  setCustomVisaTypes]  = useState([]);
-  const [customValidities, setCustomValidities] = useState([]);
-  const [customEntryTypes, setCustomEntryTypes] = useState([]);
-  const [customProcTimes,  setCustomProcTimes]  = useState([]);
+  const [customVisaTypes, setCustomVisaTypes] = useState([]);
+  const [customProcTimes, setCustomProcTimes] = useState([]);
 
-  const allVisaTypes  = [...DEFAULT_VISA_TYPES,  ...customVisaTypes];
-  const allValidities = [...DEFAULT_VALIDITIES,  ...customValidities];
-  const allEntryTypes = [...DEFAULT_ENTRY_TYPES, ...customEntryTypes];
-  const allProcTimes  = [...DEFAULT_PROC_TIMES,  ...customProcTimes];
+  const allVisaTypes = [...DEFAULT_VISA_TYPES, ...customVisaTypes];
+  const allProcTimes = [...DEFAULT_PROC_TIMES, ...customProcTimes];
 
   const openModal = (config) => {
     setModalConfig(config);
@@ -129,68 +134,84 @@ function AddVisaFormContent() {
     closeModal();
   };
 
-  const ALL_COUNTRIES = [
-    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua & Barbuda','Argentina','Armenia','Australia',
-    'Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin',
-    'Bhutan','Bolivia','Bosnia & Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi',
-    'Cabo Verde','Cambodia','Cameroon','Canada','Central African Republic','Chad','Chile','China','Colombia',
-    'Comoros','Congo (DRC)','Congo (Republic)','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark',
-    'Djibouti','Dominica','Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea','Eritrea',
-    'Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon','Gambia','Georgia','Germany','Ghana',
-    'Greece','Grenada','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland',
-    'India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Ivory Coast','Jamaica','Japan','Jordan',
-    'Kazakhstan','Kenya','Kiribati','Kosovo','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho',
-    'Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives',
-    'Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco',
-    'Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal','Netherlands',
-    'New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan',
-    'Palau','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal',
-    'Qatar','Romania','Russia','Rwanda','Saint Kitts & Nevis','Saint Lucia','Saint Vincent & Grenadines',
-    'Samoa','San Marino','Saudi Arabia','Senegal','Serbia','Seychelles','Sierra Leone','Singapore',
-    'Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain',
-    'Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania',
-    'Thailand','Timor-Leste','Togo','Tonga','Trinidad & Tobago','Tunisia','Turkey','Turkmenistan','Tuvalu',
-    'UAE (Dubai)','Uganda','Ukraine','United Kingdom','United States','Uruguay','Uzbekistan','Vanuatu',
-    'Vatican City','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe',
-  ];
+  // ── Section 2: Country Info (Set by Admin — Same across all seller panel) ──
+  const [capital, setCapital] = useState('Bangkok');
+  const [localTime, setLocalTime] = useState('GMT +7');
+  const [telephoneCode, setTelephoneCode] = useState('+66');
+  const [exchangeRate, setExchangeRate] = useState('1 THB is equivalent to 3.3 BDT');
+  const [embassyAddress, setEmbassyAddress] = useState('Royal Thai Embassy, 18 & 20 Madani Avenue, Baridhara, Dhaka 1212');
+  const [visaFee, setVisaFee] = useState('1800');
+  const [processingFee, setProcessingFee] = useState('6500');
 
-  // ── Section 2: Country Info (shown on visa detail page) ──
-  const [rating, setRating] = useState('4.7');
-  const [capital, setCapital] = useState('');
-  const [localTime, setLocalTime] = useState('');
-  const [telephoneCode, setTelephoneCode] = useState('');
-  const [exchangeRate, setExchangeRate] = useState('');
-  const [embassyAddress, setEmbassyAddress] = useState('');
-  const [visaFee, setVisaFee] = useState('');
-  const [processingFee, setProcessingFee] = useState('');
+  const handleCountrySelect = (selectedCountry) => {
+    setCountry(selectedCountry);
+    try {
+      const savedAdminConfigs = JSON.parse(localStorage.getItem('admin_country_configs') || '{}');
+      const config = savedAdminConfigs[selectedCountry] || ADMIN_COUNTRY_CONFIGS[selectedCountry] || {
+        capital: selectedCountry + ' Capital',
+        localTime: 'GMT +6',
+        telephoneCode: '+880',
+        exchangeRate: '1 USD is equivalent to 118 BDT',
+        visaFee: '1800',
+        embassyAddress: 'Embassy of ' + selectedCountry + ', Dhaka, Bangladesh'
+      };
 
-  // ── Section 3: Dynamic Combination Pricing ──
-  const [matrixItems, setMatrixItems] = useState([
-    { id: 1, visaType: 'Tourist Visa', entryType: 'Single Entry', price: '6500' },
-    { id: 2, visaType: 'Tourist Visa', entryType: 'Double Entry', price: '10000' },
-    { id: 3, visaType: 'Tourist Visa', entryType: 'Multiple Entry', price: '18500' },
+      setCapital(config.capital);
+      setLocalTime(config.localTime);
+      setTelephoneCode(config.telephoneCode);
+      setExchangeRate(config.exchangeRate);
+      setVisaFee(config.visaFee || '1800');
+      setEmbassyAddress(config.embassyAddress);
+    } catch (e) {
+      console.error('Error auto-filling country config:', e);
+    }
+  };
+
+  // ── Section 3: Pricing Policy (Same as Tour Package: Dynamic Options & Discount Calculator) ──
+  const [dynamicPricingItems, setDynamicPricingItems] = useState([
+    { id: 1, title: '30 Days Single Entry', regularPrice: '6500', discountType: 'percentage', discountValue: '10' },
+    { id: 2, title: '90 Days Multiple Entry', regularPrice: '18500', discountType: 'amount', discountValue: '2000' }
   ]);
 
-  const addMatrixItem = () => {
-    setMatrixItems(prev => [
+  const addPricingItem = () => {
+    setDynamicPricingItems((prev) => [
       ...prev,
-      { id: Date.now(), visaType: visaType || 'Tourist Visa', entryType: entryType || 'Single Entry', price: '' }
+      { id: Date.now(), title: '', regularPrice: '', discountType: 'percentage', discountValue: '0' }
     ]);
   };
 
-  const updateMatrixItem = (id, field, value) => {
-    setMatrixItems(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
+  const handlePricingItemChange = (index, field, value) => {
+    setDynamicPricingItems((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   };
 
-  const removeMatrixItem = (id) => {
-    setMatrixItems(prev => prev.filter(item => item.id !== id));
+  const removePricingItem = (index) => {
+    if (dynamicPricingItems.length > 1) {
+      setDynamicPricingItems((prev) => prev.filter((_, i) => i !== index));
+    }
   };
 
-  // ── Section 4: Documents ──
+  const calculateFinalPrice = (item) => {
+    const regPrice = parseFloat(item.regularPrice) || 0;
+    const discVal = parseFloat(item.discountValue) || 0;
+    if (regPrice <= 0) return 0;
+    if (item.discountType === 'percentage') {
+      const discounted = regPrice - (regPrice * discVal) / 100;
+      return Math.max(0, Math.round(discounted));
+    } else {
+      const discounted = regPrice - discVal;
+      return Math.max(0, Math.round(discounted));
+    }
+  };
+
+  // ── Section 4: Required Documents ──
   const [stickerStudentDocs, setStickerStudentDocs] = useState('07 Months Valid Passport With Old Passport (If have)\nRecent 2 copy photograph taken in last 3 months (white background only, photo size 35 mm X 45 mm)\nID card (Student) one photocopy both sides\nLeave letter from school or college original copy\nParents bank statement (Last 06 months) and solvency certificate with minimum balance BDT 70,000 for each applicant');
   const [generalDocs, setGeneralDocs] = useState('Filled visa application form\nValid passport and previous travel history copies\nBank statement and sponsor documents\nAdmission or invitation letter where applicable');
 
-  // ── Section 5: Policy ──
+  // ── Section 5: Description & Policy ──
   const [description, setDescription] = useState('Official e-Visa and Sticker Visa processing service with express submission.');
   const [conditions, setConditions] = useState('Non-refundable visa fee once submitted to embassy. Processing duration depends on embassy workload.');
   const [policy, setPolicy] = useState('Full refund of service charge if visa gets rejected due to documentation error from our side.');
@@ -199,7 +220,6 @@ function AddVisaFormContent() {
   // ── Section 6: Images ──
   const [mainImage, setMainImage] = useState('');
   const [galleryImages, setGalleryImages] = useState([]);
-
   const [saved, setSaved] = useState(false);
 
   const handleMainImage = (e) => {
@@ -210,6 +230,7 @@ function AddVisaFormContent() {
       reader.readAsDataURL(file);
     }
   };
+
   const handleGalleryImages = (e) => {
     const files = Array.from(e.target.files);
     files.forEach(file => {
@@ -220,6 +241,7 @@ function AddVisaFormContent() {
       reader.readAsDataURL(file);
     });
   };
+
   const removeGalleryImage = (index) => {
     setGalleryImages(prev => prev.filter((_, i) => i !== index));
   };
@@ -241,43 +263,40 @@ function AddVisaFormContent() {
         setCountry(item.country || 'Thailand');
         setVisaType(item.visaType || 'Tourist Visa');
         setVisaAvailableLabel(item.visaAvailableLabel || (item.visaType ? item.visaType + ' Available' : 'Tourist Visa Available'));
-        setValidity(item.validity || '30 Days');
         setProcessingTime(item.processingTime || '5-7 Working Days');
-        setCapital(item.capital || (item.country ? item.country + ' Capital' : ''));
-        setLocalTime(item.localTime || 'GMT +6');
-        setTelephoneCode(item.telephoneCode || '+880');
-        setExchangeRate(item.exchangeRate || '1 USD is equivalent to 118 BDT');
-        setEmbassyAddress(item.embassyAddress || ('Embassy of ' + (item.country || 'Destination Country') + ', Dhaka, Bangladesh'));
+        setCapital(item.capital || 'Bangkok');
+        setLocalTime(item.localTime || 'GMT +7');
+        setTelephoneCode(item.telephoneCode || '+66');
+        setExchangeRate(item.exchangeRate || '1 THB is equivalent to 3.3 BDT');
+        setEmbassyAddress(item.embassyAddress || 'Embassy of Destination Country, Dhaka, Bangladesh');
         setVisaFee(item.visaFee || '1800');
-        setProcessingFee(item.processingFee || '24000');
-        if (item.matrixItems && item.matrixItems.length > 0) {
-          setMatrixItems(item.matrixItems);
-        } else {
-          setMatrixItems([
-            { id: 1, visaType: item.visaType || 'Tourist Visa', entryType: 'Single Entry', price: item.processingFee || '6500' }
-          ]);
+
+        if (item.dynamicPricingItems && item.dynamicPricingItems.length > 0) {
+          setDynamicPricingItems(item.dynamicPricingItems);
+        } else if (item.matrixItems && item.matrixItems.length > 0) {
+          setDynamicPricingItems(item.matrixItems.map((m, idx) => ({
+            id: m.id || idx + 1,
+            title: m.entryType || 'Single Entry Option',
+            regularPrice: m.price || '6500',
+            discountType: 'percentage',
+            discountValue: '0'
+          })));
         }
+
         if (item.stickerStudentDocs) setStickerStudentDocs(item.stickerStudentDocs);
         if (item.generalDocs) setGeneralDocs(item.generalDocs);
         if (item.description) setDescription(item.description);
         if (item.conditions) setConditions(item.conditions);
         if (item.policy) setPolicy(item.policy);
         if (item.importantNotes) setImportantNotes(item.importantNotes);
-        const validMain = (item.mainImage && typeof item.mainImage === 'string' && !item.mainImage.startsWith('blob:') && !item.mainImage.startsWith('Main') && item.mainImage.length > 5)
+
+        const validMain = (item.mainImage && typeof item.mainImage === 'string' && !item.mainImage.startsWith('blob:') && item.mainImage.length > 5)
           ? item.mainImage
           : 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80';
         setMainImage(validMain);
 
         if (item.galleryImages && Array.isArray(item.galleryImages) && item.galleryImages.length > 0) {
-          const filteredGallery = item.galleryImages.filter(img => img && typeof img === 'string' && !img.startsWith('blob:') && !img.startsWith('Gallery') && img.length > 5);
-          if (filteredGallery.length > 0) {
-            setGalleryImages(filteredGallery);
-          } else {
-            setGalleryImages([
-              'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=500&q=80',
-              'https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?auto=format&fit=crop&w=500&q=80'
-            ]);
-          }
+          setGalleryImages(item.galleryImages);
         } else {
           setGalleryImages([
             'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=500&q=80',
@@ -292,16 +311,28 @@ function AddVisaFormContent() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const firstCalculatedPrice = calculateFinalPrice(dynamicPricingItems[0] || { regularPrice: 0, discountValue: 0 });
+
     const visaData = {
       id: editId || ('visa-' + (country ? country.toLowerCase().replace(/[^a-z0-9]/g, '') : 'custom') + '-' + Date.now()),
       country: country || 'Thailand',
       capital: capital || '',
       visaType: visaType || 'Tourist Visa',
-      validity: validity || '30 Days',
+      visaAvailableLabel: visaAvailableLabel || `${visaType} Available`,
       processingTime: processingTime || '5-7 Working Days',
       visaFee: visaFee || '0',
-      processingFee: processingFee || matrixItems[0]?.price || '0',
-      matrixItems: matrixItems,
+      processingFee: processingFee || firstCalculatedPrice.toString(),
+      dynamicPricingItems: dynamicPricingItems,
+      matrixItems: dynamicPricingItems.map(item => ({
+        id: item.id,
+        visaType: visaType,
+        entryType: item.title,
+        price: calculateFinalPrice(item).toString()
+      })),
+      localTime,
+      telephoneCode,
+      exchangeRate,
+      embassyAddress,
       stickerStudentDocs,
       generalDocs,
       description,
@@ -338,15 +369,34 @@ function AddVisaFormContent() {
   };
 
   // ── Style shortcuts ──
-  const inp   = { width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.92rem', fontFamily: 'inherit', outline: 'none', background: '#FAFBFF' };
-  const lbl   = { display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px' };
-  const sec   = { fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: '0 0 6px 0' };
+  const inp = { width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '0.92rem', fontFamily: 'inherit', outline: 'none', background: '#FAFBFF' };
+  const lbl = { display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#374151', marginBottom: '6px' };
+  const sec = { fontSize: '1.1rem', fontWeight: '700', color: '#111827', margin: '0 0 6px 0' };
   const subsec = { fontSize: '0.82rem', color: '#6B7280', marginBottom: '16px' };
 
   // ── Plus button helper ──
   const PlusBtn = ({ onClick }) => (
-    <button type="button" onClick={onClick} title="Add custom option"
-      style={{ background: '#2563EB', color: '#fff', border: 'none', borderRadius: '6px', width: '22px', height: '22px', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0 }}>
+    <button
+      type="button"
+      onClick={onClick}
+      title="Add custom option"
+      style={{
+        background: '#F0FDF4',
+        color: '#166534',
+        border: '1.5px solid #86EFAC',
+        width: '24px',
+        height: '24px',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        fontSize: '0.95rem',
+        fontWeight: '800',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        lineHeight: 1,
+        flexShrink: 0
+      }}
+    >
       +
     </button>
   );
@@ -361,8 +411,8 @@ function AddVisaFormContent() {
 
             <header className="seller-header">
               <div>
-                <h1 className="seller-page-title">{isEditing ? 'Edit VISA Processing Service Product' : 'Add VISA Processing Service Product'}</h1>
-                <p className="seller-page-subtitle">Configure VISA Country, Type, Validity, Entry options, and Combination Price Sets.</p>
+                <h1 className="seller-page-title">{isEditing ? 'Edit VISA Service Product' : 'Add VISA Service Product'}</h1>
+                <p className="seller-page-subtitle">Configure single VISA Type per product with multiple validity options &amp; dynamic pricing tiers.</p>
               </div>
             </header>
 
@@ -379,19 +429,18 @@ function AddVisaFormContent() {
 
               {/* ── 1. Basic VISA Product Info ── */}
               <h3 style={sec}>1. Basic VISA Product Info</h3>
-              <p style={subsec}>Set the destination country, visa category and entry options.</p>
+              <p style={subsec}>Set destination country, single visa category for this product, and processing time.</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '28px' }}>
 
-                {/* Country Dropdown with 190+ countries */}
+                {/* Country Dropdown with 190+ world countries */}
                 <div>
                   <label style={lbl}>Destination Country *</label>
                   <select
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    style={inp}
+                    onChange={(e) => handleCountrySelect(e.target.value)}
+                    style={{ ...inp, fontWeight: 600 }}
                   >
-                    <option value="" disabled>Select Destination Country...</option>
-                    {ALL_COUNTRIES.map((c) => (
+                    {ALL_WORLD_COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
@@ -400,39 +449,33 @@ function AddVisaFormContent() {
                 {/* VISA Available Label */}
                 <div>
                   <label style={lbl}>VISA Available Label *</label>
-                  <input type="text" placeholder="e.g. Tourist Visa / Student Visa Available" value={visaAvailableLabel} onChange={(e) => setVisaAvailableLabel(e.target.value)} style={inp} />
+                  <input
+                    type="text"
+                    placeholder="e.g. Tourist Visa / Student Visa Available"
+                    value={visaAvailableLabel}
+                    onChange={(e) => setVisaAvailableLabel(e.target.value)}
+                    style={inp}
+                  />
                 </div>
 
-                {/* VISA Type */}
+                {/* Single VISA Type for entire product */}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <label style={{ ...lbl, marginBottom: 0 }}>Primary VISA Category *</label>
-                    <PlusBtn onClick={() => openModal({ title: 'Add VISA Type', fieldLabel: 'VISA Type Name', list: allVisaTypes, setter: setCustomVisaTypes, valueSetter: setVisaType })} />
+                    <label style={{ ...lbl, marginBottom: 0 }}>Primary VISA Category (Single Type) *</label>
+                    <PlusBtn onClick={() => openModal({ title: 'Add VISA Category', fieldLabel: 'VISA Category Name', list: allVisaTypes, setter: setCustomVisaTypes, valueSetter: setVisaType })} />
                   </div>
-                  <select value={visaType} onChange={(e) => setVisaType(e.target.value)} style={inp}>
+                  <select value={visaType} onChange={(e) => setVisaType(e.target.value)} style={{ ...inp, fontWeight: 600 }}>
                     {allVisaTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
 
-                {/* Validity */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <label style={{ ...lbl, marginBottom: 0 }}>VISA Validity Option *</label>
-                    <PlusBtn onClick={() => openModal({ title: 'Add Validity Option', fieldLabel: 'Validity Duration', list: allValidities, setter: setCustomValidities, valueSetter: setValidity })} />
-                  </div>
-                  <select value={validity} onChange={(e) => setValidity(e.target.value)} style={inp}>
-                    {allValidities.map((v) => <option key={v} value={v}>{v}</option>)}
-                  </select>
-                </div>
-
-
                 {/* Processing Time */}
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <label style={{ ...lbl, marginBottom: 0 }}>Processing Time</label>
+                    <label style={{ ...lbl, marginBottom: 0 }}>Processing Time *</label>
                     <PlusBtn onClick={() => openModal({ title: 'Add Processing Time', fieldLabel: 'Processing Duration', list: allProcTimes, setter: setCustomProcTimes, valueSetter: setProcessingTime })} />
                   </div>
-                  <select value={processingTime} onChange={(e) => setProcessingTime(e.target.value)} style={inp}>
+                  <select value={processingTime} onChange={(e) => setProcessingTime(e.target.value)} style={{ ...inp, fontWeight: 600 }}>
                     {allProcTimes.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
@@ -441,9 +484,17 @@ function AddVisaFormContent() {
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
 
-              {/* ── 2. Country Info (shown on visa detail page) ── */}
-              <h3 style={sec}>2. Country Info (Shown on VISA Detail Page)</h3>
-              <p style={subsec}>These details appear on the public visa detail page — Capital City, Local Time, Exchange Rate, Embassy etc.</p>
+              {/* ── 2. Destination Country & Embassy Information ── */}
+              <h3 style={sec}>2. Destination Country &amp; Embassy Information</h3>
+              <p style={subsec}>Country metadata auto-populates upon selecting destination country. You can review and set your custom processing fee &amp; embassy details below.</p>
+
+              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '12px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.2rem' }}>ℹ️</span>
+                <span style={{ fontSize: '0.82rem', color: '#1E40AF', fontWeight: 500 }}>
+                  <strong>Auto-Filled Country Details:</strong> Capital City, Timezone, Telephone Code, Exchange Rate, and Embassy Fee automatically populate when a country is selected. You can specify your custom <strong>Processing Fee</strong> and <strong>Embassy Address</strong> below.
+                </span>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '28px' }}>
                 <div>
                   <label style={lbl}>Capital City</label>
@@ -462,96 +513,171 @@ function AddVisaFormContent() {
                   <input type="text" placeholder="e.g. 1 USD is equivalent to 118 BDT" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)} style={inp} />
                 </div>
                 <div>
-                  <label style={lbl}>Starting Visa Fee (BDT)</label>
-                  <input type="text" placeholder="e.g. 2400" value={visaFee} onChange={(e) => setVisaFee(e.target.value)} style={inp} />
+                  <label style={lbl}>Starting Embassy Fee (BDT)</label>
+                  <input type="text" placeholder="e.g. 1800" value={visaFee} onChange={(e) => setVisaFee(e.target.value)} style={inp} />
                 </div>
                 <div>
-                  <label style={lbl}>Processing Fee (BDT)</label>
-                  <input type="text" placeholder="e.g. 36000" value={processingFee} onChange={(e) => setProcessingFee(e.target.value)} style={inp} />
+                  <label style={lbl}>Processing Fee (BDT) *</label>
+                  <input type="text" placeholder="e.g. 36000" value={processingFee} onChange={(e) => setProcessingFee(e.target.value)} style={{ ...inp, background: '#FFFFFF', border: '1.5px solid #2563EB', fontWeight: 'bold' }} />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label style={lbl}>Embassy Address in Bangladesh</label>
-                  <input type="text" placeholder="e.g. Madani Avenue, Baridhara, Dhaka 1212, Bangladesh" value={embassyAddress} onChange={(e) => setEmbassyAddress(e.target.value)} style={inp} />
+                  <label style={lbl}>Embassy Address in Bangladesh *</label>
+                  <input type="text" placeholder="e.g. Madani Avenue, Baridhara, Dhaka 1212, Bangladesh" value={embassyAddress} onChange={(e) => setEmbassyAddress(e.target.value)} style={{ ...inp, background: '#FFFFFF', border: '1.5px solid #2563EB' }} />
                 </div>
               </div>
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
 
-              {/* ── 3. Dynamic Pricing Combinations ── */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <h3 style={{ ...sec, margin: 0 }}>3. VISA Pricing & Package Combinations</h3>
-                <button
-                  type="button"
-                  onClick={addMatrixItem}
-                  style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', padding: '6px 14px', borderRadius: '8px', fontSize: '0.84rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  + Add Combination
-                </button>
-              </div>
-              <p style={subsec}>Set prices for different entry options of your primary VISA category (or add other category combinations if offered).</p>
+              {/* ── 3. Dynamic Pricing Options & Discount Calculator (Identical to Tour Package) ── */}
+              <div className="seller-form-group full-width" style={{ marginTop: '10px', marginBottom: '28px' }}>
+                <div style={{ background: '#FAF5FF', border: '1.5px solid #E9D5FF', borderRadius: '18px', padding: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#7E22CE', margin: 0 }}>
+                      3. Pricing Policy &amp; Multiple Validity Options ({visaType})
+                    </h3>
 
-              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '28px' }}>
-                {matrixItems.length === 0 ? (
-                  <p style={{ textAlign: 'center', color: '#64748B', fontSize: '0.85rem', margin: '16px 0' }}>No pricing combinations added yet. Click <strong>"+ Add Combination"</strong> to set prices.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {matrixItems.map((item, index) => (
-                      <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#fff', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#94A3B8', minWidth: '20px' }}>#{index + 1}</span>
-
-                        {/* VISA Type Select */}
-                        <div style={{ flex: '1 1 180px' }}>
-                          <select
-                            value={item.visaType}
-                            onChange={(e) => updateMatrixItem(item.id, 'visaType', e.target.value)}
-                            style={{ ...inp, padding: '7px 10px', fontSize: '0.85rem' }}
-                          >
-                            {allVisaTypes.map((vt) => (
-                              <option key={vt} value={vt}>{vt}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <span style={{ color: '#CBD5E1', fontWeight: 'bold' }}>+</span>
-
-                        {/* Entry Option Select */}
-                        <div style={{ flex: '1 1 160px' }}>
-                          <select
-                            value={item.entryType}
-                            onChange={(e) => updateMatrixItem(item.id, 'entryType', e.target.value)}
-                            style={{ ...inp, padding: '7px 10px', fontSize: '0.85rem' }}
-                          >
-                            {allEntryTypes.map((et) => (
-                              <option key={et} value={et}>{et}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* Price Input */}
-                        <div style={{ flex: '0 0 140px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#1E293B' }}>৳</span>
-                          <input
-                            type="number"
-                            placeholder="Price (BDT)"
-                            value={item.price}
-                            onChange={(e) => updateMatrixItem(item.id, 'price', e.target.value)}
-                            style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1.5px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', outline: 'none' }}
-                          />
-                        </div>
-
-                        {/* Delete Button */}
-                        <button
-                          type="button"
-                          onClick={() => removeMatrixItem(item.id)}
-                          title="Remove combination"
-                          style={{ background: '#FEF2F2', color: '#EF4444', border: '1px solid #FCA5A5', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                    <button
+                      type="button"
+                      onClick={addPricingItem}
+                      style={{
+                        background: '#7E22CE',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '10px 18px',
+                        borderRadius: '10px',
+                        fontWeight: 700,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(126,34,206,0.25)',
+                      }}
+                    >
+                      + Create New Validity Option / Tier
+                    </button>
                   </div>
-                )}
+
+                  {/* Pricing Items List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {dynamicPricingItems.map((item, index) => {
+                      const autoFinalPrice = calculateFinalPrice(item);
+                      return (
+                        <div
+                          key={item.id}
+                          style={{
+                            background: '#FFFFFF',
+                            border: '1px solid #DDD6FE',
+                            borderRadius: '14px',
+                            padding: '16px',
+                            boxShadow: '0 2px 8px rgba(126,34,206,0.05)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                            <span style={{ background: '#F3E8FF', color: '#6B21A8', padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700 }}>
+                              Validity Option Tier #{index + 1}
+                            </span>
+                            {dynamicPricingItems.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removePricingItem(index)}
+                                style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                              >
+                                Remove Tier ✕
+                              </button>
+                            )}
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                            {/* Entry Option Dropdown */}
+                            <div>
+                              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                Entry Option *
+                              </label>
+                              <select
+                                value={item.entryType || (item.title && item.title.includes('Multiple') ? 'Multiple Entry' : (item.title && item.title.includes('Double') ? 'Double Entry' : 'Single Entry'))}
+                                onChange={(e) => {
+                                  const entry = e.target.value;
+                                  handlePricingItemChange(index, 'entryType', entry);
+                                  // Update title entry suffix if needed
+                                  if (!item.title) {
+                                    handlePricingItemChange(index, 'title', `30 Days ${entry}`);
+                                  }
+                                }}
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600, background: '#FFFFFF' }}
+                              >
+                                <option value="Single Entry">Single Entry</option>
+                                <option value="Double Entry">Double Entry</option>
+                                <option value="Multiple Entry">Multiple Entry</option>
+                              </select>
+                            </div>
+
+                            {/* Validity & Entry Title Input */}
+                            <div>
+                              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                Validity &amp; Entry Title *
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="e.g. 30 Days Single Entry"
+                                value={item.title}
+                                onChange={(e) => handlePricingItemChange(index, 'title', e.target.value)}
+                                required
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                Regular Price (৳) *
+                              </label>
+                              <input
+                                type="number"
+                                placeholder="e.g. 15000"
+                                value={item.regularPrice}
+                                onChange={(e) => handlePricingItemChange(index, 'regularPrice', e.target.value)}
+                                required
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                              />
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                Discount Type *
+                              </label>
+                              <select
+                                value={item.discountType}
+                                onChange={(e) => handlePricingItemChange(index, 'discountType', e.target.value)}
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                              >
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="amount">Fixed Amount (৳)</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                Discount Value ({item.discountType === 'percentage' ? '%' : '৳'}) *
+                              </label>
+                              <input
+                                type="number"
+                                placeholder={item.discountType === 'percentage' ? 'e.g. 10' : 'e.g. 2000'}
+                                value={item.discountValue}
+                                onChange={(e) => handlePricingItemChange(index, 'discountValue', e.target.value)}
+                                style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                              />
+                            </div>
+
+                            {/* Auto-Calculated Result */}
+                            <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', textTransform: 'uppercase' }}>Auto Calculated Final Price</span>
+                              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669' }}>
+                                ৳{autoFinalPrice.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
@@ -581,7 +707,7 @@ function AddVisaFormContent() {
                   <textarea rows="3" value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inp, resize: 'vertical' }} />
                 </div>
                 <div>
-                  <label style={lbl}>Conditions as ShareTrip *</label>
+                  <label style={lbl}>Conditions *</label>
                   <textarea rows="2" value={conditions} onChange={(e) => setConditions(e.target.value)} style={{ ...inp, resize: 'vertical' }} />
                 </div>
                 <div>

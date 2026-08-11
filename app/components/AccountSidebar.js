@@ -85,7 +85,7 @@ function SidebarInner() {
             </li>
             <li>
               <Link href="/account/vouchers" {...navProps} style={{ textDecoration: 'none', fontSize: '0.82rem', fontWeight: pathname === '/account/vouchers' ? '700' : '500', color: pathname === '/account/vouchers' ? '#2563EB' : '#64748B' }}>
-                Vouchers
+                My Collected Vouchers
               </Link>
             </li>
           </ul>

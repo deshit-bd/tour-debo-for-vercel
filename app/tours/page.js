@@ -246,6 +246,15 @@ function TourListingContent() {
                       <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '1.1rem' }}>
                         {item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : formatPrice(item.price)}
                       </span>
+                      {filteredTours.indexOf(item) % 2 === 0 ? (
+                        <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 8px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🎟️ Voucher Available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 8px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🏷️ Extra Discount Available
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -385,7 +394,7 @@ function TourListingContent() {
                       <div className="price-and-action" style={{ textAlign: 'right' }}>
                         <div className="price-box">
                           <small style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)' }}>Starting From</small>
-                          <div className="price-numbers" style={{ display: 'flex', alignItems: 'baseline', gap: '5px', justifyContent: 'flex-end' }}>
+                          <div className="price-numbers" style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
                             <span className="current-price" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--primary-blue)' }}>
                               {item.prices?.single ? `৳${item.prices.single.toLocaleString()}` : formatPrice(item.price)}
                             </span>
@@ -401,6 +410,18 @@ function TourListingContent() {
                               }
                               return null;
                             })()}
+                            <span className="discount-tag" style={{ fontSize: '0.74rem', background: '#FFE4E6', color: '#E11D48', border: '1px dashed #F43F5E', padding: '2px 6px', borderRadius: '6px', fontWeight: '800' }}>
+                              20% OFF
+                            </span>
+                            {filteredTours.indexOf(item) % 2 === 0 ? (
+                              <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 8px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                🎟️ Voucher Available
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 8px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                🏷️ Extra Discount Available
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

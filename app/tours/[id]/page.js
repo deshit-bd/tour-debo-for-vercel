@@ -19,7 +19,7 @@ export default function TourDetailPage() {
   const { user } = useAuth();
 
   const rawId = params?.id ? String(params.id) : 'paris';
-  
+
   // 1. Initial state always resolves static tour so SSR HTML matches initial Client Hydration HTML 100%
   const staticTour = ALL_TOURS.find((t) => t.id === resolveId(rawId)) || ALL_TOURS[0];
   const [tour, setTour] = useState(staticTour);
@@ -35,12 +35,22 @@ export default function TourDetailPage() {
   const galleryImages = tour.images || [];
   const bedPrices = tour.prices || {};
 
+  const singlePrice = bedPrices.single || 10000;
+  const couplePrice = bedPrices.couple || (bedPrices.single ? Math.round(bedPrices.single * 1.8) : 18000);
+  const childPrice = bedPrices.child || Math.round(singlePrice * 0.5);
+
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [ticketCount, setTicketCount] = useState(1);
+  const [childCount, setChildCount] = useState(0);
   const [selectedPackage, setSelectedPackage] = useState('single');
   const [inWishlist, setInWishlist] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
-  
+
+  const selectedBaseUnitPrice = selectedPackage === 'couple' ? couplePrice : singlePrice;
+  const adultTotalPrice = selectedBaseUnitPrice * ticketCount;
+  const childTotalPrice = childPrice * childCount;
+  const grandTotalPrice = adultTotalPrice + childTotalPrice;
+
   // Tour Type State: 'fixed' (Fixed Date Tour) or 'open' (Open Tour)
   const [tourType, setTourType] = useState('fixed');
   const [selectedCustomDate, setSelectedCustomDate] = useState('2026-07-15');
@@ -147,14 +157,14 @@ export default function TourDetailPage() {
 
 
   const handleBookNow = () => {
-    router.push(`/checkout?tourId=${tour.id}&package=${selectedPackage}&count=${ticketCount}`);
+    router.push(`/checkout?tourId=${tour.id}&package=${selectedPackage}&count=${ticketCount}&children=${childCount}&totalPrice=${grandTotalPrice}`);
   };
 
   const handleDownloadVoucher = async () => {
     setDownloadingPdf(true);
     await generateTicketPDF({
       title: tour.title,
-      amount: formatPrice(bedPrices[selectedPackage] * ticketCount),
+      amount: formatPrice(grandTotalPrice),
       date: tour.dates,
       touristName: user?.name || 'Tourist',
     });
@@ -224,161 +234,268 @@ export default function TourDetailPage() {
 
         {/* Header Summary Section (PDF Page 2 Reference) */}
         <div className="detail-header-card" style={{ marginTop: '24px', background: '#fff', borderRadius: '16px', padding: '24px', border: '1px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: '2.1rem', fontWeight: '800', color: '#1E293B', margin: 0, fontFamily: 'sans-serif' }}>
-                {tour.titlePrefix}<span style={{ fontStyle: 'italic', fontWeight: '400', color: '#334155' }}>{tour.titleSub}</span>
-              </h1>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
-                <span style={{ color: '#FFB800', fontSize: '1rem' }}>★★★★★</span>
-                <strong style={{ fontSize: '0.95rem', color: '#0F172A' }}>{tour.rating}</strong>
-                <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>(Ratings)</span>
 
-                {/* Share & Wishlist Icons Moved Beside Ratings */}
-                <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', marginLeft: '6px' }}>
-                  {/* Share Arrow Icon with Popover */}
-                  <div style={{ position: 'relative' }}>
+          {/* ── 🛒 E-COMMERCE DISCOUNTED PRICE DISPLAY (MATCHING SCREENSHOT) ── */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '2rem', fontWeight: 900, color: '#0F172A' }}>
+              ৳ 12,500
+            </span>
+            <span style={{ fontSize: '1.1rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+              ৳ 16,000
+            </span>
+            <span style={{ fontSize: '0.84rem', fontWeight: 800, background: '#FFE4E6', color: '#E11D48', padding: '3px 10px', borderRadius: '8px' }}>
+              -22% OFF
+            </span>
+          </div>
+
+          {/* ── TITLE ON LEFT + RATINGS, SHARE, WISHLIST & VOUCHER TO THE RIGHT OF TITLE ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '14px' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1E293B', margin: 0, fontFamily: 'sans-serif', display: 'inline-flex', alignItems: 'center' }}>
+              {tour.titlePrefix}<span style={{ fontStyle: 'italic', fontWeight: '400', color: '#334155', marginLeft: '4px' }}>{tour.titleSub}</span>
+            </h1>
+
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              {/* 1. Ratings */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ color: '#FFB800', fontSize: '0.95rem' }}>★★★★★</span>
+                <strong style={{ fontSize: '0.9rem', color: '#0F172A' }}>{tour.rating}</strong>
+                <span style={{ fontSize: '0.76rem', color: '#94A3B8' }}>(Ratings)</span>
+              </div>
+
+            {/* 2. Share Icon */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowShareModal(!showShareModal)}
+                title="Share Tour"
+                style={{
+                  background: showShareModal ? '#EFF6FF' : '#F1F5F9',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '6px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563EB">
+                  <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z" />
+                </svg>
+              </button>
+
+              {/* Daraz-Style Share Modal / Popover */}
+              {showShareModal && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '40px',
+                    left: '0',
+                    background: '#ffffff',
+                    borderRadius: '16px',
+                    boxShadow: '0 16px 40px rgba(15, 23, 42, 0.2)',
+                    border: '1px solid #E2E8F0',
+                    padding: '20px',
+                    width: '310px',
+                    zIndex: 100,
+                  }}
+                >
+                  {/* Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <strong style={{ fontSize: '0.95rem', color: '#0F172A', fontWeight: '800' }}>Share Package</strong>
                     <button
                       type="button"
-                      onClick={() => setShowShareModal(!showShareModal)}
-                      title="Share Tour"
-                      style={{
-                        background: showShareModal ? '#EFF6FF' : '#F1F5F9',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '6px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s ease',
-                      }}
+                      onClick={() => setShowShareModal(false)}
+                      style={{ border: 'none', background: '#F1F5F9', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', color: '#64748B', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#2563EB">
-                        <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z" />
-                      </svg>
+                      ✕
                     </button>
-
-                    {/* Daraz-Style Share Modal / Popover */}
-                    {showShareModal && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '40px',
-                          left: '0',
-                          background: '#ffffff',
-                          borderRadius: '16px',
-                          boxShadow: '0 16px 40px rgba(15, 23, 42, 0.2)',
-                          border: '1px solid #E2E8F0',
-                          padding: '20px',
-                          width: '310px',
-                          zIndex: 100,
-                        }}
-                      >
-                        {/* Header */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                          <strong style={{ fontSize: '0.95rem', color: '#0F172A', fontWeight: '800' }}>Share Package</strong>
-                          <button
-                            type="button"
-                            onClick={() => setShowShareModal(false)}
-                            style={{ border: 'none', background: '#F1F5F9', width: '28px', height: '28px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.85rem', color: '#64748B', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        {/* Social Icons Row */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px', textAlign: 'center' }}>
-                          {/* Facebook */}
-                          <a
-                            href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => setShowShareModal(false)}
-                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                          >
-                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(24,119,242,0.3)' }}>
-                              f
-                            </div>
-                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Facebook</span>
-                          </a>
-
-                          {/* WhatsApp */}
-                          <a
-                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}%20${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => setShowShareModal(false)}
-                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                          >
-                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#25D366', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(37,211,102,0.3)' }}>
-                              💬
-                            </div>
-                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>WhatsApp</span>
-                          </a>
-
-                          {/* Twitter (X) */}
-                          <a
-                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => setShowShareModal(false)}
-                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                          >
-                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0F172A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '800', boxShadow: '0 4px 10px rgba(15,23,42,0.3)' }}>
-                              𝕏
-                            </div>
-                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Twitter</span>
-                          </a>
-
-                          {/* Email */}
-                          <a
-                            href={`mailto:?subject=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&body=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                            onClick={() => setShowShareModal(false)}
-                            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
-                          >
-                            <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EA4335', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(234,67,53,0.3)' }}>
-                              ✉️
-                            </div>
-                            <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Email</span>
-                          </a>
-                        </div>
-
-                        {/* Copy Link Input Capsule */}
-                        <div>
-                          <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748B', display: 'block', marginBottom: '6px' }}>Page Link</span>
-                          <div style={{ display: 'flex', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '3px' }}>
-                            <input
-                              type="text"
-                              readOnly
-                              value={typeof window !== 'undefined' ? window.location.href : ''}
-                              style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px 10px', fontSize: '0.78rem', color: '#475569', outline: 'none' }}
-                            />
-                            <button
-                              type="button"
-                              onClick={handleCopyLink}
-                              style={{ background: '#2563EB', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                            >
-                              Copy
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Wishlist Heart Icon */}
-                  <button
-                    onClick={() => setInWishlist(!inWishlist)}
-                    title="Save to Wishlist"
-                    style={{ background: '#F1F5F9', border: 'none', cursor: 'pointer', width: '30px', height: '30px', borderRadius: '50%', fontSize: '1rem', color: inWishlist ? '#E11D48' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    {inWishlist ? '❤️' : '♡'}
-                  </button>
+                  {/* Social Icons Row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px', textAlign: 'center' }}>
+                    {/* Facebook */}
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareModal(false)}
+                      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                    >
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#1877F2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(24,119,242,0.3)' }}>
+                        f
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Facebook</span>
+                    </a>
+
+                    {/* WhatsApp */}
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}%20${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareModal(false)}
+                      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                    >
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#25D366', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(37,211,102,0.3)' }}>
+                        💬
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>WhatsApp</span>
+                    </a>
+
+                    {/* Twitter (X) */}
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowShareModal(false)}
+                      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                    >
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#0F172A', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '800', boxShadow: '0 4px 10px rgba(15,23,42,0.3)' }}>
+                        𝕏
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Twitter</span>
+                    </a>
+
+                    {/* Email */}
+                    <a
+                      href={`mailto:?subject=${encodeURIComponent(tour.titlePrefix + tour.titleSub)}&body=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
+                      onClick={() => setShowShareModal(false)}
+                      style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
+                    >
+                      <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EA4335', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(234,67,53,0.3)' }}>
+                        ✉️
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#475569', fontWeight: '600' }}>Email</span>
+                    </a>
+                  </div>
+
+                  {/* Copy Link Input Capsule */}
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748B', display: 'block', marginBottom: '6px' }}>Page Link</span>
+                    <div style={{ display: 'flex', background: '#F8FAFC', border: '1px solid #CBD5E1', borderRadius: '10px', overflow: 'hidden', padding: '3px' }}>
+                      <input
+                        type="text"
+                        readOnly
+                        value={typeof window !== 'undefined' ? window.location.href : ''}
+                        style={{ flex: 1, border: 'none', background: 'transparent', padding: '6px 10px', fontSize: '0.78rem', color: '#475569', outline: 'none' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        style={{ background: '#2563EB', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              )}
+            </div>
+
+            {/* 3. Wishlist Heart Icon */}
+            <button
+              onClick={() => setInWishlist(!inWishlist)}
+              title="Save to Wishlist"
+              style={{ background: '#F1F5F9', border: 'none', cursor: 'pointer', width: '30px', height: '30px', borderRadius: '50%', fontSize: '1rem', color: inWishlist ? '#E11D48' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {inWishlist ? '❤️' : '♡'}
+            </button>
+
+            {/* 4. Voucher Ticket Box */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
+              <div
+                style={{
+                  background: '#FFF1F2',
+                  border: '1.5px dashed #F43F5E',
+                  borderRadius: '12px',
+                  padding: '8px 12px',
+                  display: 'inline-flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '6px'
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#E11D48', lineHeight: 1.2 }}>
+                    ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9F1239' }}>(Code: EID2026)</span>
+                  </strong>
+                  <span style={{ fontSize: '0.66rem', color: '#881337', fontWeight: 600, marginTop: '2px' }}>
+                    Min. Spend ৳5,000 • Valid till 31 Aug 2026
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.currentTarget.innerText = '✓ Collected';
+                    e.currentTarget.style.background = '#DCFCE7';
+                    e.currentTarget.style.color = '#15803D';
+                  }}
+                  style={{
+                    background: '#E11D48',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '4px 12px',
+                    borderRadius: '14px',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    width: '100%',
+                    textAlign: 'center'
+                  }}
+                >
+                  Collect Voucher
+                </button>
               </div>
             </div>
+
+            {/* 5. Special Package Direct Discount Box (To the Right of Voucher Box) */}
+            {(tour.discountTag || tour.specialDiscount || true) && (
+              <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '4px' }}>
+                <div
+                  style={{
+                    background: '#F0FDF4',
+                    border: '1.5px dashed #16A34A',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                    display: 'inline-flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '6px'
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                      {tour.discountTag || '-22% OFF'} Offered Extra Discount
+                    </strong>
+                    <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
+                      Applied directly on package price
+                    </span>
+                  </div>
+
+                  <span
+                    style={{
+                      background: '#DCFCE7',
+                      color: '#15803D',
+                      border: '1px solid #86EFAC',
+                      padding: '3px 10px',
+                      borderRadius: '14px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      width: '100%',
+                      textAlign: 'center',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    ✓ Deal Active
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
+        </div>
 
           <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.92rem', color: '#334155' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -412,8 +529,10 @@ export default function TourDetailPage() {
                 </strong>
               </span>
 
+
+
               {/* Premium Segmented Toggle Switch for Fixed Date vs Open Tour */}
-              <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: '3px', borderRadius: '24px', border: '1px solid #CBD5E1', alignItems: 'center' }}>
+              <div style={{ display: 'inline-flex', background: '#F1F5F9', padding: '3px', borderRadius: '24px', border: '1px solid #CBD5E1', alignItems: 'center', marginTop: '10px' }}>
                 <button
                   type="button"
                   onClick={() => setTourType('fixed')}
@@ -486,10 +605,10 @@ export default function TourDetailPage() {
 
         {/* Two-Column Main Section Layout */}
         <div className="detail-two-col-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', marginTop: '24px' }}>
-          
+
           {/* Left Column: Itinerary Card & Accordions Stack */}
           <div className="left-content-column">
-            
+
             {/* 1. Dynamic Day-by-Day Itinerary Box */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '24px', marginBottom: '16px' }}>
               {tour.dayPlans && tour.dayPlans.length > 0 ? (
@@ -867,7 +986,7 @@ export default function TourDetailPage() {
 
           {/* Right Sidebar Column (PDF Page 2 Reference) */}
           <div className="right-sidebar-column" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            
+
             {/* Top Block 1: Planner / Shop Card */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -889,66 +1008,107 @@ export default function TourDetailPage() {
             {/* Top Block 2: Booking Card */}
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#0F172A', textTransform: 'capitalize' }}>
-                  {selectedPackage === 'couple' ? 'Couple' : 'Single'} {(() => {
-                    const priceVal = bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 18000 : 10000);
-                    return typeof priceVal === 'number' ? `৳${priceVal.toLocaleString()}` : priceVal;
-                  })()}
-                </span>
+                <div>
+                  <span style={{ fontSize: '1.3rem', fontWeight: '800', color: '#0F172A', display: 'block' }}>
+                    ৳{grandTotalPrice.toLocaleString()}
+                  </span>
+                  <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '600' }}>
+                    {selectedPackage === 'couple' ? 'Couple Package' : 'Single Package'} {childCount > 0 ? `+ ${childCount} Child` : ''}
+                  </span>
+                </div>
                 <span style={{ fontSize: '1.05rem', color: '#15803D', fontWeight: '800', textDecoration: 'line-through', background: '#F0FDF4', padding: '4px 12px', borderRadius: '8px', border: '1.5px solid #86EFAC' }}>
                   {(() => {
-                    const priceVal = bedPrices[selectedPackage] || (selectedPackage === 'couple' ? 18000 : 10000);
-                    const origVal = bedPrices[`${selectedPackage}Original`];
-                    if (origVal && origVal > priceVal && origVal < priceVal * 10) {
-                      return `৳${origVal.toLocaleString()}`;
-                    }
                     const rawTag = tour.discountTag || tour.discount?.tag || '20% OFF';
                     let pct = parseInt(rawTag.replace(/[^0-9]/g, '')) || 20;
                     if (pct >= 100 || pct <= 0) pct = 20;
-                    
-                    const calcOrig = Math.round(priceVal / (1 - pct / 100));
+                    const calcOrig = Math.round(grandTotalPrice / (1 - pct / 100));
                     return `৳${calcOrig.toLocaleString()}`;
                   })()}
                 </span>
               </div>
 
+              {/* Package Selection */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                 {[
-                  { id: 'single', label: 'Single', price: bedPrices?.single || 10000 },
-                  { id: 'couple', label: 'Couple', price: bedPrices?.couple || (bedPrices?.single ? Math.round(bedPrices.single * 1.8) : 18000) },
+                  { id: 'single', label: 'Single (1 Adult)', price: singlePrice },
+                  { id: 'couple', label: 'Couple (2 Adults)', price: couplePrice },
                 ].map((opt) => (
                   <div
                     key={opt.id}
                     onClick={() => setSelectedPackage(opt.id)}
                     style={{
-                      padding: '8px 12px',
-                      borderRadius: '8px',
+                      padding: '10px 14px',
+                      borderRadius: '10px',
                       border: selectedPackage === opt.id ? '2px solid #2563EB' : '1px solid #E2E8F0',
                       background: selectedPackage === opt.id ? '#EFF6FF' : '#fff',
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
-                      fontSize: '0.85rem',
+                      alignItems: 'center',
+                      fontSize: '0.86rem',
                       fontWeight: '600',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <span>{opt.label}</span>
-                    <span>{typeof opt.price === 'number' ? `৳${opt.price.toLocaleString()}` : opt.price}</span>
+                    <span style={{ color: selectedPackage === opt.id ? '#1D4ED8' : '#0F172A' }}>{opt.label}</span>
+                    <span style={{ fontWeight: '800', color: selectedPackage === opt.id ? '#1D4ED8' : '#334155' }}>
+                      ৳{opt.price.toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>
 
               {/* Pass Counter */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Passes:</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', background: '#F8FAFC', padding: '8px 12px', borderRadius: '10px', border: '1px solid #F1F5F9' }}>
+                <div>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 'bold', color: '#0F172A', display: 'block' }}>
+                    {selectedPackage === 'couple' ? 'Couple Passes:' : 'Single Passes:'}
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                    {selectedPackage === 'couple' ? '2 Adults / Pass' : '1 Adult / Pass'}
+                  </span>
+                </div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button onClick={() => setTicketCount(Math.max(1, ticketCount - 1))} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1' }}>-</button>
-                  <span style={{ fontWeight: 'bold' }}>{ticketCount}</span>
-                  <button onClick={() => setTicketCount(ticketCount + 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1' }}>+</button>
+                  <button onClick={() => setTicketCount(Math.max(1, ticketCount - 1))} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
+                  <span style={{ fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>{ticketCount}</span>
+                  <button onClick={() => setTicketCount(ticketCount + 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
                 </div>
               </div>
 
+              {/* Child Pass Counter */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', background: '#F0F9FF', padding: '8px 12px', borderRadius: '10px', border: '1px solid #BAE6FD' }}>
+                <div>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 'bold', color: '#0369A1', display: 'block' }}>Child Passes (2-11 yrs):</span>
+                  <span style={{ fontSize: '0.72rem', color: '#0284C7', fontWeight: '600' }}>
+                    +৳{childPrice.toLocaleString()} / child
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button onClick={() => setChildCount(Math.max(0, childCount - 1))} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #93C5FD', background: '#fff', cursor: 'pointer', fontWeight: 'bold', color: '#0369A1' }}>-</button>
+                  <span style={{ fontWeight: 'bold', minWidth: '16px', textAlign: 'center', color: '#0369A1' }}>{childCount}</span>
+                  <button onClick={() => setChildCount(childCount + 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #93C5FD', background: '#fff', cursor: 'pointer', fontWeight: 'bold', color: '#0369A1' }}>+</button>
+                </div>
+              </div>
 
+              {/* Summary Breakdown Box (shown if childCount > 0 or ticketCount > 1) */}
+              {(childCount > 0 || ticketCount > 1) && (
+                <div style={{ background: '#F8FAFC', borderRadius: '10px', padding: '10px 12px', border: '1px dashed #CBD5E1', marginBottom: '16px', fontSize: '0.78rem', color: '#475569' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span>{selectedPackage === 'couple' ? 'Couple Pass' : 'Single Pass'} ({ticketCount}x):</span>
+                    <span style={{ fontWeight: '700', color: '#0F172A' }}>৳{adultTotalPrice.toLocaleString()}</span>
+                  </div>
+                  {childCount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span>Child ({childCount}x Pass):</span>
+                      <span style={{ fontWeight: '700', color: '#0369A1' }}>৳{childTotalPrice.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #E2E8F0', paddingTop: '4px', marginTop: '4px', fontWeight: '800', color: '#0F172A', fontSize: '0.84rem' }}>
+                    <span>Total Payable:</span>
+                    <span style={{ color: '#2563EB' }}>৳{grandTotalPrice.toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
 
               <button onClick={handleBookNow} style={{ background: '#2563EB', color: '#fff', border: 'none', width: '100%', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.92rem', boxShadow: '0 3px 10px rgba(37,99,235,0.25)' }}>
                 Book Now
@@ -965,7 +1125,7 @@ export default function TourDetailPage() {
                   const rawTag = tour.discountTag || tour.discount?.tag || '20% OFF';
                   let pct = parseInt(rawTag.replace(/[^0-9]/g, '')) || 20;
                   if (pct >= 100 || pct <= 0) pct = 20;
-                  
+
                   const priceVal = bedPrices?.single || 10000;
                   const calcAmt = Math.round(priceVal * (pct / 100));
                   return `৳${calcAmt.toLocaleString()} OFF (${pct}%)`;

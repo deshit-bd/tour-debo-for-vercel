@@ -164,7 +164,7 @@ export default function ManageVisaPage() {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
-                        <th style={thStyle}>#</th>
+                        <th style={thStyle}>Visa ID</th>
                         <th style={thStyle}>Country</th>
                         <th style={thStyle}>Visa Type</th>
                         <th style={thStyle}>Validity</th>
@@ -180,9 +180,12 @@ export default function ManageVisaPage() {
                     <tbody>
                       {filtered.map((v, idx) => {
                         const typeColor = TYPE_COLORS[v.visaType] || { bg: '#F8FAFC', color: '#475569' };
+                        const visaIdCode = v.visaCode || `#VISA-${101 + idx}`;
                         return (
                           <tr key={v.id} style={{ background: idx % 2 === 0 ? '#fff' : '#FAFBFF' }}>
-                            <td style={{ ...tdStyle, color: '#94A3B8', fontWeight: 600, width: '40px' }}>{idx + 1}</td>
+                            <td style={{ ...tdStyle, color: '#2563EB', fontWeight: 700, fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
+                              {visaIdCode}
+                            </td>
                             <td style={tdStyle}>
                               <div style={{ fontWeight: '700', color: '#0F172A' }}>{v.country}</div>
                               <div style={{ fontSize: '0.76rem', color: '#94A3B8', marginTop: '2px' }}>{v.capital}</div>

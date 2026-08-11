@@ -172,7 +172,7 @@ export default function HomePage() {
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="tours-3col-grid">
-            {POPULAR_TOURS.map((t) => (
+            {POPULAR_TOURS.map((t, idx) => (
               <Link href={`/tours/${t.id}`} key={t.id} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
                   <Image src={t.image} alt={t.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
@@ -190,10 +190,19 @@ export default function HomePage() {
                   </div>
                   <div className="price-row">
                     <small>Starting From</small>
-                    <div className="price-tag">
+                    <div className="price-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                       <span className="current-price">{formatPrice(t.price)}</span>
                       <span className="strike-price">{formatPrice(t.oldPrice)}</span>
                       {t.isOffer && <span className="discount-tag">20% OFF</span>}
+                      {idx % 2 === 0 ? (
+                        <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🎟️ Voucher Available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🏷️ Extra Discount Available
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ margin: '4px 0' }}>
@@ -248,10 +257,19 @@ export default function HomePage() {
                   </div>
                   <div className="price-row">
                     <small>Starting From</small>
-                    <div className="price-tag">
+                    <div className="price-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                       <span className="current-price">{formatPrice(o.price)}</span>
                       <span className="strike-price">{formatPrice(o.oldPrice)}</span>
                       <span className="discount-tag">20% OFF</span>
+                      {idx % 2 === 0 ? (
+                        <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🎟️ Voucher Available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🏷️ Extra Discount Available
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ margin: '4px 0' }}>
@@ -288,7 +306,7 @@ export default function HomePage() {
             <Link href="/tours" className="link-view-all">View All &gt;</Link>
           </div>
           <div className="tours-3col-grid">
-            {MOST_VISITED_TOURS.map((t) => (
+            {MOST_VISITED_TOURS.map((t, idx) => (
               <Link href={`/tours/${t.id}`} key={`mv-${t.id}`} className="tour-card-figma">
                 <div className="tour-card-image-wrap">
                   <Image src={t.image} alt={t.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="tour-card-img" />
@@ -306,10 +324,19 @@ export default function HomePage() {
                   </div>
                   <div className="price-row">
                     <small>Starting From</small>
-                    <div className="price-tag">
+                    <div className="price-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                       <span className="current-price">{formatPrice(t.price)}</span>
                       <span className="strike-price">{formatPrice(t.oldPrice)}</span>
                       {t.isOffer && <span className="discount-tag">20% OFF</span>}
+                      {idx % 2 === 0 ? (
+                        <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🎟️ Voucher Available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🏷️ Extra Discount Available
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ margin: '4px 0' }}>
@@ -370,10 +397,19 @@ export default function HomePage() {
                   </div>
                   <div className="price-row">
                     <small>Starting From</small>
-                    <div className="price-tag">
+                    <div className="price-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                       <span className="current-price">{formatPrice(tour.price)}</span>
                       <span className="strike-price">{formatPrice(tour.oldPrice)}</span>
                       {tour.isOffer && <span className="discount-tag">20% OFF</span>}
+                      {idx % 2 === 0 ? (
+                        <span style={{ fontSize: '0.72rem', background: '#FFF1F2', color: '#E11D48', border: '1.5px dashed #F43F5E', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🎟️ Voucher Available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', background: '#F0FDF4', color: '#15803D', border: '1.5px dashed #16A34A', padding: '2px 7px', borderRadius: '6px', fontWeight: '800', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          🏷️ Extra Discount Available
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ margin: '4px 0' }}>

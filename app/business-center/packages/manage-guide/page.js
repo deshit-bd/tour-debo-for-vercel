@@ -110,7 +110,7 @@ export default function ManageTourGuidesPage() {
                   <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0', color: '#475569' }}>
                     <th style={{ padding: '12px' }}>Guide Info</th>
                     <th style={{ padding: '12px' }}>Location</th>
-                    <th style={{ padding: '12px' }}>Languages</th>
+                    <th style={{ padding: '12px' }}>Capacity &amp; Vacancy</th>
                     <th style={{ padding: '12px' }}>Pricing Tiers (1P / 2P / 3P)</th>
                     <th style={{ padding: '12px' }}>Rating</th>
                     <th style={{ padding: '12px' }}>Actions</th>
@@ -129,7 +129,10 @@ export default function ManageTourGuidesPage() {
                           <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{guide.title}</div>
                         </td>
                         <td style={{ padding: '12px', color: '#334155' }}>📍 {guide.location}</td>
-                        <td style={{ padding: '12px', color: '#334155' }}>🗣️ {guide.languages || 'English, Bengali'}</td>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#0F172A' }}>👥 Max {guide.maxGuests || 10} Guests</div>
+                          <div style={{ fontSize: '0.74rem', color: '#16A34A', fontWeight: '600', marginTop: '2px' }}>📅 Slot Vacancy Managed</div>
+                        </td>
                         <td style={{ padding: '12px', fontWeight: '600', color: '#059669' }}>
                           ৳{guide.price1Person || '1500'} / ৳{guide.price2Person || '2500'} / ৳{guide.price3Person || '3200'}
                         </td>

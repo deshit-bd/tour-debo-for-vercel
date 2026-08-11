@@ -311,7 +311,8 @@ export default function VisaDetailPage({ params }) {
   const visaId = routeParams?.id || params?.id || 'canada';
 
   const handleApplyVisa = (totalAmount) => {
-    router.push(`/checkout?tourId=${visaId}&package=${encodeURIComponent(visaTypeSelect + ' (' + entryTypeSelect + ')')}&count=${applicantCount}&price=${totalAmount}`);
+    const totalCount = applicantCount + childApplicantCount;
+    router.push(`/checkout?tourId=${visaId}&package=${encodeURIComponent(visaTypeSelect + ' (' + entryTypeSelect + ')')}&count=${totalCount}&price=${totalAmount}&type=visa&adults=${applicantCount}&children=${childApplicantCount}`);
   };
 
   const [customVisa, setCustomVisa] = useState(null);
@@ -353,6 +354,7 @@ export default function VisaDetailPage({ params }) {
   const visa = customVisa || VISA_DETAILS[visaId] || VISA_DETAILS.canada;
 
   const [applicantCount, setApplicantCount] = useState(1);
+  const [childApplicantCount, setChildApplicantCount] = useState(0);
   const [visaTypeSelect, setVisaTypeSelect] = useState('Tourist Visa');
   const [entryTypeSelect, setEntryTypeSelect] = useState('Single Entry');
   const [voucher, setVoucher] = useState('');
@@ -606,6 +608,97 @@ export default function VisaDetailPage({ params }) {
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                 </button>
+
+                {/* 4. Voucher Ticket Box */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
+                  <div
+                    style={{
+                      background: '#FFF1F2',
+                      border: '1.5px dashed #F43F5E',
+                      borderRadius: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '6px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#E11D48', lineHeight: 1.2 }}>
+                        ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9F1239' }}>(Code: EID2026)</span>
+                      </strong>
+                      <span style={{ fontSize: '0.66rem', color: '#881337', fontWeight: 600, marginTop: '2px' }}>
+                        Min. Spend ৳5,000 • Valid till 31 Aug 2026
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.currentTarget.innerText = '✓ Collected';
+                        e.currentTarget.style.background = '#DCFCE7';
+                        e.currentTarget.style.color = '#15803D';
+                      }}
+                      style={{
+                        background: '#E11D48',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '4px 12px',
+                        borderRadius: '14px',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        width: '100%',
+                        textAlign: 'center'
+                      }}
+                    >
+                      Collect Voucher
+                    </button>
+                  </div>
+                </div>
+
+                {/* 5. Offered Extra Discount Box */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '4px' }}>
+                  <div
+                    style={{
+                      background: '#F0FDF4',
+                      border: '1.5px dashed #16A34A',
+                      borderRadius: '12px',
+                      padding: '8px 12px',
+                      display: 'inline-flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '6px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                        -18% OFF Offered Extra Discount
+                      </strong>
+                      <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
+                        Applied directly on visa fee
+                      </span>
+                    </div>
+
+                    <span
+                      style={{
+                        background: '#DCFCE7',
+                        color: '#15803D',
+                        border: '1px solid #86EFAC',
+                        padding: '3px 10px',
+                        borderRadius: '14px',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        width: '100%',
+                        textAlign: 'center',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      ✓ Deal Active
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -720,7 +813,8 @@ export default function VisaDetailPage({ params }) {
               const regProcFee = Math.round(currentProcFee * 1.25);
               const procDiscount = regProcFee - currentProcFee;
               const totalPerApplicant = primaryVisaFeeNum + currentProcFee;
-              const grandTotal = totalPerApplicant * applicantCount;
+              const childPerApplicant = Math.round(totalPerApplicant * 0.5);
+              const grandTotal = (totalPerApplicant * applicantCount) + (childPerApplicant * childApplicantCount);
 
               return (
                 <div className="booking-price-card" style={{ background: '#fff', padding: '18px', borderRadius: '16px', border: '1.5px solid #2563EB', boxShadow: '0 6px 20px rgba(37,99,235,0.06)' }}>
@@ -759,7 +853,7 @@ export default function VisaDetailPage({ params }) {
                   <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '12px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {/* 1. Visa Fee */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.76rem' }}>
-                      <span style={{ color: '#64748B', fontWeight: 600 }}>Visa Fee:</span>
+                      <span style={{ color: '#64748B', fontWeight: 600 }}>Adult Visa Fee:</span>
                       <strong style={{ color: '#0F172A', fontSize: '0.82rem' }}>৳{primaryVisaFeeNum.toLocaleString()}</strong>
                     </div>
 
@@ -779,22 +873,56 @@ export default function VisaDetailPage({ params }) {
                       You Save ৳{procDiscount.toLocaleString()} on Processing Fee!
                     </div>
 
-                    {/* 3. Total Calculated Fee */}
+                    {/* 3. Total Calculated Fee per Adult */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1.5px solid #CBD5E1', paddingTop: '8px', marginTop: '2px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0F172A' }}>Calculated Fee ({visaTypeSelect} - {entryTypeSelect}):</span>
-                      <div className="fee-big-text" style={{ color: '#2563EB', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0F172A' }}>Adult Fee ({visaTypeSelect}):</span>
+                      <div className="fee-big-text" style={{ color: '#2563EB', fontSize: '1.15rem', fontWeight: 'bold' }}>
                         ৳{totalPerApplicant.toLocaleString()}
                       </div>
                     </div>
                   </div>
 
-                  <div className="counter-row">
-                    <button className="counter-btn" onClick={() => setApplicantCount(Math.max(1, applicantCount - 1))}>−</button>
-                    <span className="count-number" style={{ fontSize: '0.82rem' }}>{applicantCount} Applicant{applicantCount > 1 ? 's' : ''}</span>
-                    <button className="counter-btn" onClick={() => setApplicantCount(applicantCount + 1)}>+</button>
+                  {/* Dual Applicant Counters: Adult & Child */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                    {/* Adult Applicant Counter */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #CBD5E1' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>Adult Applicant(s):</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button className="counter-btn" style={{ width: '26px', height: '26px', padding: 0, cursor: 'pointer' }} onClick={() => setApplicantCount(Math.max(1, applicantCount - 1))}>−</button>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>{applicantCount}</span>
+                        <button className="counter-btn" style={{ width: '26px', height: '26px', padding: 0, cursor: 'pointer' }} onClick={() => setApplicantCount(applicantCount + 1)}>+</button>
+                      </div>
+                    </div>
+
+                    {/* Child Applicant Counter */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #CBD5E1' }}>
+                      <div>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block' }}>Child Applicant(s):</span>
+                        <small style={{ fontSize: '0.66rem', color: '#166534', fontWeight: 700 }}>50% Off (Age 2-11 yrs)</small>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button className="counter-btn" style={{ width: '26px', height: '26px', padding: 0, cursor: 'pointer' }} onClick={() => setChildApplicantCount(Math.max(0, childApplicantCount - 1))}>−</button>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>{childApplicantCount}</span>
+                        <button className="counter-btn" style={{ width: '26px', height: '26px', padding: 0, cursor: 'pointer' }} onClick={() => setChildApplicantCount(childApplicantCount + 1)}>+</button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="booking-buttons-stack" style={{ marginTop: '14px' }}>
+                  {/* Breakdown Box if Child Selected */}
+                  {childApplicantCount > 0 && (
+                    <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '8px 12px', borderRadius: '8px', fontSize: '0.74rem', color: '#1E40AF', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                        <span>Adult Passes ({applicantCount}x):</span>
+                        <strong>৳{(totalPerApplicant * applicantCount).toLocaleString()}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Child Passes ({childApplicantCount}x - 50% Off):</span>
+                        <strong>৳{(childPerApplicant * childApplicantCount).toLocaleString()}</strong>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="booking-buttons-stack">
                     <button
                       className="btn-book-now"
                       onClick={() => handleApplyVisa(grandTotal)}

@@ -150,6 +150,121 @@ export default function GuideDetailPage({ params }) {
   const [voucher, setVoucher] = useState('');
   const [voucherApplied, setVoucherApplied] = useState(false);
   const [useCoins, setUseCoins] = useState(true);
+
+  // ── Calendar Availability & Guest Capacity Logic ──
+  // ── Month Navigation State & Calculations (Default: August 2026) ──
+  const [calYear, setCalYear] = useState(2026);
+  const [calMonth, setCalMonth] = useState(7); // 0-indexed: 7 = August
+
+  const handlePrevMonth = () => {
+    if (calMonth === 0) {
+      setCalMonth(11);
+      setCalYear((y) => y - 1);
+    } else {
+      setCalMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (calMonth === 11) {
+      setCalMonth(0);
+      setCalYear((y) => y + 1);
+    } else {
+      setCalMonth((m) => m + 1);
+    }
+  };
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const currentMonthName = monthNames[calMonth];
+
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(calYear, calMonth, 1).getDay(); // 0 = Sunday
+  const maxCap = Number(guide.maxGuests) || 10;
+  const [selectedTourDate, setSelectedTourDate] = useState('2026-08-15');
+
+  // Booked schedule data simulating backend & localStorage
+  const [guideSchedule] = useState({
+    '2026-08-15': { location: guide.location || 'Dhaka, Bangladesh', bookedGuests: 4 }, // Condition 2: Shared same location
+    '2026-08-18': { location: "Cox's Bazar, Bangladesh", bookedGuests: 10 },             // Condition 3A: Different location
+    '2026-08-22': { location: guide.location || 'Dhaka, Bangladesh', bookedGuests: 10 },  // Condition 3B: Fully booked
+  });
+
+  // Calculate Availability helper (Condition 1, Condition 2, Condition 3, Past Dates)
+  const todayStr = '2026-08-11';
+
+  const getDateStatus = (dateStr) => {
+    if (dateStr < todayStr) {
+      return {
+        status: 'PAST',
+        badgeColor: '#94A3B8',
+        badgeBg: '#F8FAFC',
+        badgeBorder: '#E2E8F0',
+        title: '⚪ Past Date',
+        desc: 'Expired / Past date (Booking unavailable)',
+        available: false,
+        remaining: 0,
+      };
+    }
+
+    const rec = guideSchedule[dateStr];
+    if (!rec) {
+      return {
+        status: 'FREE',
+        badgeColor: '#059669',
+        badgeBg: '#ECFDF5',
+        badgeBorder: '#A7F3D0',
+        title: '🟢 Open & Available',
+        desc: `0 / ${maxCap} Guests Booked (Any destination allowed)`,
+        available: true,
+        remaining: maxCap,
+      };
+    }
+
+    const isSameLocation = rec.location.toLowerCase().includes((guide.location || '').toLowerCase()) ||
+                           (guide.location || '').toLowerCase().includes(rec.location.toLowerCase());
+
+    if (!isSameLocation) {
+      return {
+        status: 'LOCKED_OTHER_LOCATION',
+        badgeColor: '#DC2626',
+        badgeBg: '#FEF2F2',
+        badgeBorder: '#FCA5A5',
+        title: '🔴 Today slot not vacant',
+        desc: `Unavailable today (Booked for another location: ${rec.location})`,
+        available: false,
+        remaining: 0,
+      };
+    }
+
+    const remaining = maxCap - rec.bookedGuests;
+    if (remaining <= 0) {
+      return {
+        status: 'FULL',
+        badgeColor: '#DC2626',
+        badgeBg: '#FEF2F2',
+        badgeBorder: '#FCA5A5',
+        title: '🔴 Today slot not vacant',
+        desc: `${maxCap} / ${maxCap} Max Guest Capacity Reached`,
+        available: false,
+        remaining: 0,
+      };
+    }
+
+    return {
+      status: 'SHARED_AVAILABLE',
+      badgeColor: '#D97706',
+      badgeBg: '#FFFBEB',
+      badgeBorder: '#FCD34D',
+      title: '🟡 Shared Tour Available',
+      desc: `${rec.bookedGuests} / ${maxCap} Booked (${remaining} Guests Left for ${guide.location})`,
+      available: true,
+      remaining: remaining,
+    };
+  };
   const [openAccordions, setOpenAccordions] = useState({
     itinerary: true,
     serviceDetails: false,
@@ -215,8 +330,17 @@ export default function GuideDetailPage({ params }) {
   };
 
   const handleBookGuide = () => {
-    // Navigate directly to Checkout / Booking Confirmation Page
-    router.push(`/checkout?type=guide&guide=${encodeURIComponent(guide.guideName)}&title=${encodeURIComponent(guide.title)}&variety=${encodeURIComponent(selectedOption.name)}&passes=${passCount}&price=${totalPrice}`);
+    const curStatus = getDateStatus(selectedTourDate);
+    if (!curStatus.available) {
+      alert(`⚠️ Cannot Book: ${curStatus.title}. ${curStatus.desc}`);
+      return;
+    }
+    if (passCount > curStatus.remaining) {
+      alert(`⚠️ Exceeds Maximum Guest Capacity! Only ${curStatus.remaining} guest spot(s) remaining for ${selectedTourDate} (Maximum Capacity: ${maxCap} Guests).`);
+      return;
+    }
+    // Navigate directly to Checkout / Booking Confirmation Page with date & capacity info
+    router.push(`/checkout?type=guide&guide=${encodeURIComponent(guide.guideName)}&title=${encodeURIComponent(guide.title)}&variety=${encodeURIComponent(selectedOption.name)}&date=${selectedTourDate}&passes=${passCount}&price=${totalPrice}`);
   };
 
   return (
@@ -532,6 +656,24 @@ export default function GuideDetailPage({ params }) {
           {/* Interactive Group Variety Pricing Sidebar */}
           <div className="right-sidebar-column" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             
+            {/* Planner / Shop Card */}
+            <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#2563EB', fontSize: '0.9rem' }}>
+                  D
+                </div>
+                <div>
+                  <strong style={{ fontSize: '0.92rem', color: '#0F172A', display: 'block' }}>DeshIT-BD</strong>
+                  <Link href="/account/messages" style={{ fontSize: '0.75rem', color: '#2563EB', textDecoration: 'none', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    💬 Chat Available
+                  </Link>
+                </div>
+              </div>
+              <Link href="/planner/deshit" style={{ background: '#2563EB', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 'bold', textDecoration: 'none', display: 'inline-block' }}>
+                View Shop
+              </Link>
+            </div>
+
             {/* Compact SRS 5-Box Parameter Language Proficiency Box */}
             <div style={{ background: '#FFFDF5', border: '1px solid #FDE68A', borderRadius: '12px', padding: '10px 12px' }}>
               <h5 style={{ fontSize: '0.72rem', fontWeight: '800', color: '#92400E', margin: '0 0 6px 0', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -573,6 +715,127 @@ export default function GuideDetailPage({ params }) {
             </div>
 
             <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '12px 14px', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
+              
+              {/* ── CALENDAR OF TOUR DATE AVAILABILITY & GUEST CAPACITY WIDGET ── */}
+              <div style={{ background: '#F8FAFC', border: '1.5px solid #CBD5E1', borderRadius: '14px', padding: '14px', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>📅</span>
+                    <span>Calendar of Tour Date Availability</span>
+                  </h4>
+                  <span style={{ fontSize: '0.72rem', background: '#DBEAFE', color: '#1D4ED8', padding: '3px 8px', borderRadius: '6px', fontWeight: 800 }}>
+                    Max {maxCap} Guests
+                  </span>
+                </div>
+
+                {/* ── Interactive Monthly Grid View ── */}
+                <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '10px', marginBottom: '10px' }}>
+                  {/* Month Header Navigation Controls */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', padding: '0 2px' }}>
+                    <button
+                      type="button"
+                      onClick={handlePrevMonth}
+                      title="Previous Month"
+                      style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontWeight: 800, color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      ‹
+                    </button>
+                    <strong style={{ fontSize: '0.88rem', color: '#0F172A', fontWeight: 800 }}>{currentMonthName} {calYear}</strong>
+                    <button
+                      type="button"
+                      onClick={handleNextMonth}
+                      title="Next Month"
+                      style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '6px', width: '28px', height: '28px', cursor: 'pointer', fontWeight: 800, color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      ›
+                    </button>
+                  </div>
+
+                  {/* Day Names Header */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center', fontSize: '0.68rem', fontWeight: 800, color: '#64748B', marginBottom: '6px' }}>
+                    <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                  </div>
+
+                  {/* Dynamic Month Days Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                    {/* Padding cells for start day of week */}
+                    {[...Array(firstDayOfWeek)].map((_, i) => (
+                      <div key={`empty-${i}`} style={{ height: '34px' }} />
+                    ))}
+
+                    {/* Days 1 to daysInMonth */}
+                    {[...Array(daysInMonth)].map((_, idx) => {
+                      const dayNum = idx + 1;
+                      const mStr = (calMonth + 1) < 10 ? '0' + (calMonth + 1) : (calMonth + 1);
+                      const dStr = dayNum < 10 ? '0' + dayNum : dayNum;
+                      const dateStr = `${calYear}-${mStr}-${dStr}`;
+                      const dayStatus = getDateStatus(dateStr);
+                      const isSelected = selectedTourDate === dateStr;
+
+                      return (
+                        <button
+                          key={dateStr}
+                          type="button"
+                          disabled={dayStatus.status === 'PAST'}
+                          onClick={() => dayStatus.status !== 'PAST' && setSelectedTourDate(dateStr)}
+                          title={`${dateStr}: ${dayStatus.title} - ${dayStatus.desc}`}
+                          style={{
+                            height: '34px',
+                            borderRadius: '8px',
+                            border: isSelected ? '2px solid #2563EB' : `1px solid ${dayStatus.badgeBorder}`,
+                            background: dayStatus.badgeBg,
+                            color: dayStatus.badgeColor,
+                            fontSize: '0.76rem',
+                            fontWeight: 800,
+                            cursor: dayStatus.status === 'PAST' ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'relative',
+                            opacity: dayStatus.status === 'PAST' ? 0.45 : 1,
+                            boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,0.2)' : 'none',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>{dayNum}</span>
+                          <span style={{ fontSize: '0.55rem', opacity: 0.85, fontWeight: 700, lineHeight: 1 }}>
+                            {dayStatus.status === 'PAST' ? 'Past' : dayStatus.status === 'FREE' ? 'Open' : dayStatus.status === 'SHARED_AVAILABLE' ? `${dayStatus.remaining} Left` : 'Vacant'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Calendar Color Legend Bar */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontWeight: 700, background: '#FFFFFF', padding: '6px 10px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }}></span> Open
+                  </span>
+                  <span style={{ color: '#D97706', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F59E0B' }}></span> Shared
+                  </span>
+                  <span style={{ color: '#DC2626', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#EF4444' }}></span> Not Vacant
+                  </span>
+                </div>
+
+                {/* Selected Date Detail Card */}
+                {(() => {
+                  const curStatus = getDateStatus(selectedTourDate);
+                  return (
+                    <div style={{ background: curStatus.badgeBg, border: `1px solid ${curStatus.badgeBorder}`, padding: '10px 12px', borderRadius: '10px', marginTop: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                        <strong style={{ fontSize: '0.82rem', color: curStatus.badgeColor, fontWeight: 800 }}>{curStatus.title} ({selectedTourDate})</strong>
+                        <span style={{ fontSize: '0.72rem', color: curStatus.badgeColor, fontWeight: 700 }}>{curStatus.remaining} Guests Left</span>
+                      </div>
+                      <div style={{ fontSize: '0.76rem', color: '#334155', lineHeight: 1.4 }}>{curStatus.desc}</div>
+                    </div>
+                  );
+                })()}
+              </div>
+
               {/* Top Title & Calculated Price Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>

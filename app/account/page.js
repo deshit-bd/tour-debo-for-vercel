@@ -37,7 +37,7 @@ export default function AccountOverviewPage() {
               </Link>
               <Link href="/account/vouchers" className="stat-widget-card">
                 <div className="widget-icon">🎟</div>
-                <span>Vouchers</span>
+                <span>My Collected Vouchers</span>
               </Link>
             </div>
 

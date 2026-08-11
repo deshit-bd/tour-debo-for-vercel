@@ -28,6 +28,43 @@ export default function PlannerAddVisaPage() {
   const [visaFee, setVisaFee] = useState('');
   const [processingFee, setProcessingFee] = useState('');
 
+  const ADMIN_COUNTRY_CONFIGS = {
+    'Thailand': { capital: 'Bangkok', localTime: 'GMT +7', telephoneCode: '+66', exchangeRate: '1 THB is equivalent to 3.3 BDT', visaFee: '1800', embassyAddress: 'Royal Thai Embassy, 18 & 20 Madani Avenue, Baridhara, Dhaka 1212' },
+    'United States': { capital: 'Washington, D.C.', localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 USD is equivalent to 118 BDT', visaFee: '2400', embassyAddress: 'Embassy of the United States, Madani Avenue, Baridhara, Dhaka 1212' },
+    'USA': { capital: 'Washington, D.C.', localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 USD is equivalent to 118 BDT', visaFee: '2400', embassyAddress: 'Embassy of the United States, Madani Avenue, Baridhara, Dhaka 1212' },
+    'United Kingdom': { capital: 'London', localTime: 'GMT +0', telephoneCode: '+44', exchangeRate: '1 GBP is equivalent to 148 BDT', visaFee: '2100', embassyAddress: 'British High Commission, United Nations Road, Baridhara, Dhaka 1212' },
+    'UK': { capital: 'London', localTime: 'GMT +0', telephoneCode: '+44', exchangeRate: '1 GBP is equivalent to 148 BDT', visaFee: '2100', embassyAddress: 'British High Commission, United Nations Road, Baridhara, Dhaka 1212' },
+    'Canada': { capital: 'Ottawa', localTime: 'GMT -5', telephoneCode: '+1', exchangeRate: '1 CAD is equivalent to 87 BDT', visaFee: '2200', embassyAddress: 'High Commission of Canada, United Nations Road, Baridhara, Dhaka 1212' },
+    'Japan': { capital: 'Tokyo', localTime: 'GMT +9', telephoneCode: '+81', exchangeRate: '1 JPY is equivalent to 0.77 BDT', visaFee: '1500', embassyAddress: 'Embassy of Japan, Plot No. 5 & 7, Dutabash Road, Baridhara, Dhaka 1212' },
+    'Malaysia': { capital: 'Kuala Lumpur', localTime: 'GMT +8', telephoneCode: '+60', exchangeRate: '1 MYR is equivalent to 26.5 BDT', visaFee: '1600', embassyAddress: 'High Commission of Malaysia, House 19, Road 6, Baridhara, Dhaka 1212' },
+    'Singapore': { capital: 'Singapore', localTime: 'GMT +8', telephoneCode: '+65', exchangeRate: '1 SGD is equivalent to 88 BDT', visaFee: '1900', embassyAddress: 'Consulate of Singapore, House 8, Road 51, Gulshan 2, Dhaka 1212' },
+    'Dubai (UAE)': { capital: 'Abu Dhabi', localTime: 'GMT +4', telephoneCode: '+971', exchangeRate: '1 AED is equivalent to 32 BDT', visaFee: '1800', embassyAddress: 'Embassy of the UAE, House 19, Road 143, Gulshan 2, Dhaka 1212' },
+    'India': { capital: 'New Delhi', localTime: 'GMT +5:30', telephoneCode: '+91', exchangeRate: '1 INR is equivalent to 1.41 BDT', visaFee: '800', embassyAddress: 'High Commission of India, Plot No 1-3, Park Road, Baridhara, Dhaka 1212' },
+    'Saudi Arabia': { capital: 'Riyadh', localTime: 'GMT +3', telephoneCode: '+966', exchangeRate: '1 SAR is equivalent to 31.4 BDT', visaFee: '2500', embassyAddress: 'Royal Embassy of Saudi Arabia, House 5 (NE) L, Road 83, Gulshan 2, Dhaka 1212' },
+    'Germany': { capital: 'Berlin', localTime: 'GMT +1', telephoneCode: '+49', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of Germany, 11 Madani Avenue, Baridhara, Dhaka 1212' },
+    'France': { capital: 'Paris', localTime: 'GMT +1', telephoneCode: '+33', exchangeRate: '1 EUR is equivalent to 127 BDT', visaFee: '2300', embassyAddress: 'Embassy of France, Road 108, Gulshan 2, Dhaka 1212' },
+    'Turkey': { capital: 'Ankara', localTime: 'GMT +3', telephoneCode: '+90', exchangeRate: '1 TRY is equivalent to 3.6 BDT', visaFee: '2000', embassyAddress: 'Embassy of the Republic of Turkey, 6 Madani Avenue, Baridhara, Dhaka 1212' },
+    'Australia': { capital: 'Canberra', localTime: 'GMT +10', telephoneCode: '+61', exchangeRate: '1 AUD is equivalent to 78 BDT', visaFee: '2400', embassyAddress: 'Australian High Commission, 184 Gulshan Avenue, Gulshan 2, Dhaka 1212' }
+  };
+
+  const handleCountrySelect = (selectedCountry) => {
+    setCountry(selectedCountry);
+    const config = ADMIN_COUNTRY_CONFIGS[selectedCountry] || {
+      capital: selectedCountry + ' Capital',
+      localTime: 'GMT +6',
+      telephoneCode: '+880',
+      exchangeRate: '1 USD is equivalent to 118 BDT',
+      visaFee: '1800',
+      embassyAddress: 'Embassy of ' + selectedCountry + ', Dhaka, Bangladesh'
+    };
+    setCapital(config.capital);
+    setLocalTime(config.localTime);
+    setTelephoneCode(config.telephoneCode);
+    setExchangeRate(config.exchangeRate);
+    setVisaFee(config.visaFee || '1800');
+    setEmbassyAddress(config.embassyAddress);
+  };
+
   // Section 3: Pricing Matrix
   const [matrixPrices, setMatrixPrices] = useState({
     'Tourist Visa-Single Entry': '',
@@ -126,7 +163,7 @@ export default function PlannerAddVisaPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               <div>
                 <label style={lbl}>Destination Country *</label>
-                <select required value={country} onChange={(e) => setCountry(e.target.value)} style={inp}>
+                <select required value={country} onChange={(e) => handleCountrySelect(e.target.value)} style={inp}>
                   <option value="">Select Country</option>
                   <option>Thailand</option><option>Malaysia</option><option>Singapore</option>
                   <option>Dubai (UAE)</option><option>Turkey</option><option>Schengen / Europe</option>
@@ -179,8 +216,8 @@ export default function PlannerAddVisaPage() {
 
           {/* 2. Country Info */}
           <div style={card}>
-            {secH('2', 'Country Info (Shown on VISA Detail Page)')}
-            <p style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '16px', marginTop: '-6px' }}>Capital City, Local Time, Telephone Code, Exchange Rate, Embassy Address — all appear on the public visa detail page.</p>
+            {secH('2', 'Destination Country & Embassy Information')}
+            <p style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '16px', marginTop: '-6px' }}>Country details auto-populate upon selecting country. You can review and specify your custom processing fee &amp; embassy address below.</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
               <div>
                 <label style={lbl}>Capital City</label>

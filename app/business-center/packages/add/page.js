@@ -15,18 +15,58 @@ export default function AddPackagePage() {
   const editId = searchParams ? searchParams.get('edit') : null;
   const isEditing = Boolean(editId);
 
-  // Basic Info
+  // 1. Basic Information States
   const [title, setTitle] = useState('');
-  const [tagline, setTagline] = useState('');
-  const [packageType, setPackageType] = useState('Fixed Date'); // Fixed Date vs Open Tour Option
-  const [fixedDateRange, setFixedDateRange] = useState('');
-  const [mainProduct, setMainProduct] = useState('Travel Package');
-  const [destination, setDestination] = useState('');
+  // SRS Document Specified Fields:
+  const [skuCode, setSkuCode] = useState('SKU-PKG-2026');
+  const [tourClassification, setTourClassification] = useState('Domestic'); // Domestic | International
+  const [internationalCategory, setInternationalCategory] = useState('Single Country'); // Single Country | Multi Country
+  const [tourCategory, setTourCategory] = useState('Multi-Day Tour'); // Day Tour, Multi-Day Tour, Cruise, Adventure, Honeymoon, Family, Wildlife, Trekking, Hill track
+  const [packageTypes, setPackageTypes] = useState(['Single', 'Couple', 'Group']); // Single, Couple, Family, Group
+  const [startingPoint, setStartingPoint] = useState('Dhaka');
+  const [destinationCity, setDestinationCity] = useState('Cox\'s Bazar');
+  const [multipleDestinations, setMultipleDestinations] = useState('Sajek, Rangamati, Bandarban');
+  const [transportationType, setTransportationType] = useState('Include'); // Air Fare, Include, Partial Include, Exclude
   
-  // Transport & Amenities Preview Tags
-  const [includedTags, setIncludedTags] = useState(['Flight', 'Hotel', 'Bus', 'Cab']);
+  // Tour Includes Checkboxes (Shown in Top Summary)
+  const [tourIncludes, setTourIncludes] = useState([
+    'Bus', 'Hotel', 'Breakfast', 'Dinner', 'Local Transport', 'Tour Guide', 'Entrance Fees'
+  ]);
+  const allTourIncludesOptions = [
+    'Airfare', 'Bus', 'Ferry', 'Hotel', 'Breakfast', 'Lunch', 'Dinner', 'Airport Transfer',
+    'Local Transport', 'Cruise', 'Tour Guide', 'Entrance Fees', 'Visa Support', 'Travel', 'Photography', 'Insurance'
+  ];
 
-  // Dynamic Day-by-Day Itinerary (🌟 Dynamic Days & Daily Plan Fields)
+  const toggleTourInclude = (item) => {
+    setTourIncludes((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
+
+  // Times & Flexibility
+  const [startTime, setStartTime] = useState('08:00 AM');
+  const [endTime, setEndTime] = useState('08:00 PM');
+  const [flexibleDates, setFlexibleDates] = useState('No'); // Yes | No
+  const [isFeaturedPackage, setIsFeaturedPackage] = useState(false);
+
+  // Section 2: Videos & 360 Photo
+  const [tourVideoUrl, setTourVideoUrl] = useState('');
+  const [photo360Url, setPhoto360Url] = useState('');
+
+  // Section 6: Availability (Optional)
+  const [bookingDeadline, setBookingDeadline] = useState('');
+  const [minTravelers, setMinTravelers] = useState(1);
+  const [maxTravelers, setMaxTravelers] = useState(15);
+
+  // Section 7: Pricing Breakdown
+  const [childPrice, setChildPrice] = useState('');
+  const [infantPrice, setInfantPrice] = useState('');
+  const [groupDiscount, setGroupDiscount] = useState('');
+
+  // Section 22: Publish Settings & Status
+  const [publishStatus, setPublishStatus] = useState('Published'); // Draft | Pending Review | Published | Rejected
+
+  // Dynamic Day-by-Day Itinerary
   const [daysCount, setDaysCount] = useState(3);
   const [nightsCount, setNightsCount] = useState(2);
   const [dayPlans, setDayPlans] = useState([
@@ -43,7 +83,6 @@ export default function AddPackagePage() {
 
     setDayPlans((prevPlans) => {
       if (val > prevPlans.length) {
-        // Add new empty days
         const added = [];
         for (let i = prevPlans.length + 1; i <= val; i++) {
           added.push({
@@ -54,7 +93,6 @@ export default function AddPackagePage() {
         }
         return [...prevPlans, ...added];
       } else {
-        // Truncate to new count
         return prevPlans.slice(0, val);
       }
     });
@@ -76,10 +114,9 @@ export default function AddPackagePage() {
     }
   };
 
-  // Gallery & Cover Images from PC File Picker
+  // Gallery & Cover Images
   const [coverImagePreview, setCoverImagePreview] = useState('');
   const [coverFileName, setCoverFileName] = useState('');
-  
   const [galleryPreviews, setGalleryPreviews] = useState([]);
 
   const handleCoverFileChange = (e) => {
@@ -102,7 +139,7 @@ export default function AddPackagePage() {
     setGalleryPreviews((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
-  // Helper for Auto Bullet Points on Enter key & Button click
+  // Helper for Auto Bullet Points on Enter key
   const handleBulletKeyDown = (e, setter, value) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -130,7 +167,7 @@ export default function AddPackagePage() {
     }
   };
 
-  // Service Amenity Badges (Flight, Hotel, Meals, Transport, Sightseeing)
+  // Service Amenity Badges
   const [amenities, setAmenities] = useState([
     { id: 'flight', name: 'Flight', icon: '✈️', included: false },
     { id: 'hotel', name: 'Hotel', icon: '🏨', included: true },
@@ -143,28 +180,102 @@ export default function AddPackagePage() {
     setAmenities(prev => prev.map(a => a.id === id ? { ...a, included: !a.included } : a));
   };
 
-  // Package Details & Inclusions / Exclusions
+  // Meal Selection Toggle
+  const mealOptions = ['Breakfast', 'Lunch', 'Dinner', 'Partial Included', 'All Meals Included', 'None'];
+  const toggleMealOption = (meal) => {
+    if (selectedMeals.includes(meal)) {
+      setSelectedMeals(selectedMeals.filter(m => m !== meal));
+    } else {
+      setSelectedMeals([...selectedMeals, meal]);
+    }
+  };
+
+  // Package Details & Policies
   const [packageDetails, setPackageDetails] = useState('');
   const [whatsIncluded, setWhatsIncluded] = useState('');
   const [whatsExcluded, setWhatsExcluded] = useState('');
-
-  // Cancellation Policy & Policies
   const [cancellationPolicy, setCancellationPolicy] = useState('');
   const [termsConditions, setTermsConditions] = useState('');
   const [travelTips, setTravelTips] = useState('');
   const [hotelPolicy, setHotelPolicy] = useState('');
 
-  // Pricing Options
-  const [singlePrice, setSinglePrice] = useState('');
-  const [singleOriginalPrice, setSingleOriginalPrice] = useState('');
-  const [couplePrice, setCouplePrice] = useState('');
-  const [extraBedPrice, setExtraBedPrice] = useState('');
+  // 6. Requirement 6: Dynamic Pricing Items with Auto Calculation
+  const [dynamicPricingItems, setDynamicPricingItems] = useState([
+    {
+      id: 1,
+      title: 'Single Person Package',
+      regularPrice: '24000',
+      discountType: 'percentage', // 'percentage' | 'amount'
+      discountValue: '10',
+    },
+    {
+      id: 2,
+      title: 'Couple Package (2 Persons)',
+      regularPrice: '40000',
+      discountType: 'amount',
+      discountValue: '4000',
+    },
+  ]);
 
-  // Discount Offer Banner & Percentage Badge Tag
-  const [discountPercent, setDiscountPercent] = useState('');
-  const [discountAmount, setDiscountAmount] = useState('');
-  const [minSpend, setMinSpend] = useState('');
-  const [discountExpiry, setDiscountExpiry] = useState('');
+  const calculateFinalPrice = (item) => {
+    const reg = parseFloat(String(item.regularPrice).replace(/[^0-9.]/g, '')) || 0;
+    const val = parseFloat(String(item.discountValue).replace(/[^0-9.]/g, '')) || 0;
+    if (item.discountType === 'percentage') {
+      return Math.max(0, Math.round(reg - (reg * val / 100)));
+    } else {
+      return Math.max(0, Math.round(reg - val));
+    }
+  };
+
+  const handlePricingItemChange = (index, field, value) => {
+    const updated = [...dynamicPricingItems];
+    updated[index][field] = value;
+    setDynamicPricingItems(updated);
+  };
+
+  const addPricingItem = () => {
+    setDynamicPricingItems([
+      ...dynamicPricingItems,
+      {
+        id: Date.now(),
+        title: `Package Option ${dynamicPricingItems.length + 1}`,
+        regularPrice: '15000',
+        discountType: 'percentage',
+        discountValue: '10',
+      },
+    ]);
+  };
+
+  const removePricingItem = (index) => {
+    if (dynamicPricingItems.length > 1) {
+      setDynamicPricingItems(dynamicPricingItems.filter((_, idx) => idx !== index));
+    }
+  };
+
+  // 7. Requirement 7: Dynamic Optional Add-ons with Prices
+  const [optionalAddOns, setOptionalAddOns] = useState([
+    { id: 1, title: 'Private Airport Pickup & Drop Shuttle', price: '1500' },
+    { id: 2, title: 'Candle Light Buffet Dinner on Beach', price: '1200' },
+  ]);
+
+  const handleAddOnChange = (index, field, value) => {
+    const updated = [...optionalAddOns];
+    updated[index][field] = value;
+    setOptionalAddOns(updated);
+  };
+
+  const addOptionalAddOn = () => {
+    setOptionalAddOns([
+      ...optionalAddOns,
+      { id: Date.now(), title: '', price: '' },
+    ]);
+  };
+
+  const removeAddOn = (index) => {
+    setOptionalAddOns(optionalAddOns.filter((_, idx) => idx !== index));
+  };
+
+  const [discountExpiry, setDiscountExpiry] = useState('2026-12-31');
 
   // Load package data when editing
   useEffect(() => {
@@ -173,13 +284,9 @@ export default function AddPackagePage() {
       if (pkgToEdit) {
         setTitle(pkgToEdit.title || '');
         setDestination(pkgToEdit.location || pkgToEdit.fullLocation || '');
-        setPackageType(pkgToEdit.mode || 'Fixed Date Tour');
+        setDestinationCountry(pkgToEdit.country || 'France');
+        setPackageType(pkgToEdit.mode || 'Fixed Date');
         setFixedDateRange(pkgToEdit.dates || '');
-        if (pkgToEdit.prices?.single) setSinglePrice(pkgToEdit.prices.single.toLocaleString());
-        if (pkgToEdit.prices?.couple) setCouplePrice(pkgToEdit.prices.couple.toLocaleString());
-        if (pkgToEdit.prices?.extraBed) setExtraBedPrice(pkgToEdit.prices.extraBed.toLocaleString());
-        if (pkgToEdit.discountTag) setDiscountPercent(pkgToEdit.discountTag);
-        if (pkgToEdit.discount?.expiry) setDiscountExpiry(pkgToEdit.discount.expiry);
         if (pkgToEdit.amenities) setAmenities(pkgToEdit.amenities);
         if (pkgToEdit.desc) setPackageDetails(pkgToEdit.desc);
         if (pkgToEdit.whatsIncluded) setWhatsIncluded(pkgToEdit.whatsIncluded);
@@ -199,10 +306,9 @@ export default function AddPackagePage() {
     }
   }, [editId]);
 
-  // Form State
+  // Form Submission
   const [submitted, setSubmitted] = useState(false);
 
-  // Submit Handler: Saves to LocalStorage and redirects
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -210,92 +316,47 @@ export default function AddPackagePage() {
     const slugId = packageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `pkg-${Date.now()}`;
     const targetId = isEditing && editId ? editId : slugId;
     
-    const singlePriceNum = parseInt(singlePrice.replace(/[^0-9]/g, '')) || 10000;
-    const coupleNum = couplePrice ? parseInt(couplePrice.replace(/[^0-9]/g, '')) : Math.round(singlePriceNum * 1.8);
-    const extraBedNum = parseInt(extraBedPrice.replace(/[^0-9]/g, '')) || 0;
+    const formattedDateRange = startDate && endDate ? `${startDate} to ${endDate}` : (fixedDateRange || 'Flexible Dates');
 
-    const discountPctNum = parseInt(discountPercent.replace(/[^0-9]/g, '')) || 0;
-    
-    // Auto-Calculate Original Price (Strikethrough Price): Price / (1 - pct/100)
-    const singleOriginalNum = discountPctNum > 0 && discountPctNum < 100
-      ? Math.round(singlePriceNum / (1 - discountPctNum / 100))
-      : 0;
-
-    const coupleOriginalNum = discountPctNum > 0 && discountPctNum < 100
-      ? Math.round(coupleNum / (1 - discountPctNum / 100))
-      : 0;
-
-    // Auto-Calculate Voucher OFF Amount: Price * (pct/100)
-    const voucherOffAmount = discountPctNum > 0
-      ? Math.round(singlePriceNum * (discountPctNum / 100))
-      : 0;
-
-    const calculatedTag = discountPctNum > 0 ? `${discountPctNum}% OFF` : '';
+    const formattedPricingItems = dynamicPricingItems.map(item => ({
+      ...item,
+      finalPrice: calculateFinalPrice(item),
+    }));
 
     const newPackage = {
       id: targetId,
       title: packageTitle,
-      titlePrefix: packageTitle.includes(':') ? `${packageTitle.split(':')[0]} : ` : `${packageTitle} : `,
-      titleSub: packageTitle.includes(':') ? packageTitle.split(':')[1] : 'Special Tour Package',
-      location: destination || 'Bangladesh',
-      fullLocation: destination || 'Bangladesh',
-      country: destination.includes(',') ? destination.split(',').pop().trim() : 'Bangladesh',
+      location: destination || 'Paris, France',
+      country: destinationCountry,
+      startingCountry: startingCountry,
+      accommodationType: accommodationType,
+      meals: selectedMeals,
       rating: 5.0,
       type: mainProduct,
       mode: packageType,
+      dates: formattedDateRange,
+      startDate: startDate,
+      endDate: endDate,
       status: 'Active',
       sales: 0,
-      price: Math.round(singlePriceNum / 120),
-      oldPrice: Math.round(singleOriginalNum / 120),
+      pricingItems: formattedPricingItems,
+      addOns: optionalAddOns,
       duration: `${daysCount} Days / ${nightsCount} Nights`,
-      badge: `${daysCount} Days / ${nightsCount} Nights`,
-      isOffer: true,
-      discountTag: calculatedTag,
-      amenities: amenities,
-      isLocal: true,
-      countryType: 'Single Country',
-      packageType: 'Couple',
-      transportation: 'Include',
-      meal: 'All Include',
-      accommodation: '4 Star Hotel',
-      sightseeing: 'Popular Landmarks',
-      desc: packageDetails || 'Comprehensive custom tour package.',
       image: coverImagePreview || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
-      visitedCount: '1',
-      interestCount: '1',
-      dates: fixedDateRange || 'Flexible Travel Dates',
-      guideName: 'DeshIT-BD Planner',
-      guideLangs: 'English, Bengali',
-      guideRating: '5.0 Verified Planner',
-      guideAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-      prices: {
-        single: singlePriceNum,
-        singleOriginal: singleOriginalNum,
-        couple: coupleNum,
-        coupleOriginal: coupleOriginalNum,
-        extraBed: extraBedNum,
-      },
-      discount: {
-        amount: voucherOffAmount > 0 ? voucherOffAmount.toLocaleString() : '',
-        minSpend: singlePriceNum.toLocaleString(),
-        expiry: discountExpiry || 'Offer Expiration',
-        tag: calculatedTag,
-      },
-      dayPlans: dayPlans,
-      whatsIncluded: whatsIncluded,
-      whatsExcluded: whatsExcluded,
-      cancellationPolicy: cancellationPolicy,
-      termsConditions: termsConditions,
-      travelTips: travelTips,
-      hotelPolicy: hotelPolicy,
-      images: galleryPreviews.length > 0 ? galleryPreviews : [coverImagePreview],
-      createdAt: new Date().toISOString(),
+      images: galleryPreviews.length > 0 ? galleryPreviews : ['https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80'],
+      desc: packageDetails,
+      whatsIncluded,
+      whatsExcluded,
+      cancellationPolicy,
+      termsConditions,
+      travelTips,
+      hotelPolicy,
+      dayPlans,
     };
 
-    // Store into LocalStorage
     try {
-      const existing = JSON.parse(localStorage.getItem('tour_dibo_custom_packages') || '[]');
-      const updated = [newPackage, ...existing.filter(p => p.id !== newPackage.id)];
+      const saved = JSON.parse(localStorage.getItem('tour_dibo_custom_packages') || '[]');
+      const updated = isEditing ? saved.map(p => p.id === targetId ? newPackage : p) : [newPackage, ...saved];
       localStorage.setItem('tour_dibo_custom_packages', JSON.stringify(updated));
     } catch (err) {
       console.error('Failed to save custom package to localStorage:', err);
@@ -303,8 +364,6 @@ export default function AddPackagePage() {
 
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Show browser alert and redirect to Package List
     alert(`🎉 Tour Package "${packageTitle}" ${isEditing ? 'Updated' : 'Created'} & Published Successfully!\n\nRedirecting to Manage Packages page...`);
     router.push('/business-center/packages');
   };
@@ -331,7 +390,7 @@ export default function AddPackagePage() {
                       </span>
                     </div>
                     <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '4px 0 0 0' }}>
-                      Fill in all input fields required for the Tour Detail page (Itinerary, Inclusions, Pricing, Policies & Images).
+                      Fill in all input fields required for the Tour Detail page (Itinerary, Pricing, Policies & Images).
                     </p>
                   </div>
                   <Link href="/business-center/packages" style={{ fontSize: '0.85rem', color: '#2563EB', fontWeight: 600, textDecoration: 'none' }}>
@@ -341,30 +400,284 @@ export default function AddPackagePage() {
 
                 {submitted && (
                   <div style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0', color: '#047857', padding: '16px 20px', borderRadius: '16px', fontSize: '0.95rem', fontWeight: 600, marginBottom: '24px', boxShadow: '0 4px 12px rgba(4,120,87,0.1)' }}>
-                    Tour Package Published Successfully! All dynamic day itineraries, pricing tiers, and policies are now live on the marketplace.
+                    Tour Package Published Successfully!
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="seller-form-grid">
                   
-                  {/* 1. BASIC INFORMATION */}
+                  {/* 1. BASIC INFORMATION (SRS Section 1) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '10px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>1. Basic Package Information</span>
+                      <span>1. Basic Information (SRS Specified)</span>
                     </h3>
                   </div>
 
-                  <div className="seller-form-group full-width">
-                    <label>Tour Title *</label>
+                  <div className="seller-form-group">
+                    <label>Package Title *</label>
                     <input
                       type="text"
-                      placeholder="e.g. Paris : City of Love"
+                      placeholder="e.g. Cox's Bazar Beach & Resort Excursion"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       required
                     />
                   </div>
 
+                  <div className="seller-form-group">
+                    <label>Package Code / SKU *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SKU-CXB-2026"
+                      value={skuCode}
+                      onChange={(e) => setSkuCode(e.target.value)}
+                      required
+                      style={{ fontWeight: 700, color: '#2563EB' }}
+                    />
+                  </div>
+
+                  {/* Tour Type: Domestic vs International */}
+                  <div className="seller-form-group">
+                    <label>Tour Scope *</label>
+                    <select
+                      value={tourClassification}
+                      onChange={(e) => setTourClassification(e.target.value)}
+                      style={{ fontWeight: 600 }}
+                    >
+                      <option value="Domestic">Domestic Tour</option>
+                      <option value="International">International Tour</option>
+                    </select>
+                  </div>
+
+                  {tourClassification === 'International' && (
+                    <div className="seller-form-group">
+                      <label>International Category *</label>
+                      <select
+                        value={internationalCategory}
+                        onChange={(e) => setInternationalCategory(e.target.value)}
+                        style={{ fontWeight: 600 }}
+                      >
+                        <option value="Single Country">Single Country Tour</option>
+                        <option value="Multi Country">Multi Country Tour</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Tour Category / Type */}
+                  <div className="seller-form-group">
+                    <label>Tour Category *</label>
+                    <select
+                      value={tourCategory}
+                      onChange={(e) => setTourCategory(e.target.value)}
+                      style={{ fontWeight: 600 }}
+                    >
+                      <option value="Day Tour">Day Tour</option>
+                      <option value="Multi-Day Tour">Multi-Day Tour</option>
+                      <option value="Cruise">Cruise</option>
+                      <option value="Adventure">Adventure</option>
+                      <option value="Honeymoon">Honeymoon</option>
+                      <option value="Family">Family</option>
+                      <option value="Wildlife">Wildlife</option>
+                      <option value="Trekking">Trekking</option>
+                      <option value="Hill track">Hill track</option>
+                    </select>
+                  </div>
+
+                  {/* Starting Point & Destination City */}
+                  <div className="seller-form-group">
+                    <label>Starting Point *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Dhaka (Hazrat Shahjalal Airport / Arambagh)"
+                      value={startingPoint}
+                      onChange={(e) => setStartingPoint(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label>Destination City *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Cox's Bazar / Sylhet"
+                      value={destinationCity}
+                      onChange={(e) => setDestinationCity(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label>Multiple Destinations (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Sajek Valley, Rangamati, Bandarban"
+                      value={multipleDestinations}
+                      onChange={(e) => setMultipleDestinations(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Transportation Dropdown */}
+                  <div className="seller-form-group">
+                    <label>Transportation Mode *</label>
+                    <select
+                      value={transportationType}
+                      onChange={(e) => setTransportationType(e.target.value)}
+                      style={{ fontWeight: 600 }}
+                    >
+                      <option value="Air Fare">Air Fare Included</option>
+                      <option value="Include">Full Transport Included</option>
+                      <option value="Partial Include">Partial Transport Included</option>
+                      <option value="Exclude">Transport Excluded</option>
+                    </select>
+                  </div>
+
+                  {/* Tour Includes Checkboxes (Shown in Top Summary) */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '6px' }}>
+                    <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                      Tour Includes (Checkboxes - Displayed in Top Summary) *
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', background: '#F8FAFC', padding: '12px 14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                      {allTourIncludesOptions.map((inc) => {
+                        const isChecked = tourIncludes.includes(inc);
+                        return (
+                          <label
+                            key={inc}
+                            onClick={() => toggleTourInclude(inc)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              fontSize: '0.82rem',
+                              fontWeight: isChecked ? 700 : 500,
+                              color: isChecked ? '#1E40AF' : '#475569',
+                              cursor: 'pointer',
+                              userSelect: 'none',
+                              padding: '6px 8px',
+                              borderRadius: '6px',
+                              background: isChecked ? '#EFF6FF' : '#FFFFFF',
+                              border: `1px solid ${isChecked ? '#93C5FD' : '#CBD5E1'}`,
+                            }}
+                          >
+                            <input type="checkbox" checked={isChecked} onChange={() => {}} style={{ accentColor: '#2563EB' }} />
+                            <span>{inc}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Start & End Times */}
+                  <div className="seller-form-group">
+                    <label>Start Time</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 08:00 AM"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label>End Time</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 08:00 PM"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label>Flexible Dates Option *</label>
+                    <select value={flexibleDates} onChange={(e) => setFlexibleDates(e.target.value)}>
+                      <option value="No">No (Fixed Specific Dates)</option>
+                      <option value="Yes">Yes (Travelers can choose flexible dates)</option>
+                    </select>
+                  </div>
+
+                  {/* Tour Starting Country */}
+                  <div className="seller-form-group">
+                    <label>Tour Starting Country *</label>
+                    <select
+                      value={startingCountry}
+                      onChange={(e) => setStartingCountry(e.target.value)}
+                      required
+                      style={{ fontWeight: 600 }}
+                    >
+                      {[
+                        'Bangladesh',
+                        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+                        'Bahamas', 'Bahrain', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+                        'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic',
+                        'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+                        'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia',
+                        'Fiji', 'Finland', 'France',
+                        'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guyana',
+                        'Haiti', 'Honduras', 'Hungary',
+                        'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast',
+                        'Jamaica', 'Japan', 'Jordan',
+                        'Kazakhstan', 'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan',
+                        'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+                        'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar',
+                        'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway',
+                        'Oman',
+                        'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
+                        'Qatar',
+                        'Romania', 'Russia', 'Rwanda',
+                        'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+                        'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
+                        'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+                        'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam',
+                        'Yemen',
+                        'Zambia', 'Zimbabwe'
+                      ].map((countryName) => (
+                        <option key={`start-${countryName}`} value={countryName}>{countryName}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Destination Country */}
+                  <div className="seller-form-group">
+                    <label>Destination Country *</label>
+                    <select
+                      value={destinationCountry}
+                      onChange={(e) => setDestinationCountry(e.target.value)}
+                      required
+                      style={{ fontWeight: 600 }}
+                    >
+                      {[
+                        'Bangladesh',
+                        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+                        'Bahamas', 'Bahrain', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi',
+                        'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic',
+                        'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic',
+                        'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia',
+                        'Fiji', 'Finland', 'France',
+                        'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guyana',
+                        'Haiti', 'Honduras', 'Hungary',
+                        'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast',
+                        'Jamaica', 'Japan', 'Jordan',
+                        'Kazakhstan', 'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan',
+                        'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg',
+                        'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar',
+                        'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway',
+                        'Oman',
+                        'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
+                        'Qatar',
+                        'Romania', 'Russia', 'Rwanda',
+                        'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+                        'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
+                        'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+                        'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam',
+                        'Yemen',
+                        'Zambia', 'Zimbabwe'
+                      ].map((countryName) => (
+                        <option key={`dest-${countryName}`} value={countryName}>{countryName}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Destination / Location */}
                   <div className="seller-form-group">
                     <label>Destination / Location *</label>
                     <input
@@ -375,6 +688,135 @@ export default function AddPackagePage() {
                       required
                     />
                   </div>
+
+                  {/* Requirement 5: Accommodation Type */}
+                  <div className="seller-form-group" style={{ position: 'relative' }}>
+                    <label style={{ display: 'block', marginBottom: '6px' }}>Accommodation Type *</label>
+
+                    <div style={{ position: 'relative' }}>
+                      <select
+                        value={accommodationType}
+                        onChange={(e) => setAccommodationType(e.target.value)}
+                        required
+                        style={{ width: '100%', fontWeight: 600, paddingRight: '40px' }}
+                      >
+                        {accommodationOptions.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+
+                      {/* Plus Icon Overlay Button on Top Right Border Edge */}
+                      <button
+                        type="button"
+                        onClick={() => setShowAddAccomModal(true)}
+                        style={{
+                          position: 'absolute',
+                          top: '-12px',
+                          right: '-4px',
+                          background: '#F0FDF4',
+                          color: '#166534',
+                          border: '1.5px solid #86EFAC',
+                          width: '26px',
+                          height: '26px',
+                          borderRadius: '50%',
+                          fontSize: '1.05rem',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          lineHeight: 1,
+                          boxShadow: '0 2px 6px rgba(22,101,52,0.15)',
+                          zIndex: 2,
+                        }}
+                        title="Create new accommodation type"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Popup Modal for Custom Accommodation Type */}
+                  {showAddAccomModal && (
+                    <div
+                      style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                        backdropFilter: 'blur(4px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 9999,
+                        padding: '20px',
+                      }}
+                      onClick={() => setShowAddAccomModal(false)}
+                    >
+                      <div
+                        style={{
+                          background: '#FFFFFF',
+                          borderRadius: '20px',
+                          width: '100%',
+                          maxWidth: '460px',
+                          padding: '24px',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                          border: '1px solid #E2E8F0',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                            Create Accommodation Type
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={() => setShowAddAccomModal(false)}
+                            style={{ background: '#F1F5F9', color: '#64748B', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem' }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '0 0 18px 0' }}>
+                          Enter a custom accommodation type name to add to your package dropdown list.
+                        </p>
+
+                        <div style={{ marginBottom: '20px' }}>
+                          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
+                            Accommodation Type Name *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Treehouse Eco Lodge / Deluxe Houseboat"
+                            value={newAccomTitle}
+                            onChange={(e) => setNewAccomTitle(e.target.value)}
+                            autoFocus
+                            style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1.5px solid #CBD5E1', fontSize: '0.9rem', outline: 'none', fontWeight: 500 }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            onClick={() => setShowAddAccomModal(false)}
+                            style={{ padding: '10px 18px', borderRadius: '10px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#475569', fontWeight: 600, fontSize: '0.88rem', cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCreateAccomType}
+                            style={{ padding: '10px 20px', borderRadius: '10px', border: 'none', background: '#166534', color: '#FFFFFF', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(22, 101, 52, 0.25)' }}
+                          >
+                            + Save &amp; Select
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="seller-form-group">
                     <label>Main Product Service *</label>
@@ -391,17 +833,67 @@ export default function AddPackagePage() {
                     </select>
                   </div>
 
+                  {/* Requirement 2: Date in Calendar Format */}
                   {packageType === 'Fixed Date' && (
-                    <div className="seller-form-group">
-                      <label>Fixed Date Range *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 27 - 29 June, 2024"
-                        value={fixedDateRange}
-                        onChange={(e) => setFixedDateRange(e.target.value)}
-                      />
-                    </div>
+                    <>
+                      <div className="seller-form-group">
+                        <label>Tour Start Date *</label>
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          required
+                          style={{ cursor: 'pointer', fontWeight: 600 }}
+                        />
+                      </div>
+
+                      <div className="seller-form-group">
+                        <label>Tour End Date *</label>
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          required
+                          style={{ cursor: 'pointer', fontWeight: 600 }}
+                        />
+                      </div>
+                    </>
                   )}
+
+                  {/* Requirement 4: Food Inclusions */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '10px' }}>
+                    <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                      Food / Meal Inclusions *
+                    </label>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      {mealOptions.map((meal) => {
+                        const isSelected = selectedMeals.includes(meal);
+                        return (
+                          <div
+                            key={meal}
+                            onClick={() => toggleMealOption(meal)}
+                            style={{
+                              padding: '8px 14px',
+                              borderRadius: '12px',
+                              border: isSelected ? '2px solid #2563EB' : '1.5px solid #CBD5E1',
+                              background: isSelected ? '#EFF6FF' : '#F8FAFC',
+                              color: isSelected ? '#1E40AF' : '#475569',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              userSelect: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            <span>{isSelected ? '✓' : '○'}</span>
+                            <span>{meal}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                   {/* 2. DYNAMIC DAY-BY-DAY ITINERARY PLAN */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
@@ -533,7 +1025,7 @@ export default function AddPackagePage() {
                     </div>
                   </div>
 
-                  {/* 3. IMAGES & GALLERY (PC FILE UPLOADER) */}
+                  {/* 3. IMAGES & GALLERY */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       3. Main Cover & Gallery Photos (Choose from PC)
@@ -545,7 +1037,6 @@ export default function AddPackagePage() {
                     <label style={{ fontWeight: 600 }}>Main Cover Image (Select file from PC) *</label>
                     
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap', background: '#F8FAFC', padding: '16px', borderRadius: '16px', border: '1.5px dashed #CBD5E1' }}>
-                      {/* Image Thumbnail Preview */}
                       {coverImagePreview && (
                         <div style={{ position: 'relative', width: '160px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '2px solid #2563EB', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
                           <img src={coverImagePreview} alt="Cover Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -615,7 +1106,6 @@ export default function AddPackagePage() {
                       </label>
                     </div>
 
-                    {/* Gallery Preview Thumbnail Grid */}
                     {galleryPreviews.length > 0 ? (
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '14px', background: '#F8FAFC', padding: '16px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
                         {galleryPreviews.map((imgUrl, index) => (
@@ -632,7 +1122,6 @@ export default function AddPackagePage() {
                           >
                             <img src={imgUrl} alt={`Gallery ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             
-                            {/* Delete Button */}
                             <button
                               type="button"
                               onClick={() => removeGalleryImage(index)}
@@ -684,7 +1173,6 @@ export default function AddPackagePage() {
                     />
                   </div>
 
-                  {/* Card Service Icon Badges (Included / Excluded Toggle) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '10px' }}>
                     <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>
                       Package Included Amenities & Services *
@@ -707,7 +1195,6 @@ export default function AddPackagePage() {
                             fontSize: '0.85rem',
                             cursor: 'pointer',
                             userSelect: 'none',
-                            transition: 'all 0.2s ease',
                           }}
                         >
                           <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
@@ -749,9 +1236,6 @@ export default function AddPackagePage() {
                       onKeyDown={(e) => handleBulletKeyDown(e, setWhatsIncluded, whatsIncluded)}
                       required
                     />
-                    <small style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                      Tip: Press <code>Enter</code> key to automatically create a disc bullet point (<code>•</code>).
-                    </small>
                   </div>
 
                   <div className="seller-form-group">
@@ -768,68 +1252,202 @@ export default function AddPackagePage() {
                     <textarea
                       rows="5"
                       placeholder="Write bullet points of excluded services... (Press Enter for new bullet)"
+                      value={whatsExcluded}
                       onChange={(e) => setWhatsExcluded(e.target.value)}
                       onKeyDown={(e) => handleBulletKeyDown(e, setWhatsExcluded, whatsExcluded)}
                       required
                     />
-                    <small style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', marginTop: '4px' }}>
-                      Tip: Press <code>Enter</code> key to automatically create a disc bullet point (<code>•</code>).
-                    </small>
                   </div>
 
-                  {/* 5. PRICING TIERS & DISCOUNT BANNER */}
+                  {/* Requirement 6: Dynamic Pricing Options with Create New Item Tab & Auto Calculation */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
+                    <div style={{ background: '#FAF5FF', border: '1.5px solid #E9D5FF', borderRadius: '18px', padding: '20px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#7E22CE', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          5. Dynamic Pricing Options & Discount Calculator
+                        </h3>
+
+                        <button
+                          type="button"
+                          onClick={addPricingItem}
+                          style={{
+                            background: '#7E22CE',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            padding: '10px 18px',
+                            borderRadius: '10px',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(126,34,206,0.25)',
+                          }}
+                        >
+                          + Create New Pricing Item / Tier
+                        </button>
+                      </div>
+
+                      {/* Pricing Items List */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {dynamicPricingItems.map((item, index) => {
+                          const autoFinalPrice = calculateFinalPrice(item);
+                          return (
+                            <div
+                              key={item.id}
+                              style={{
+                                background: '#FFFFFF',
+                                border: '1px solid #DDD6FE',
+                                borderRadius: '14px',
+                                padding: '16px',
+                                boxShadow: '0 2px 8px rgba(126,34,206,0.05)',
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                                <span style={{ background: '#F3E8FF', color: '#6B21A8', padding: '4px 12px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700 }}>
+                                  Pricing Item #{index + 1}
+                                </span>
+                                {dynamicPricingItems.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => removePricingItem(index)}
+                                    style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                  >
+                                    Remove Item ✕
+                                  </button>
+                                )}
+                              </div>
+
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                                <div>
+                                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                    Package Title *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Single Person / Deluxe Suite"
+                                    value={item.title}
+                                    onChange={(e) => handlePricingItemChange(index, 'title', e.target.value)}
+                                    required
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 500 }}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                    Regular Price (৳) *
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder="e.g. 24000"
+                                    value={item.regularPrice}
+                                    onChange={(e) => handlePricingItemChange(index, 'regularPrice', e.target.value)}
+                                    required
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                    Discount Type *
+                                  </label>
+                                  <select
+                                    value={item.discountType}
+                                    onChange={(e) => handlePricingItemChange(index, 'discountType', e.target.value)}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                                  >
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="amount">Fixed Amount (৳)</option>
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                                    Discount Value ({item.discountType === 'percentage' ? '%' : '৳'}) *
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder={item.discountType === 'percentage' ? 'e.g. 10' : 'e.g. 2000'}
+                                    value={item.discountValue}
+                                    onChange={(e) => handlePricingItemChange(index, 'discountValue', e.target.value)}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                                  />
+                                </div>
+
+                                {/* Auto-Calculated Result */}
+                                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', textTransform: 'uppercase' }}>Auto Calculated Final Price</span>
+                                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669' }}>
+                                    ৳{autoFinalPrice.toLocaleString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Requirement 7: Optional Add-ons with Prices */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
+                    <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: '18px', padding: '20px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#15803D', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          6. Dynamic Optional Add-on Services (Optional with Price)
+                        </h3>
+
+                        <button
+                          type="button"
+                          onClick={addOptionalAddOn}
+                          style={{
+                            background: '#16A34A',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            padding: '10px 18px',
+                            borderRadius: '10px',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 12px rgba(22,163,74,0.25)',
+                          }}
+                        >
+                          + Add Optional Add-on Service
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {optionalAddOns.map((addOn, index) => (
+                          <div key={addOn.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', background: '#FFFFFF', padding: '12px 16px', borderRadius: '12px', border: '1px solid #CBD5E1' }}>
+                            <input
+                              type="text"
+                              placeholder="Add-on Title (e.g. Private Airport Pickup Shuttle)"
+                              value={addOn.title}
+                              onChange={(e) => handleAddOnChange(index, 'title', e.target.value)}
+                              style={{ flex: 2, minWidth: '200px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem' }}
+                            />
+                            <input
+                              type="number"
+                              placeholder="Add-on Price (৳)"
+                              value={addOn.price}
+                              onChange={(e) => handleAddOnChange(index, 'price', e.target.value)}
+                              style={{ flex: 1, minWidth: '130px', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeAddOn(index)}
+                              style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+                            >
+                              Remove ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 7. POLICIES & TERMS */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      5. Pricing Tiers & Discount Offer
-                    </h3>
-                  </div>
-
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Single Person Price (৳) *</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 1,728,000"
-                      value={singlePrice}
-                      onChange={(e) => setSinglePrice(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Couple Price (৳)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 2,880,000"
-                      value={couplePrice}
-                      onChange={(e) => setCouplePrice(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Discount Percentage (%)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 20%"
-                      value={discountPercent}
-                      onChange={(e) => setDiscountPercent(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Offer Expiry Date *</label>
-                    <input
-                      type="date"
-                      value={discountExpiry.includes('-') ? discountExpiry : '2026-12-31'}
-                      onChange={(e) => setDiscountExpiry(e.target.value)}
-                      required
-                      style={{ cursor: 'pointer', fontWeight: 500 }}
-                    />
-                  </div>
-
-                  {/* 6. POLICIES & TERMS */}
-                  <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      6. Policies, Terms & Travel Tips
+                      7. Policies, Terms & Travel Tips
                     </h3>
                   </div>
 
@@ -895,12 +1513,120 @@ export default function AddPackagePage() {
                     />
                   </div>
 
-                  {/* Submit Button */}
+                  {/* 6. AVAILABILITY SETTINGS (SRS Section 6 - Optional) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
+                      6. Availability Settings (Optional - SRS Section 6)
+                    </h3>
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Booking Deadline Date</label>
+                    <input
+                      type="date"
+                      value={bookingDeadline}
+                      onChange={(e) => setBookingDeadline(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Minimum Travelers</label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="e.g. 1"
+                      value={minTravelers}
+                      onChange={(e) => setMinTravelers(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Maximum Travelers</label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="e.g. 15"
+                      value={maxTravelers}
+                      onChange={(e) => setMaxTravelers(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 7. PRICING & DISCOUNTS (SRS Section 7) */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
+                      7. Child, Infant & Group Pricing (SRS Section 7)
+                    </h3>
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Child Price (৳)</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 5000"
+                      value={childPrice}
+                      onChange={(e) => setChildPrice(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Infant Price (৳)</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 1500"
+                      value={infantPrice}
+                      onChange={(e) => setInfantPrice(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Group Discount (%)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 10% Off for 5+ Guests"
+                      value={groupDiscount}
+                      onChange={(e) => setGroupDiscount(e.target.value)}
+                    />
+                  </div>
+
+                  {/* 22. PUBLISH SETTINGS & STATUS (SRS Section 22) */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
+                      22. Publish Settings & Status (SRS Section 22)
+                    </h3>
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Publish Status *</label>
+                    <select value={publishStatus} onChange={(e) => setPublishStatus(e.target.value)} style={{ fontWeight: 700 }}>
+                      <option value="Published">Published (Live for Customers)</option>
+                      <option value="Draft">Save Draft (Draft Mode)</option>
+                      <option value="Pending Review">Pending Review</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+
+                  <div className="seller-form-group">
+                    <label style={{ fontWeight: 600 }}>Featured Package Badge</label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '8px', fontSize: '0.88rem', fontWeight: 600, color: '#1E293B' }}>
+                      <input
+                        type="checkbox"
+                        checked={isFeaturedPackage}
+                        onChange={(e) => setIsFeaturedPackage(e.target.checked)}
+                        style={{ width: '18px', height: '18px', accentColor: '#2563EB' }}
+                      />
+                      <span>Mark as Featured Package (Top Banner Highlight)</span>
+                    </label>
+                  </div>
+
+                  {/* SRS Section 22: Save Draft, Preview & Publish Buttons */}
+                  <div className="seller-form-group full-width" style={{ marginTop: '20px', display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
                     <button
                       type="submit"
+                      onClick={() => setPublishStatus('Published')}
                       className="btn-seller-primary"
                       style={{
+                        flex: 2,
+                        minWidth: '220px',
                         justifyContent: 'center',
                         fontSize: '1rem',
                         padding: '14px 28px',
@@ -908,9 +1634,48 @@ export default function AddPackagePage() {
                         background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                         boxShadow: '0 6px 16px rgba(37,99,235,0.2)',
                         fontWeight: 600,
+                        cursor: 'pointer',
                       }}
                     >
-                      {isEditing ? '✓ Save & Update Package' : 'Publish Complete Tour Package'}
+                      {isEditing ? '✓ Save & Update Package' : '🚀 Publish Complete Tour Package'}
+                    </button>
+
+                    <button
+                      type="submit"
+                      onClick={() => setPublishStatus('Draft')}
+                      style={{
+                        flex: 1,
+                        minWidth: '140px',
+                        padding: '14px 20px',
+                        borderRadius: '12px',
+                        border: '1.5px solid #CBD5E1',
+                        background: '#FFFFFF',
+                        color: '#334155',
+                        fontWeight: 700,
+                        fontSize: '0.92rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      💾 Save Draft
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => alert(`👁️ Previewing Package: "${title || 'Untitled Tour'}" (${daysCount} Days / ${nightsCount} Nights)\n\nDestination: ${destinationCity}\nStatus: ${publishStatus}`)}
+                      style={{
+                        flex: 1,
+                        minWidth: '120px',
+                        padding: '14px 20px',
+                        borderRadius: '12px',
+                        border: '1.5px solid #93C5FD',
+                        background: '#EFF6FF',
+                        color: '#1D4ED8',
+                        fontWeight: 700,
+                        fontSize: '0.92rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      👁️ Preview
                     </button>
                   </div>
 
@@ -925,4 +1690,3 @@ export default function AddPackagePage() {
     </div>
   );
 }
-
