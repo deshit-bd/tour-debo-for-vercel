@@ -61,6 +61,19 @@ export default function SpecialOffersPage() {
     }
   ]);
 
+  const ALL_PACKAGES_AND_VISAS = [
+    "Cox's Bazar Deluxe Beach Resort Package",
+    "Sajek Valley Cloud 3-Day Resort Tour",
+    "Thailand Tourist Sticker VISA Service",
+    "Dubai Express E-Visa Service",
+    "Sylhet Ratargul & Jaflong Tour",
+    "Sundarbans Mangrove Wilderness Cruise",
+    "Singapore & Malaysia Combo Tour Package",
+    "Maldives Luxury Water Villa Honeymoon Package",
+    "Saint Martin Island Coral Beach Tour",
+    "Bandarban Nilgiri Peak Cloud Adventure"
+  ];
+
   // Modal Form State
   const [promotionName, setPromotionName] = useState('');
   const [code, setCode] = useState('');
@@ -68,8 +81,13 @@ export default function SpecialOffersPage() {
   const [redeemEnd, setRedeemEnd] = useState('2026-08-31');
   const [applyTo, setApplyTo] = useState('Entire Shop');
   const [specificProduct, setSpecificProduct] = useState("Cox's Bazar Deluxe Beach Resort Package");
+  const [selectedProducts, setSelectedProducts] = useState(["Cox's Bazar Deluxe Beach Resort Package"]);
+  const [pkgSearchQuery, setPkgSearchQuery] = useState('');
+  const [pkgDropdownOpen, setPkgDropdownOpen] = useState(false);
+
   const [discountSettingType, setDiscountSettingType] = useState('money');
   const [minSpend, setMinSpend] = useState('2000');
+  const [maxDiscount, setMaxDiscount] = useState('1000');
   const [discountValue, setDiscountValue] = useState('200');
   const [totalIssued, setTotalIssued] = useState('100');
   const [limitPerCustomer, setLimitPerCustomer] = useState('1');
@@ -77,6 +95,9 @@ export default function SpecialOffersPage() {
 
   const handleOpenModal = (item = null, mode = 'edit') => {
     setModalMode(mode);
+    setPkgSearchQuery('');
+    setPkgDropdownOpen(false);
+
     if (item) {
       setEditingItem(item);
       setPromotionName(item.promotionName);
@@ -85,8 +106,13 @@ export default function SpecialOffersPage() {
       setRedeemEnd(item.redeemEnd || '2026-08-31');
       setApplyTo(item.applyTo || 'Entire Shop');
       setSpecificProduct(item.specificProduct || "Cox's Bazar Deluxe Beach Resort Package");
+      const itemProds = item.selectedProducts && Array.isArray(item.selectedProducts)
+        ? item.selectedProducts
+        : (item.specificProduct ? item.specificProduct.split(', ') : ["Cox's Bazar Deluxe Beach Resort Package"]);
+      setSelectedProducts(itemProds);
       setDiscountSettingType(item.discountSettingType || 'money');
       setMinSpend(item.minSpend ? item.minSpend.toString() : '2000');
+      setMaxDiscount(item.maxDiscount ? item.maxDiscount.toString() : '1000');
       setDiscountValue(item.discountValue ? item.discountValue.toString() : '200');
       setTotalIssued(item.totalIssued ? item.totalIssued.toString() : '100');
       setLimitPerCustomer(item.limitPerCustomer ? item.limitPerCustomer.toString() : '1');
@@ -99,8 +125,10 @@ export default function SpecialOffersPage() {
       setRedeemEnd('2026-08-31');
       setApplyTo('Entire Shop');
       setSpecificProduct("Cox's Bazar Deluxe Beach Resort Package");
+      setSelectedProducts(["Cox's Bazar Deluxe Beach Resort Package"]);
       setDiscountSettingType('money');
       setMinSpend('2000');
+      setMaxDiscount('1000');
       setDiscountValue('200');
       setTotalIssued('100');
       setLimitPerCustomer('1');
@@ -113,6 +141,10 @@ export default function SpecialOffersPage() {
     e.preventDefault();
     if (!promotionName.trim() || !discountValue || !minSpend) return;
 
+    const formattedProductString = selectedProducts.length > 0
+      ? selectedProducts.join(', ')
+      : "Cox's Bazar Deluxe Beach Resort Package";
+
     if (activeTab === 'voucher') {
       if (editingItem) {
         setVouchersList(prev => prev.map(v => v.id === editingItem.id ? {
@@ -122,9 +154,11 @@ export default function SpecialOffersPage() {
           redeemStart,
           redeemEnd,
           applyTo,
-          specificProduct: applyTo === 'Specific Products' ? specificProduct : '',
+          selectedProducts: applyTo === 'Specific Products' ? selectedProducts : [],
+          specificProduct: applyTo === 'Specific Products' ? formattedProductString : '',
           discountSettingType,
           minSpend: parseFloat(minSpend) || 0,
+          maxDiscount: parseFloat(maxDiscount) || 0,
           discountValue: parseFloat(discountValue) || 0,
           totalIssued: parseInt(totalIssued) || 100,
           limitPerCustomer: parseInt(limitPerCustomer) || 1,
@@ -138,9 +172,11 @@ export default function SpecialOffersPage() {
           redeemStart,
           redeemEnd,
           applyTo,
-          specificProduct: applyTo === 'Specific Products' ? specificProduct : '',
+          selectedProducts: applyTo === 'Specific Products' ? selectedProducts : [],
+          specificProduct: applyTo === 'Specific Products' ? formattedProductString : '',
           discountSettingType,
           minSpend: parseFloat(minSpend) || 0,
+          maxDiscount: parseFloat(maxDiscount) || 0,
           discountValue: parseFloat(discountValue) || 0,
           totalIssued: parseInt(totalIssued) || 100,
           usedCount: 0,
@@ -158,8 +194,10 @@ export default function SpecialOffersPage() {
           discountSettingType,
           discountValue: parseFloat(discountValue) || 0,
           minSpend: parseFloat(minSpend) || 0,
+          maxDiscount: parseFloat(maxDiscount) || 0,
           applyTo,
-          specificProduct: applyTo === 'Specific Products' ? specificProduct : '',
+          selectedProducts: applyTo === 'Specific Products' ? selectedProducts : [],
+          specificProduct: applyTo === 'Specific Products' ? formattedProductString : '',
           redeemEnd,
           status
         } : d));
@@ -170,8 +208,10 @@ export default function SpecialOffersPage() {
           discountSettingType,
           discountValue: parseFloat(discountValue) || 0,
           minSpend: parseFloat(minSpend) || 0,
+          maxDiscount: parseFloat(maxDiscount) || 0,
           applyTo,
-          specificProduct: applyTo === 'Specific Products' ? specificProduct : '',
+          selectedProducts: applyTo === 'Specific Products' ? selectedProducts : [],
+          specificProduct: applyTo === 'Specific Products' ? formattedProductString : '',
           redeemEnd,
           status
         };
@@ -754,6 +794,26 @@ export default function SpecialOffersPage() {
                 />
               </div>
 
+              {/* Maximum Discount per Order */}
+              <div>
+                <label style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '2px' }}>
+                  Maximum Discount per Order
+                </label>
+                <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'block', marginBottom: '6px' }}>
+                  Set up a discount cap to avoid over budget
+                </span>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ position: 'absolute', left: '12px', fontSize: '0.88rem', fontWeight: 700, color: '#64748B' }}>৳</span>
+                  <input
+                    type="number"
+                    placeholder="e.g. 1500"
+                    value={maxDiscount}
+                    onChange={(e) => setMaxDiscount(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px 10px 28px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 700, outline: 'none' }}
+                  />
+                </div>
+              </div>
+
               {/* Target Scope Selection */}
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '4px' }}>Applicable Target *</label>
@@ -769,16 +829,237 @@ export default function SpecialOffersPage() {
 
               {applyTo === 'Specific Products' && (
                 <div>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '4px' }}>Select Package/Visa Service *</label>
-                  <select
-                    value={specificProduct}
-                    onChange={(e) => setSpecificProduct(e.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600, background: '#FFFFFF' }}
-                  >
-                    <option value="Cox's Bazar Deluxe Beach Resort Package">Cox's Bazar Deluxe Package</option>
-                    <option value="Sajek Valley Cloud 3-Day Resort Tour">Sajek Valley 3-Day Resort Tour</option>
-                    <option value="Thailand Tourist Sticker VISA Service">Thailand Tourist Visa</option>
-                  </select>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '6px' }}>
+                    Select Package / Visa Services *
+                  </label>
+
+                  {/* Input Box Wrapper with Relative Positioning */}
+                  <div style={{ position: 'relative' }}>
+                    {/* Ultra-Sleek Searchable Input Field */}
+                    <div
+                      onClick={() => setPkgDropdownOpen(!pkgDropdownOpen)}
+                      style={{
+                        width: '100%',
+                        height: '46px',
+                        padding: '0 14px',
+                        borderRadius: '12px',
+                        border: pkgDropdownOpen ? '1.5px solid #2563EB' : '1px solid #CBD5E1',
+                        background: '#FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer',
+                        boxShadow: pkgDropdownOpen ? '0 0 0 4px rgba(37,99,235,0.1)' : '0 1px 2px rgba(0,0,0,0.05)',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <span style={{ fontSize: '0.95rem', color: '#64748B' }}>🔍</span>
+                      <input
+                        type="text"
+                        placeholder={selectedProducts.length === 0 ? 'Search & select packages or visa services...' : 'Type to search list...'}
+                        value={pkgSearchQuery}
+                        onChange={(e) => {
+                          setPkgSearchQuery(e.target.value);
+                          if (!pkgDropdownOpen) setPkgDropdownOpen(true);
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPkgDropdownOpen(true);
+                        }}
+                        style={{
+                          border: 'none',
+                          outline: 'none',
+                          fontSize: '0.88rem',
+                          fontWeight: 500,
+                          flex: 1,
+                          background: 'transparent',
+                          color: '#0F172A',
+                        }}
+                      />
+
+                      {selectedProducts.length > 0 && (
+                        <span
+                          style={{
+                            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                            color: '#FFFFFF',
+                            fontSize: '0.74rem',
+                            fontWeight: 800,
+                            padding: '4px 10px',
+                            borderRadius: '20px',
+                            boxShadow: '0 2px 6px rgba(37,99,235,0.25)',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {selectedProducts.length} Selected
+                        </span>
+                      )}
+
+                      <span style={{ fontSize: '0.75rem', color: '#64748B', userSelect: 'none', transition: 'transform 0.2s ease', transform: pkgDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                        ▼
+                      </span>
+                    </div>
+
+                    {/* Dropdown Menu - Positioned EXACTLY below the input field (top: 100%) */}
+                    {pkgDropdownOpen && (
+                      <>
+                        {/* Invisible Click-Outside Backdrop */}
+                        <div
+                          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9998 }}
+                          onClick={() => setPkgDropdownOpen(false)}
+                        />
+
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            marginTop: '6px',
+                            background: '#FFFFFF',
+                            border: '1.5px solid #CBD5E1',
+                            borderRadius: '14px',
+                            boxShadow: '0 16px 32px -4px rgba(15, 23, 42, 0.18)',
+                            maxHeight: '230px',
+                            overflowY: 'auto',
+                            zIndex: 9999,
+                            padding: '6px 0 0 0',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: '1px solid #E2E8F0', marginBottom: '4px', background: '#F8FAFC' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>
+                              Choose Packages ({selectedProducts.length} chosen)
+                            </span>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (selectedProducts.length === ALL_PACKAGES_AND_VISAS.length) {
+                                    setSelectedProducts([]);
+                                  } else {
+                                    setSelectedProducts([...ALL_PACKAGES_AND_VISAS]);
+                                  }
+                                }}
+                                style={{ border: 'none', background: 'transparent', color: '#2563EB', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                {selectedProducts.length === ALL_PACKAGES_AND_VISAS.length ? 'Deselect All' : 'Select All'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPkgDropdownOpen(false)}
+                                style={{ background: '#2563EB', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 4px rgba(37,99,235,0.2)' }}
+                              >
+                                Done ✓
+                              </button>
+                            </div>
+                          </div>
+
+                          {ALL_PACKAGES_AND_VISAS
+                            .filter((p) => p.toLowerCase().includes(pkgSearchQuery.toLowerCase()))
+                            .map((pkg) => {
+                              const isChecked = selectedProducts.includes(pkg);
+                              return (
+                                <label
+                                  key={pkg}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    padding: '9px 14px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.85rem',
+                                    fontWeight: isChecked ? 700 : 500,
+                                    color: isChecked ? '#1E293B' : '#475569',
+                                    background: isChecked ? '#EFF6FF' : 'transparent',
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                  onMouseEnter={(e) => { if (!isChecked) e.currentTarget.style.background = '#F8FAFC'; }}
+                                  onMouseLeave={(e) => { if (!isChecked) e.currentTarget.style.background = 'transparent'; }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => {
+                                      if (isChecked) {
+                                        setSelectedProducts(selectedProducts.filter((p) => p !== pkg));
+                                      } else {
+                                        setSelectedProducts([...selectedProducts, pkg]);
+                                      }
+                                    }}
+                                    style={{ width: '17px', height: '17px', accentColor: '#2563EB', cursor: 'pointer' }}
+                                  />
+                                  <span style={{ flex: 1 }}>{pkg}</span>
+                                  {isChecked && <span style={{ color: '#2563EB', fontWeight: 800, fontSize: '0.85rem' }}>✓</span>}
+                                </label>
+                              );
+                            })}
+
+                          {ALL_PACKAGES_AND_VISAS.filter((p) => p.toLowerCase().includes(pkgSearchQuery.toLowerCase())).length === 0 && (
+                            <div style={{ padding: '14px', fontSize: '0.82rem', color: '#94A3B8', textAlign: 'center' }}>
+                              No package found matching &quot;{pkgSearchQuery}&quot;
+                            </div>
+                          )}
+
+                          <div style={{ padding: '8px 14px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC', display: 'flex', justifyContent: 'flex-end', position: 'sticky', bottom: 0 }}>
+                            <button
+                              type="button"
+                              onClick={() => setPkgDropdownOpen(false)}
+                              style={{ background: '#1E293B', color: '#FFFFFF', border: 'none', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Apply &amp; Close ✓
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Selected Items Pills (Rendered below input box & dropdown container) */}
+                  {selectedProducts.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                      {selectedProducts.map((prod) => (
+                        <span
+                          key={prod}
+                          style={{
+                            background: '#F0F9FF',
+                            color: '#0369A1',
+                            border: '1px solid #BAE6FD',
+                            borderRadius: '8px',
+                            padding: '4px 10px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 1px 3px rgba(3,105,161,0.08)',
+                          }}
+                        >
+                          {prod}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProducts(selectedProducts.filter((p) => p !== prod))}
+                            style={{
+                              border: 'none',
+                              background: '#E0F2FE',
+                              color: '#0284C7',
+                              borderRadius: '50%',
+                              width: '16px',
+                              height: '16px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              fontSize: '0.68rem',
+                              lineHeight: 1,
+                            }}
+                            title="Remove item"
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

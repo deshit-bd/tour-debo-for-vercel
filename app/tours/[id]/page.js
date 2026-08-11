@@ -406,8 +406,8 @@ export default function TourDetailPage() {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
               <div
                 style={{
-                  background: '#FFF1F2',
-                  border: '1.5px dashed #F43F5E',
+                  background: '#F0FDF4',
+                  border: '1.5px dashed #16A34A',
                   borderRadius: '12px',
                   padding: '8px 12px',
                   display: 'inline-flex',
@@ -417,10 +417,10 @@ export default function TourDetailPage() {
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#E11D48', lineHeight: 1.2 }}>
-                    ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9F1239' }}>(Code: EID2026)</span>
+                  <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                    ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: EID2026)</span>
                   </strong>
-                  <span style={{ fontSize: '0.66rem', color: '#881337', fontWeight: 600, marginTop: '2px' }}>
+                  <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
                     Min. Spend ৳5,000 • Valid till 31 Aug 2026
                   </span>
                 </div>
@@ -433,7 +433,7 @@ export default function TourDetailPage() {
                     e.currentTarget.style.color = '#15803D';
                   }}
                   style={{
-                    background: '#E11D48',
+                    background: '#16A34A',
                     color: '#FFFFFF',
                     border: 'none',
                     padding: '4px 12px',
@@ -1027,52 +1027,98 @@ export default function TourDetailPage() {
                 </span>
               </div>
 
-              {/* Package Selection */}
+              {/* Package Selection with Counter Buttons Inside */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                 {[
                   { id: 'single', label: 'Single (1 Adult)', price: singlePrice },
                   { id: 'couple', label: 'Couple (2 Adults)', price: couplePrice },
-                ].map((opt) => (
-                  <div
-                    key={opt.id}
-                    onClick={() => setSelectedPackage(opt.id)}
-                    style={{
-                      padding: '10px 14px',
-                      borderRadius: '10px',
-                      border: selectedPackage === opt.id ? '2px solid #2563EB' : '1px solid #E2E8F0',
-                      background: selectedPackage === opt.id ? '#EFF6FF' : '#fff',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '0.86rem',
-                      fontWeight: '600',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <span style={{ color: selectedPackage === opt.id ? '#1D4ED8' : '#0F172A' }}>{opt.label}</span>
-                    <span style={{ fontWeight: '800', color: selectedPackage === opt.id ? '#1D4ED8' : '#334155' }}>
-                      ৳{opt.price.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                ].map((opt) => {
+                  const isSelected = selectedPackage === opt.id;
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => setSelectedPackage(opt.id)}
+                      style={{
+                        padding: '10px 14px',
+                        borderRadius: '10px',
+                        border: isSelected ? '2px solid #2563EB' : '1px solid #E2E8F0',
+                        background: isSelected ? '#EFF6FF' : '#fff',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: '0.86rem',
+                        fontWeight: '600',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span style={{ color: isSelected ? '#1D4ED8' : '#0F172A' }}>{opt.label}</span>
 
-              {/* Pass Counter */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', background: '#F8FAFC', padding: '8px 12px', borderRadius: '10px', border: '1px solid #F1F5F9' }}>
-                <div>
-                  <span style={{ fontSize: '0.84rem', fontWeight: 'bold', color: '#0F172A', display: 'block' }}>
-                    {selectedPackage === 'couple' ? 'Couple Passes:' : 'Single Passes:'}
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: '#64748B' }}>
-                    {selectedPackage === 'couple' ? '2 Adults / Pass' : '1 Adult / Pass'}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button onClick={() => setTicketCount(Math.max(1, ticketCount - 1))} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>-</button>
-                  <span style={{ fontWeight: 'bold', minWidth: '16px', textAlign: 'center' }}>{ticketCount}</span>
-                  <button onClick={() => setTicketCount(ticketCount + 1)} style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
-                </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontWeight: '800', color: isSelected ? '#1D4ED8' : '#334155' }}>
+                          ৳{(opt.price * (isSelected ? ticketCount : 1)).toLocaleString()}
+                        </span>
+
+                        {/* Interactive [-] 1 [+] Counter directly inline without double cards */}
+                        {isSelected && (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setTicketCount(Math.max(1, ticketCount - 1))}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: '#DBEAFE',
+                                color: '#1D4ED8',
+                                cursor: 'pointer',
+                                fontWeight: '900',
+                                fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                lineHeight: 1,
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              -
+                            </button>
+                            <span style={{ fontWeight: '800', minWidth: '14px', textAlign: 'center', fontSize: '0.88rem', color: '#1E40AF' }}>
+                              {ticketCount}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setTicketCount(ticketCount + 1)}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: '#2563EB',
+                                color: '#FFFFFF',
+                                cursor: 'pointer',
+                                fontWeight: '900',
+                                fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                lineHeight: 1,
+                                boxShadow: '0 2px 4px rgba(37,99,235,0.2)',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Child Pass Counter */}

@@ -24,7 +24,10 @@ export default function AddPackagePage() {
   const [tourCategory, setTourCategory] = useState('Multi-Day Tour'); // Day Tour, Multi-Day Tour, Cruise, Adventure, Honeymoon, Family, Wildlife, Trekking, Hill track
   const [packageTypes, setPackageTypes] = useState(['Single', 'Couple', 'Group']); // Single, Couple, Family, Group
   const [startingPoint, setStartingPoint] = useState('Dhaka');
+  const [startingCountry, setStartingCountry] = useState('Bangladesh');
+  const [destinationCountry, setDestinationCountry] = useState('Bangladesh');
   const [destinationCity, setDestinationCity] = useState('Cox\'s Bazar');
+  const [destination, setDestination] = useState('Cox\'s Bazar');
   const [multipleDestinations, setMultipleDestinations] = useState('Sajek, Rangamati, Bandarban');
   const [transportationType, setTransportationType] = useState('Include'); // Air Fare, Include, Partial Include, Exclude
   
@@ -48,6 +51,38 @@ export default function AddPackagePage() {
   const [endTime, setEndTime] = useState('08:00 PM');
   const [flexibleDates, setFlexibleDates] = useState('No'); // Yes | No
   const [isFeaturedPackage, setIsFeaturedPackage] = useState(false);
+
+  // Accommodation & Package Option States
+  const [accommodationType, setAccommodationType] = useState('Standard Hotel (3 Star)');
+  const [accommodationOptions, setAccommodationOptions] = useState([
+    'Standard Hotel (3 Star)',
+    'Luxury Resort (5 Star)',
+    'Boutique Hotel',
+    'Eco Resort / Cottage',
+    'Houseboat / Cruise',
+    'Camping Tent'
+  ]);
+  const [showAddAccomModal, setShowAddAccomModal] = useState(false);
+  const [newAccomTitle, setNewAccomTitle] = useState('');
+
+  const [selectedMeals, setSelectedMeals] = useState(['Breakfast', 'Dinner']);
+  const [mainProduct, setMainProduct] = useState('Travel Package');
+  const [packageType, setPackageType] = useState('Fixed Date');
+  const [fixedDateRange, setFixedDateRange] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const handleCreateAccomType = () => {
+    if (newAccomTitle && newAccomTitle.trim() !== '') {
+      const trimmed = newAccomTitle.trim();
+      if (!accommodationOptions.includes(trimmed)) {
+        setAccommodationOptions([...accommodationOptions, trimmed]);
+      }
+      setAccommodationType(trimmed);
+      setNewAccomTitle('');
+      setShowAddAccomModal(false);
+    }
+  };
 
   // Section 2: Videos & 360 Photo
   const [tourVideoUrl, setTourVideoUrl] = useState('');
@@ -409,7 +444,7 @@ export default function AddPackagePage() {
                   {/* 1. BASIC INFORMATION (SRS Section 1) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '10px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>1. Basic Information (SRS Specified)</span>
+                      <span>1. Basic Information</span>
                     </h3>
                   </div>
 
@@ -1316,7 +1351,7 @@ export default function AddPackagePage() {
                                 )}
                               </div>
 
-                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr 1.2fr', gap: '10px', alignItems: 'end' }}>
                                 <div>
                                   <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
                                     Package Title *
@@ -1373,11 +1408,15 @@ export default function AddPackagePage() {
                                 </div>
 
                                 {/* Auto-Calculated Result */}
-                                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', textTransform: 'uppercase' }}>Auto Calculated Final Price</span>
-                                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669' }}>
-                                    ৳{autoFinalPrice.toLocaleString()}
-                                  </span>
+                                <div>
+                                  <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#047857', display: 'block', marginBottom: '4px', whiteSpace: 'nowrap' }}>
+                                    Final Price
+                                  </label>
+                                  <div style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0', padding: '6px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '37px' }}>
+                                    <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#059669', whiteSpace: 'nowrap' }}>
+                                      ৳{autoFinalPrice.toLocaleString()}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1516,7 +1555,7 @@ export default function AddPackagePage() {
                   {/* 6. AVAILABILITY SETTINGS (SRS Section 6 - Optional) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      6. Availability Settings (Optional - SRS Section 6)
+                      6. Availability Settings (Optional)
                     </h3>
                   </div>
 
@@ -1554,7 +1593,7 @@ export default function AddPackagePage() {
                   {/* 7. PRICING & DISCOUNTS (SRS Section 7) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      7. Child, Infant & Group Pricing (SRS Section 7)
+                      7. Child, Infant & Group Pricing
                     </h3>
                   </div>
 
@@ -1591,7 +1630,7 @@ export default function AddPackagePage() {
                   {/* 22. PUBLISH SETTINGS & STATUS (SRS Section 22) */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      22. Publish Settings & Status (SRS Section 22)
+                      22. Publish Settings & Status
                     </h3>
                   </div>
 
@@ -1637,7 +1676,7 @@ export default function AddPackagePage() {
                         cursor: 'pointer',
                       }}
                     >
-                      {isEditing ? '✓ Save & Update Package' : '🚀 Publish Complete Tour Package'}
+                      {isEditing ? 'Save & Update Package' : 'Publish Complete Tour Package'}
                     </button>
 
                     <button
@@ -1656,12 +1695,12 @@ export default function AddPackagePage() {
                         cursor: 'pointer',
                       }}
                     >
-                      💾 Save Draft
+                      Save Draft
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => alert(`👁️ Previewing Package: "${title || 'Untitled Tour'}" (${daysCount} Days / ${nightsCount} Nights)\n\nDestination: ${destinationCity}\nStatus: ${publishStatus}`)}
+                      onClick={() => alert(`Previewing Package: "${title || 'Untitled Tour'}" (${daysCount} Days / ${nightsCount} Nights)\n\nDestination: ${destinationCity}\nStatus: ${publishStatus}`)}
                       style={{
                         flex: 1,
                         minWidth: '120px',
@@ -1675,7 +1714,7 @@ export default function AddPackagePage() {
                         cursor: 'pointer',
                       }}
                     >
-                      👁️ Preview
+                      Preview
                     </button>
                   </div>
 

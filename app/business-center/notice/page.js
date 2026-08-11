@@ -13,7 +13,7 @@ export default function SellerNoticePage() {
       date: '2026-08-01',
       category: 'Policy',
       urgent: true,
-      content: 'Please ensure that no mobile numbers, email addresses, or personal contact details are shared in the chat. System automated filters will restrict accounts violating this rule as per SRS guidelines.',
+      content: 'Please ensure that no mobile numbers, email addresses, or personal contact details are shared in the chat. System automated filters will restrict accounts violating this rule as per platform guidelines.',
     },
     {
       id: 2,

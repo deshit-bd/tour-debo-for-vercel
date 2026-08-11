@@ -613,8 +613,8 @@ export default function VisaDetailPage({ params }) {
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: '4px' }}>
                   <div
                     style={{
-                      background: '#FFF1F2',
-                      border: '1.5px dashed #F43F5E',
+                      background: '#F0FDF4',
+                      border: '1.5px dashed #16A34A',
                       borderRadius: '12px',
                       padding: '8px 12px',
                       display: 'inline-flex',
@@ -624,10 +624,10 @@ export default function VisaDetailPage({ params }) {
                     }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#E11D48', lineHeight: 1.2 }}>
-                        ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#9F1239' }}>(Code: EID2026)</span>
+                      <strong style={{ fontSize: '0.84rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                        ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: EID2026)</span>
                       </strong>
-                      <span style={{ fontSize: '0.66rem', color: '#881337', fontWeight: 600, marginTop: '2px' }}>
+                      <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
                         Min. Spend ৳5,000 • Valid till 31 Aug 2026
                       </span>
                     </div>
@@ -640,7 +640,7 @@ export default function VisaDetailPage({ params }) {
                         e.currentTarget.style.color = '#15803D';
                       }}
                       style={{
-                        background: '#E11D48',
+                        background: '#16A34A',
                         color: '#FFFFFF',
                         border: 'none',
                         padding: '4px 12px',
@@ -709,7 +709,6 @@ export default function VisaDetailPage({ params }) {
             <div className="meta-info-item">🏙 <strong>Capital City :</strong> {visa.capital}</div>
             <div className="meta-info-item">🕒 <strong>Local Time :</strong> {visa.localTime}</div>
             <div className="meta-info-item">☎ <strong>Telephone Code :</strong> {visa.telephoneCode}</div>
-            <div className="meta-info-item">💱 <strong>Exchange Rate :</strong> {visa.exchangeRate}</div>
             <div className="meta-info-item full-width-item">📍 <strong>Embassy Address :</strong> {visa.embassyAddress}</div>
           </div>
 

@@ -395,6 +395,94 @@ export default function GuideDetailPage({ params }) {
                 Guide Name: <strong style={{ color: '#0F172A' }}>{guide.guideName}</strong> • {guide.location}
               </p>
 
+              {/* VOUCHER & DISCOUNT PROMO BOXES (MATCHING TOUR PACKAGE & VISA DETAILS) */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', margin: '8px 0' }}>
+                {/* 1. Available Voucher Box */}
+                <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      background: '#F0FDF4',
+                      border: '1.5px dashed #16A34A',
+                      borderRadius: '12px',
+                      padding: '6px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong style={{ fontSize: '0.82rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                        ৳ 300 OFF <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: GUIDE2026)</span>
+                      </strong>
+                      <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
+                        Min. Spend ৳2,000 • Valid till 31 Aug 2026
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.currentTarget.innerText = '✓ Collected';
+                        e.currentTarget.style.background = '#DCFCE7';
+                        e.currentTarget.style.color = '#15803D';
+                      }}
+                      style={{
+                        background: '#16A34A',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      Collect Voucher
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Offered Extra Discount Box */}
+                <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      background: '#F0FDF4',
+                      border: '1.5px dashed #16A34A',
+                      borderRadius: '12px',
+                      padding: '6px 12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <strong style={{ fontSize: '0.82rem', fontWeight: 800, color: '#15803D', lineHeight: 1.2 }}>
+                        -15% OFF Special Guide Discount
+                      </strong>
+                      <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
+                        Applied directly on booking fare
+                      </span>
+                    </div>
+
+                    <span
+                      style={{
+                        background: '#DCFCE7',
+                        color: '#15803D',
+                        border: '1px solid #86EFAC',
+                        padding: '3px 8px',
+                        borderRadius: '12px',
+                        fontSize: '0.72rem',
+                        fontWeight: 800,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      ✓ Deal Active
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Feature Pill Badges */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '3px' }}>
                 <span style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '999px', padding: '3px 10px', fontSize: '0.74rem', fontWeight: '600', color: '#334155' }}>
@@ -846,8 +934,8 @@ export default function GuideDetailPage({ params }) {
                 </span>
               </div>
 
-              {/* Variety Selection List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+              {/* Variety Selection List with Counter Buttons Inside */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
                 {tierOptions.map((option) => {
                   const isSelected = selectedTier === option.tier;
                   return (
@@ -858,10 +946,10 @@ export default function GuideDetailPage({ params }) {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        padding: '8px 10px',
+                        padding: '10px 12px',
                         background: isSelected ? '#EFF6FF' : '#ffffff',
                         border: `1.5px solid ${isSelected ? '#2563EB' : '#E2E8F0'}`,
-                        borderRadius: '8px',
+                        borderRadius: '10px',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
@@ -869,66 +957,72 @@ export default function GuideDetailPage({ params }) {
                       <span style={{ fontWeight: isSelected ? '700' : '600', color: isSelected ? '#1E40AF' : '#334155', fontSize: '0.85rem' }}>
                         {option.name} ({option.label})
                       </span>
-                      <strong style={{ color: isSelected ? '#2563EB' : '#0F172A', fontSize: '0.88rem' }}>
-                        ৳{option.rate.toLocaleString()}
-                      </strong>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <strong style={{ color: isSelected ? '#2563EB' : '#0F172A', fontSize: '0.88rem' }}>
+                          ৳{(option.rate * (isSelected ? passCount : 1)).toLocaleString()}
+                        </strong>
+
+                        {/* Interactive [-] 1 [+] Counter directly inline without double cards */}
+                        {isSelected && (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '4px' }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setPassCount((prev) => Math.max(1, prev - 1))}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: '#DBEAFE',
+                                color: '#1D4ED8',
+                                cursor: 'pointer',
+                                fontWeight: '900',
+                                fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                lineHeight: 1,
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              -
+                            </button>
+                            <span style={{ fontWeight: '800', minWidth: '14px', textAlign: 'center', fontSize: '0.88rem', color: '#1E40AF' }}>
+                              {passCount}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setPassCount((prev) => prev + 1)}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                background: '#2563EB',
+                                color: '#FFFFFF',
+                                cursor: 'pointer',
+                                fontWeight: '900',
+                                fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                lineHeight: 1,
+                                boxShadow: '0 2px 4px rgba(37,99,235,0.2)',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Passes Quantity Counter Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <strong style={{ fontSize: '0.9rem', color: '#0F172A', fontWeight: '800' }}>Passes:</strong>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setPassCount((prev) => Math.max(1, prev - 1))}
-                    style={{
-                      width: '30px',
-                      height: '30px',
-                      borderRadius: '6px',
-                      border: '1px solid #CBD5E1',
-                      background: '#fff',
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#334155',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    -
-                  </button>
-                  <span style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0F172A', minWidth: '18px', textAlign: 'center' }}>
-                    {passCount}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setPassCount((prev) => prev + 1)}
-                    style={{
-                      width: '30px',
-                      height: '30px',
-                      borderRadius: '6px',
-                      border: '1px solid #CBD5E1',
-                      background: '#fff',
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#334155',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    +
-                  </button>
-                </div>
               </div>
 
               {/* Book Guide Button */}

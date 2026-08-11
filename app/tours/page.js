@@ -429,22 +429,6 @@ function TourListingContent() {
 
                     <div className="duration-tag-row" style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', margin: '1px 0' }}>
                       <span className="duration-pill" style={{ fontSize: '0.76rem', background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: '6px', fontWeight: '600' }}>⏱ {item.duration}</span>
-                      {item.isOffer && (
-                        <span className="discount-tag" style={{ fontSize: '0.76rem', background: '#FEE2E2', color: '#DC2626', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
-                          {(() => {
-                            if (item.discountTag && item.discountTag !== '100% OFF' && !item.discountTag.includes('100%')) {
-                              return item.discountTag;
-                            }
-                            const orig = item.prices?.singleOriginal;
-                            const curr = item.prices?.single || item.price;
-                            if (orig && curr && orig > curr && orig < curr * 10) {
-                              const pct = Math.round(((orig - curr) / orig) * 100);
-                              return `${pct}% OFF`;
-                            }
-                            return '20% OFF';
-                          })()}
-                        </span>
-                      )}
                       <span style={{ fontSize: '0.76rem', background: '#F1F5F9', color: '#475569', padding: '2px 8px', borderRadius: '6px', fontWeight: '600' }}>🏡 {item.accommodation}</span>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF3C7', color: '#B45309', padding: '2px 8px', borderRadius: '999px', fontSize: '0.76rem', fontWeight: '800', border: '1px solid #FDE68A' }}>
                         🚌 Route: {item.transportRoute || `${item.startingPoint || 'Dhaka'} - ${item.location} - ${item.startingPoint || 'Dhaka'}`}

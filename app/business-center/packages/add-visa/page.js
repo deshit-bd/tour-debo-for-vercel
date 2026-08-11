@@ -491,7 +491,7 @@ function AddVisaFormContent() {
               <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '12px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontSize: '1.2rem' }}>ℹ️</span>
                 <span style={{ fontSize: '0.82rem', color: '#1E40AF', fontWeight: 500 }}>
-                  <strong>Auto-Filled Country Details:</strong> Capital City, Timezone, Telephone Code, Exchange Rate, and Embassy Fee automatically populate when a country is selected. You can specify your custom <strong>Processing Fee</strong> and <strong>Embassy Address</strong> below.
+                  <strong>Auto-Filled Country Details:</strong> Capital City, Timezone, Telephone Code, and Embassy Fee automatically populate when a country is selected. You can specify your custom <strong>Processing Fee</strong> and <strong>Embassy Address</strong> below.
                 </span>
               </div>
 
@@ -507,10 +507,6 @@ function AddVisaFormContent() {
                 <div>
                   <label style={lbl}>Telephone Code</label>
                   <input type="text" placeholder="e.g. +1" value={telephoneCode} onChange={(e) => setTelephoneCode(e.target.value)} style={inp} />
-                </div>
-                <div>
-                  <label style={lbl}>Exchange Rate</label>
-                  <input type="text" placeholder="e.g. 1 USD is equivalent to 118 BDT" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)} style={inp} />
                 </div>
                 <div>
                   <label style={lbl}>Starting Embassy Fee (BDT)</label>
@@ -585,7 +581,7 @@ function AddVisaFormContent() {
                             )}
                           </div>
 
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr 1fr 1.2fr', gap: '10px', alignItems: 'end' }}>
                             {/* Entry Option Dropdown */}
                             <div>
                               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
@@ -666,11 +662,15 @@ function AddVisaFormContent() {
                             </div>
 
                             {/* Auto-Calculated Result */}
-                            <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px 14px', borderRadius: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', textTransform: 'uppercase' }}>Auto Calculated Final Price</span>
-                              <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669' }}>
-                                ৳{autoFinalPrice.toLocaleString()}
-                              </span>
+                            <div>
+                              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#047857', display: 'block', marginBottom: '4px', whiteSpace: 'nowrap' }}>
+                                Final Price
+                              </label>
+                              <div style={{ background: '#ECFDF5', border: '1.5px solid #A7F3D0', padding: '6px 12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '37px' }}>
+                                <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#059669', whiteSpace: 'nowrap' }}>
+                                  ৳{autoFinalPrice.toLocaleString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>

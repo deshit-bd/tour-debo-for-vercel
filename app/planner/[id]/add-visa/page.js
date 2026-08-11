@@ -232,10 +232,6 @@ export default function PlannerAddVisaPage() {
                 <input type="text" placeholder="e.g. +1" value={telephoneCode} onChange={(e) => setTelephoneCode(e.target.value)} style={inp} />
               </div>
               <div>
-                <label style={lbl}>Exchange Rate</label>
-                <input type="text" placeholder="e.g. 1 USD is equivalent to 118 BDT" value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)} style={inp} />
-              </div>
-              <div>
                 <label style={lbl}>Starting Visa Fee (BDT)</label>
                 <input type="text" placeholder="e.g. 2400" value={visaFee} onChange={(e) => setVisaFee(e.target.value)} style={inp} />
               </div>
@@ -252,7 +248,7 @@ export default function PlannerAddVisaPage() {
 
           {/* 3. Pricing Matrix */}
           <div style={card}>
-            {secH('3', 'Feature Combination Pricing Matrix (SRS Page 3-4 Standard)')}
+            {secH('3', 'Feature Combination Pricing Matrix')}
             <p style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '16px', marginTop: '-6px' }}>Set individual prices for combination of VISA Type and Entry Option.</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
               {Object.keys(matrixPrices).map((key) => (
