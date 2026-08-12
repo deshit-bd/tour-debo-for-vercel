@@ -4,8 +4,10 @@ import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import SellerSidebar from '../components/SellerSidebar';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function RevenuePage() {
+  const { formatPrice } = useCurrency();
   const [amount, setAmount] = useState('3400');
   const [bankName, setBankName] = useState('Dutch-Bangla Bank Ltd');
   const [branch, setBranch] = useState('Gulshan Branch, Dhaka');
@@ -43,22 +45,22 @@ export default function RevenuePage() {
               <div className="seller-metrics-grid">
                 <div className="metric-card">
                   <span className="label">Total Earned Income</span>
-                  <span className="value">৳4,52,000</span>
+                  <span className="value">{formatPrice(452000)}</span>
                   <span className="subtext">Gross Revenue</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Hold Amount (Available)</span>
-                  <span className="value" style={{ color: '#2563EB' }}>৳34,000</span>
+                  <span className="value" style={{ color: '#2563EB' }}>{formatPrice(34000)}</span>
                   <span className="subtext" style={{ color: '#10B981' }}>Ready for Payout</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Total Disbursed</span>
-                  <span className="value">৳3,85,000</span>
+                  <span className="value">{formatPrice(385000)}</span>
                   <span className="subtext">Paid via Bank Transfer</span>
                 </div>
                 <div className="metric-card">
                   <span className="label">Admin Commission</span>
-                  <span className="value" style={{ color: '#DC2626' }}>৳33,000</span>
+                  <span className="value" style={{ color: '#DC2626' }}>{formatPrice(33000)}</span>
                   <span className="subtext">10% Platform Fee</span>
                 </div>
               </div>

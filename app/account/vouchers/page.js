@@ -5,9 +5,11 @@ import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import AccountSidebar from '../../components/AccountSidebar';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function CustomerVouchersPage() {
-  const [collectedCodes, setCollectedCodes] = useState(['EID2026', 'FLASH2000']);
+  const { formatPrice } = useCurrency();
+  const [collectedCodes, setCollectedCodes] = useState(['EID2026', 'FLASH2000', 'REF-REWARD-500', 'REF-FRIEND-500']);
   const [usedCodes, setUsedCodes] = useState([]);
   const [inputCode, setInputCode] = useState('');
   const [claimNotice, setClaimNotice] = useState('');
@@ -19,8 +21,9 @@ export default function CustomerVouchersPage() {
       id: 1,
       code: 'EID2026',
       title: 'Eid Special Festival Tour Voucher',
+      discountVal: 0,
       discount: '15% OFF',
-      minSpend: 'Min. Spend ৳5,000',
+      minSpendVal: 5000,
       validTill: '31 Aug 2026',
       validUntilDate: '2026-08-31T23:59:59',
       seller: 'DeshIT-BD Planner',
@@ -31,8 +34,9 @@ export default function CustomerVouchersPage() {
       id: 2,
       code: 'FLASH2000',
       title: 'Thailand Sticker Visa Flash Deal',
-      discount: '৳2,000 OFF',
-      minSpend: 'Min. Spend ৳10,000',
+      discountVal: 2000,
+      discount: '2,000 OFF',
+      minSpendVal: 10000,
       validTill: '15 Sep 2026',
       validUntilDate: '2026-09-15T23:59:59',
       seller: 'DeshIT-BD Planner',
@@ -41,8 +45,35 @@ export default function CustomerVouchersPage() {
     },
     {
       id: 3,
+      code: 'REF-REWARD-500',
+      title: 'Referral Winner Reward Voucher',
+      discountVal: 500,
+      discount: '500 OFF',
+      minSpendVal: 2000,
+      validTill: '31 Dec 2026',
+      validUntilDate: '2026-12-31T23:59:59',
+      seller: 'Tour Dibo Referral Program',
+      type: 'fixed',
+      status: 'Active'
+    },
+    {
+      id: 4,
+      code: 'REF-FRIEND-500',
+      title: 'Friend Welcome Referral Voucher',
+      discountVal: 500,
+      discount: '500 OFF',
+      minSpendVal: 2000,
+      validTill: '31 Dec 2026',
+      validUntilDate: '2026-12-31T23:59:59',
+      seller: 'Tour Dibo Referral Program',
+      type: 'fixed',
+      status: 'Active'
+    },
+    {
+      id: 5,
       code: 'SAJEK10',
       title: 'Sajek Valley Monsoon Voucher',
+      discountVal: 0,
       discount: '10% OFF',
       minSpend: 'Min. Spend ৳4,000',
       validTill: '25 Aug 2026',
@@ -52,7 +83,7 @@ export default function CustomerVouchersPage() {
       status: 'Active'
     },
     {
-      id: 4,
+      id: 6,
       code: 'SUMMER2025',
       title: 'Summer Early Bird Voucher (Expired)',
       discount: '৳500 OFF',
@@ -144,54 +175,9 @@ export default function CustomerVouchersPage() {
                 <h1 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '10px 0 6px 0' }}>
                   My Collected Vouchers
                 </h1>
-                <p style={{ fontSize: '0.88rem', opacity: 0.9, margin: '0 0 20px 0', maxWidth: '520px' }}>
+                <p style={{ fontSize: '0.88rem', opacity: 0.9, margin: 0, maxWidth: '520px' }}>
                   Your active collected coupons and seller discounts. Used or expired vouchers are automatically removed!
                 </p>
-
-                {/* Redeem Promo Code Bar */}
-                <form onSubmit={handleClaimCode} style={{ display: 'flex', gap: '10px', maxWidth: '440px' }}>
-                  <input
-                    type="text"
-                    placeholder="Enter Coupon Code (e.g. EID2026)"
-                    value={inputCode}
-                    onChange={(e) => setInputCode(e.target.value)}
-                    style={{
-                      flex: 1,
-                      padding: '10px 16px',
-                      borderRadius: '12px',
-                      border: 'none',
-                      fontSize: '0.88rem',
-                      fontWeight: 700,
-                      outline: 'none',
-                      color: '#0F172A',
-                      fontFamily: 'monospace',
-                      textTransform: 'uppercase'
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    style={{
-                      background: '#FDE047',
-                      color: '#0F172A',
-                      border: 'none',
-                      padding: '10px 20px',
-                      borderRadius: '12px',
-                      fontSize: '0.88rem',
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(253,224,71,0.3)',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    Claim Voucher
-                  </button>
-                </form>
-
-                {claimNotice && (
-                  <div style={{ marginTop: '10px', fontSize: '0.84rem', fontWeight: 700, color: claimNotice.includes('✓') ? '#86EFAC' : '#FCA5A5' }}>
-                    {claimNotice}
-                  </div>
-                )}
               </div>
             </div>
 
@@ -223,52 +209,84 @@ export default function CustomerVouchersPage() {
                   </Link>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '18px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '20px' }}>
                   {activeCollectedVouchers.map((v) => (
                     <div
                       key={v.id}
                       style={{
                         background: '#FFFFFF',
-                        borderRadius: '18px',
-                        border: '2px dashed #2563EB',
-                        padding: '22px',
-                        boxShadow: '0 4px 16px rgba(37,99,235,0.06)',
+                        borderRadius: '16px',
+                        border: '2px solid #F97316',
+                        padding: '18px',
+                        boxShadow: '0 4px 16px rgba(249, 115, 22, 0.08)',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
-                        position: 'relative'
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
-                      {/* Top Code Badge & Status */}
+                      {/* Top Right Orange Ribbon Badge with Checkmark */}
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: '28px',
+                        height: '28px',
+                        background: '#F97316',
+                        clipPath: 'polygon(0 0, 100% 0, 100% 100%)',
+                        display: 'flex',
+                        alignItems: 'top',
+                        justifyContent: 'right'
+                      }}>
+                        <span style={{ color: '#FFF', fontSize: '0.65rem', fontWeight: 900, marginRight: '4px', marginTop: '2px' }}>✓</span>
+                      </div>
+
                       <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 800, background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', padding: '3px 10px', borderRadius: '8px', fontFamily: 'monospace' }}>
-                            <i className="fa-solid fa-ticket" style={{ marginRight: '6px' }}></i>
-                            {v.code}
-                          </span>
-
-                          <span style={{ fontSize: '0.72rem', fontWeight: 800, background: '#DCFCE7', color: '#15803D', padding: '3px 10px', borderRadius: '12px' }}>
-                            ✓ Collected &amp; Ready
-                          </span>
-                        </div>
-
-                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', margin: '0 0 6px 0' }}>
+                        {/* Title Header */}
+                        <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: '#475569', margin: '0 0 12px 0' }}>
                           {v.title}
                         </h3>
 
-                        {/* Huge Discount Amount Display */}
-                        <div style={{ background: '#F8FAFC', padding: '12px', borderRadius: '12px', border: '1px solid #F1F5F9', marginBottom: '10px' }}>
-                          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2563EB' }}>
-                            {v.discount}
-                          </div>
-                          <div style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 600, marginTop: '2px' }}>
-                            {v.minSpend}
-                          </div>
-                        </div>
+                        {/* Ticket Stub Graphic Container */}
+                        <div style={{
+                          background: '#FFF1F2',
+                          borderRadius: '12px',
+                          padding: '14px',
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '14px',
+                          border: '1px solid #FFE4E6',
+                          overflow: 'hidden',
+                          marginBottom: '12px'
+                        }}>
+                          {/* Top & Bottom Notches */}
+                          <div style={{ position: 'absolute', top: '-8px', left: '80px', width: '16px', height: '16px', borderRadius: '50%', background: '#FFFFFF', borderBottom: '1px solid #FFE4E6' }}></div>
+                          <div style={{ position: 'absolute', bottom: '-8px', left: '80px', width: '16px', height: '16px', borderRadius: '50%', background: '#FFFFFF', borderTop: '1px solid #FFE4E6' }}></div>
 
-                        <div style={{ fontSize: '0.78rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <i className="fa-regular fa-clock" style={{ color: '#94A3B8' }}></i>
-                          <span>Valid till {v.validTill}</span>
+                          {/* Left Side: Shop Logo & Name */}
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '70px', flexShrink: 0, borderRight: '1.5px dashed #FDA4AF', paddingRight: '10px' }}>
+                            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', fontWeight: 800, fontSize: '0.8rem', marginBottom: '4px' }}>
+                              🛍️
+                            </div>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#F43F5E', textAlign: 'center', lineHeight: '1.1' }}>
+                              {v.seller || 'Tour Dibo'}
+                            </span>
+                          </div>
+
+                          {/* Right Side: Discount % / Value, Min Spend & Start-End Date Range */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#F43F5E', lineHeight: '1' }}>
+                              {v.type === 'fixed' && v.discountVal ? `${formatPrice(v.discountVal)} OFF` : v.discount}
+                            </div>
+                            <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#F43F5E' }}>
+                              {v.minSpendVal ? `Min. Spend ${formatPrice(v.minSpendVal)}` : (v.minSpend || 'No Min. Spend')}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#F43F5E', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                              <span>Aug 9th 26 - Sep 23rd 26</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

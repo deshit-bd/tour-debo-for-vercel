@@ -628,7 +628,7 @@ export default function VisaDetailPage({ params }) {
                         ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: EID2026)</span>
                       </strong>
                       <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                        Min. Spend ৳5,000 • Valid till 31 Aug 2026
+                        Min. Spend ৳5,000 • Aug 9th 26 - Sep 23rd 26
                       </span>
                     </div>
 
@@ -677,7 +677,7 @@ export default function VisaDetailPage({ params }) {
                         -18% OFF Offered Extra Discount
                       </strong>
                       <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                        Applied directly on visa fee
+                        Min. Spend ৳2,000 • Aug 9th 26 - Sep 23rd 26
                       </span>
                     </div>
 
@@ -812,7 +812,17 @@ export default function VisaDetailPage({ params }) {
               const regProcFee = Math.round(currentProcFee * 1.25);
               const procDiscount = regProcFee - currentProcFee;
               const totalPerApplicant = primaryVisaFeeNum + currentProcFee;
-              const childPerApplicant = Math.round(totalPerApplicant * 0.5);
+              const childPerApplicant = (() => {
+                if (visa.childDiscountType === 'flat' && visa.childPrice && Number(visa.childPrice) > 0) {
+                  return Number(visa.childPrice);
+                }
+                if (visa.childDiscountType === 'percentage' && visa.childDiscountValue) {
+                  const disc = Number(visa.childDiscountValue) || 50;
+                  return Math.round(totalPerApplicant * ((100 - disc) / 100));
+                }
+                if (visa.childPrice && Number(visa.childPrice) > 0) return Number(visa.childPrice);
+                return Math.round(totalPerApplicant * 0.5);
+              })();
               const grandTotal = (totalPerApplicant * applicantCount) + (childPerApplicant * childApplicantCount);
 
               return (
@@ -897,7 +907,9 @@ export default function VisaDetailPage({ params }) {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #CBD5E1' }}>
                       <div>
                         <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block' }}>Child Applicant(s):</span>
-                        <small style={{ fontSize: '0.66rem', color: '#166534', fontWeight: 700 }}>50% Off (Age 2-11 yrs)</small>
+                        <small style={{ fontSize: '0.66rem', color: '#166534', fontWeight: 700 }}>
+                          ৳{childPerApplicant.toLocaleString()} / child (Age 2-11 yrs)
+                        </small>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button className="counter-btn" style={{ width: '26px', height: '26px', padding: 0, cursor: 'pointer' }} onClick={() => setChildApplicantCount(Math.max(0, childApplicantCount - 1))}>−</button>

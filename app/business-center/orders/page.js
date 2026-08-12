@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import SellerSidebar from '../components/SellerSidebar';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const DEFAULT_ORDERS = [
   {
@@ -82,6 +83,7 @@ const STEPS_LIST = [
 ];
 
 export default function OrdersPage() {
+  const { formatPrice } = useCurrency();
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -307,7 +309,7 @@ export default function OrdersPage() {
                           </td>
                           <td style={{ whiteSpace: 'nowrap', fontWeight: 600, color: '#334155' }}>{order.package}</td>
                           <td style={{ whiteSpace: 'nowrap', color: '#475569' }}>{order.date}</td>
-                          <td style={{ color: '#2563EB', fontWeight: 800, whiteSpace: 'nowrap' }}>{(order.amount || '').replace('$', '৳')}</td>
+                          <td style={{ color: '#2563EB', fontWeight: 800, whiteSpace: 'nowrap' }}>{formatPrice(order.amount)}</td>
                           <td style={{ whiteSpace: 'nowrap' }}><span className="status-pill pending">{order.step}</span></td>
                           <td style={{ whiteSpace: 'nowrap' }}>
                             <span className={`status-pill ${order.status === 'Review & Dispute Window' ? 'success' : 'warning'}`}>

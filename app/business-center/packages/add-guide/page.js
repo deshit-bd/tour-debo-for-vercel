@@ -40,9 +40,79 @@ function AddGuideFormContent() {
   const [showAddLangModal, setShowAddLangModal] = useState(false);
 
   // ── 4. Group Variety Pricing Tiers ──
-  const [price1Person, setPrice1Person] = useState('1500');
+  const [dynamicPricingItems, setDynamicPricingItems] = useState([
+    {
+      id: 1,
+      title: 'Single Person Package',
+      regularPrice: '1800',
+      discountType: 'percentage',
+      discountValue: '16',
+    },
+    {
+      id: 2,
+      title: 'Couple Package (2 Persons)',
+      regularPrice: '3000',
+      discountType: 'amount',
+      discountValue: '500',
+    },
+  ]);
+
+  const calculateFinalPrice = (item) => {
+    const reg = parseFloat(String(item.regularPrice).replace(/[^0-9.]/g, '')) || 0;
+    const val = parseFloat(String(item.discountValue).replace(/[^0-9.]/g, '')) || 0;
+    if (item.discountType === 'percentage') {
+      return Math.max(0, Math.round(reg - (reg * val / 100)));
+    } else {
+      return Math.max(0, Math.round(reg - val));
+    }
+  };
+
+  const handlePricingItemChange = (index, field, value) => {
+    const updated = [...dynamicPricingItems];
+    updated[index][field] = value;
+    setDynamicPricingItems(updated);
+  };
+
+  const addPricingItem = () => {
+    setDynamicPricingItems([
+      ...dynamicPricingItems,
+      {
+        id: Date.now(),
+        title: 'Couple Package (2 Persons)',
+        regularPrice: '3000',
+        discountType: 'percentage',
+        discountValue: '10',
+      },
+    ]);
+  };
+
+  const removePricingItem = (index) => {
+    if (dynamicPricingItems.length > 1) {
+      setDynamicPricingItems(dynamicPricingItems.filter((_, idx) => idx !== index));
+    }
+  };
+
+  const [price1Person, setPrice1Person] = useState('1512');
   const [price2Person, setPrice2Person] = useState('2500');
   const [price3Person, setPrice3Person] = useState('3200');
+
+  // ── 4b. Child & Infant Pricing Breakdown ──
+  const [childDiscountType, setChildDiscountType] = useState('percentage'); // 'percentage' | 'flat'
+  const [childDiscountValue, setChildDiscountValue] = useState('50'); // 50% Off
+  const [childPrice, setChildPrice] = useState('750');
+  const [infantPrice, setInfantPrice] = useState('0');
+  const [childPolicyNotes, setChildPolicyNotes] = useState('50% Off for Children aged 2-11 years. Infants under 2 years are free of charge.');
+
+  // Auto-sync Child Policy Notes
+  useEffect(() => {
+    const childDesc = childDiscountType === 'percentage'
+      ? `${childDiscountValue || 0}% Off`
+      : `৳${Number(childPrice || 0).toLocaleString()} fixed rate`;
+    const infantDesc = infantPrice && Number(infantPrice) > 0
+      ? `Infant rate is fixed at ৳${Number(infantPrice).toLocaleString()} for children under 2 years.`
+      : 'Infants under 2 years are free of charge.';
+    setChildPolicyNotes(`${childDesc} for Children aged 2-11 years. ${infantDesc}`);
+  }, [childDiscountType, childDiscountValue, childPrice, infantPrice]);
 
   // ── 5. Bio, Services & Policy ──
   const [description, setDescription] = useState('Explore Old Dhaka heritage lanes, Ahsan Manzil, Buriganga river life, and iconic local food stops with a verified city guide.');
@@ -131,9 +201,22 @@ function AddGuideFormContent() {
         if (item.responseTime) setResponseTime(item.responseTime);
         if (item.experience) setExperience(item.experience);
         if (item.satisfaction) setSatisfaction(item.satisfaction);
+        if (item.pricingItems && Array.isArray(item.pricingItems) && item.pricingItems.length > 0) {
+          setDynamicPricingItems(item.pricingItems);
+        } else if (item.price1Person) {
+          setDynamicPricingItems([
+            { id: 1, title: 'Single Person Package', regularPrice: item.price1Person, discountType: 'amount', discountValue: '0' },
+            { id: 2, title: 'Couple Package (2 Persons)', regularPrice: item.price2Person || '2500', discountType: 'amount', discountValue: '0' },
+          ]);
+        }
         if (item.price1Person) setPrice1Person(item.price1Person);
         if (item.price2Person) setPrice2Person(item.price2Person);
         if (item.price3Person) setPrice3Person(item.price3Person);
+        if (item.childDiscountType) setChildDiscountType(item.childDiscountType);
+        if (item.childDiscountValue) setChildDiscountValue(item.childDiscountValue);
+        if (item.childPrice) setChildPrice(item.childPrice);
+        if (item.infantPrice) setInfantPrice(item.infantPrice);
+        if (item.childPolicyNotes) setChildPolicyNotes(item.childPolicyNotes);
         if (item.description) setDescription(item.description);
         if (item.service) setService(item.service);
         if (item.policy) setPolicy(item.policy);
@@ -155,6 +238,14 @@ function AddGuideFormContent() {
 
     const slugId = editId || `guide-${location.split(',')[0].toLowerCase().trim().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString().slice(-4)}`;
 
+    const formattedPricingItems = dynamicPricingItems.map(item => ({
+      ...item,
+      finalPrice: calculateFinalPrice(item),
+    }));
+
+    const p1 = formattedPricingItems[0] ? formattedPricingItems[0].finalPrice : price1Person;
+    const p2 = formattedPricingItems[1] ? formattedPricingItems[1].finalPrice : price2Person;
+
     const newGuide = {
       id: slugId,
       guideName,
@@ -169,9 +260,15 @@ function AddGuideFormContent() {
       responseTime,
       experience,
       satisfaction,
-      price1Person,
-      price2Person,
-      price3Person,
+      price1Person: String(p1),
+      price2Person: String(p2),
+      price3Person: String(price3Person),
+      pricingItems: formattedPricingItems,
+      childDiscountType,
+      childDiscountValue,
+      childPrice,
+      infantPrice,
+      childPolicyNotes,
       languages,
       languagesList: Object.keys(languages),
       description,
@@ -286,33 +383,14 @@ function AddGuideFormContent() {
               </div>
 
               <div style={{ gridColumn: 'span 2' }}>
-                <label style={lblStyle}>Covered Spots & Key Destinations *</label>
-                <input type="text" value={coveredSpots} onChange={(e) => setCoveredSpots(e.target.value)} required style={inpStyle} placeholder="e.g. Old Dhaka, Ahsan Manzil, Lalbagh Fort & Buriganga River" />
+                <label style={lblStyle}>Covered Spots &amp; Key Destinations *</label>
+                <input type="text" value={coveredSpots} onChange={(e) => setCoveredSpots(e.target.value)} required style={inpStyle} placeholder="e.g. Old Dhaka, Ahsan Manzil, Lalbagh Fort &amp; Buriganga River" />
               </div>
 
               <div style={{ gridColumn: 'span 2' }}>
                 <label style={lblStyle}>Inclusions Badge Summary *</label>
                 <input type="text" value={includedSummary} onChange={(e) => setIncludedSummary(e.target.value)} required style={inpStyle} placeholder="e.g. Flights, hotel, meals and transport included" />
               </div>
-            </div>
-
-            {/* ── Calendar of Tour Date Availability & Maximum Guest Capacity Notice ── */}
-            <div style={{ background: '#F0F9FF', border: '1.5px solid #7DD3FC', padding: '18px 22px', borderRadius: '16px', marginBottom: '28px' }}>
-              <div style={{ fontWeight: '800', color: '#0369A1', fontSize: '0.95rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.1rem' }}>📅</span>
-                <span>Calendar of Tour Date Availability &amp; Capacity Rules:</span>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem', color: '#334155', lineHeight: 1.6 }}>
-                <li>
-                  <strong>Condition 1 (Free / Open):</strong> If you are not booked on a date, any customer can select that date and book your guide package for any destination.
-                </li>
-                <li>
-                  <strong>Condition 2 (Shared Group Booking - Same Location):</strong> If booked for a specific location (e.g., <em>Sajek Valley</em>), another customer wanting to go to <strong>the exact same destination</strong> can book on that date as long as total guests do not exceed your <strong>Maximum Guest Capacity ({maxGuests || 10} Persons Max)</strong>.
-                </li>
-                <li>
-                  <strong>Condition 3 (Locked / Unavailable for Different Location):</strong> If booked for a destination, customers trying to book a <strong>different location</strong> on that same date will see <strong>"🔴 Today slot not vacant (Booked for another location)"</strong>.
-                </li>
-              </ul>
             </div>
 
             {/* ── 2. Language Proficiency (5 Box Rating) ── */}
@@ -358,27 +436,213 @@ function AddGuideFormContent() {
               })}
             </div>
 
-            {/* ── 3. Group Variety Pricing Tiers ── */}
-            <h3 style={secTitle}>3. Group Variety Pricing (Tiers)</h3>
-            <p style={{ fontSize: '0.84rem', color: '#64748B', marginBottom: '16px' }}>Set customized rates based on group size (1 person, 2 persons, or 3+ group).</p>
+            {/* ── 3. Dynamic Pricing Tiers & Discounts ── */}
+            <div style={{ background: '#FAF5FF', border: '1.5px solid #E9D5FF', borderRadius: '16px', padding: '20px', marginBottom: '28px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#6B21A8', margin: '0 0 4px 0' }}>
+                    3. Dynamic Pricing Tiers &amp; Discounts
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: '#6B7280', margin: 0 }}>
+                    Configure pricing options (Single Person Package, Couple Package) with regular price and discounts.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addPricingItem}
+                  style={{
+                    background: '#8B5CF6',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(139,92,246,0.25)',
+                  }}
+                >
+                  + Add Pricing Option Tier
+                </button>
+              </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-              <div style={{ background: '#FEFCE8', padding: '16px', borderRadius: '12px', border: '1px solid #FEF08A' }}>
-                <label style={lblStyle}>1 Person Rate (৳) *</label>
-                <input type="number" value={price1Person} onChange={(e) => setPrice1Person(e.target.value)} required style={inpStyle} placeholder="1500" />
-              </div>
-              <div style={{ background: '#F0FDF4', padding: '16px', borderRadius: '12px', border: '1px solid #BBF7D0' }}>
-                <label style={lblStyle}>2 Persons Variety Rate (৳) *</label>
-                <input type="number" value={price2Person} onChange={(e) => setPrice2Person(e.target.value)} required style={inpStyle} placeholder="2500" />
-              </div>
-              <div style={{ background: '#EFF6FF', padding: '16px', borderRadius: '12px', border: '1px solid #BFDBFE' }}>
-                <label style={lblStyle}>3 Persons Group Variety Rate (৳) *</label>
-                <input type="number" value={price3Person} onChange={(e) => setPrice3Person(e.target.value)} required style={inpStyle} placeholder="3200" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {dynamicPricingItems.map((item, index) => {
+                  const autoFinalPrice = calculateFinalPrice(item);
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #DDD6FE',
+                        borderRadius: '12px',
+                        padding: '14px',
+                        boxShadow: '0 2px 8px rgba(126,34,206,0.04)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ background: '#F3E8FF', color: '#6B21A8', padding: '3px 10px', borderRadius: '16px', fontSize: '0.76rem', fontWeight: 700 }}>
+                          Pricing Option #{index + 1}
+                        </span>
+                        {dynamicPricingItems.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removePricingItem(index)}
+                            style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            Remove Tier ✕
+                          </button>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px', alignItems: 'end' }}>
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Package Title *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Single Person Package"
+                            value={item.title}
+                            onChange={(e) => handlePricingItemChange(index, 'title', e.target.value)}
+                            required
+                            style={{ ...inpStyle, fontSize: '0.84rem', fontWeight: 600 }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Regular Price (৳) *
+                          </label>
+                          <input
+                            type="number"
+                            placeholder="e.g. 1800"
+                            value={item.regularPrice}
+                            onChange={(e) => handlePricingItemChange(index, 'regularPrice', e.target.value)}
+                            required
+                            style={{ ...inpStyle, fontSize: '0.84rem', fontWeight: 600 }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Discount Type *
+                          </label>
+                          <select
+                            value={item.discountType}
+                            onChange={(e) => handlePricingItemChange(index, 'discountType', e.target.value)}
+                            style={{ ...inpStyle, fontSize: '0.84rem', fontWeight: 600, background: '#FFFFFF' }}
+                          >
+                            <option value="percentage">Percentage (%)</option>
+                            <option value="amount">Fixed Amount (৳)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Discount Value ({item.discountType === 'percentage' ? '%' : '৳'}) *
+                          </label>
+                          <input
+                            type="number"
+                            placeholder={item.discountType === 'percentage' ? 'e.g. 10' : 'e.g. 300'}
+                            value={item.discountValue}
+                            onChange={(e) => handlePricingItemChange(index, 'discountValue', e.target.value)}
+                            required
+                            style={{ ...inpStyle, fontSize: '0.84rem', fontWeight: 600 }}
+                          />
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#047857', display: 'block', marginBottom: '4px' }}>
+                            Final Price (৳)
+                          </label>
+                          <div style={{ padding: '8px 12px', background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '8px', fontWeight: 800, color: '#15803D', fontSize: '0.88rem' }}>
+                            ৳{autoFinalPrice.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* ── 4. Bio, Services & Cancellation Policy ── */}
-            <h3 style={secTitle}>4. Tour Itinerary Overview, Services & Policy</h3>
+            {/* ── 4. Child & Infant Pricing Breakdown ── */}
+            <h3 style={secTitle}>4. Child &amp; Infant Pricing Breakdown</h3>
+            <p style={{ fontSize: '0.84rem', color: '#64748B', marginBottom: '16px' }}>Configure separate pricing rules, discounts, and policy notes for children and infants.</p>
+
+            <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: '16px', padding: '20px', marginBottom: '28px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={lblStyle}>Child Pricing Discount Type *</label>
+                  <select
+                    value={childDiscountType}
+                    onChange={(e) => setChildDiscountType(e.target.value)}
+                    style={{ ...inpStyle, fontWeight: 600, background: '#FFFFFF' }}
+                  >
+                    <option value="percentage">Percentage Discount (% Off Adult Rate)</option>
+                    <option value="flat">Fixed Rate (৳ per Child)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={lblStyle}>
+                    {childDiscountType === 'percentage' ? 'Child Discount Percentage (% Off) *' : 'Child Fixed Price (৳) *'}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={childDiscountType === 'percentage' ? 'e.g. 50' : 'e.g. 750'}
+                    value={childDiscountType === 'percentage' ? childDiscountValue : childPrice}
+                    onChange={(e) => {
+                      if (childDiscountType === 'percentage') {
+                        setChildDiscountValue(e.target.value);
+                      } else {
+                        setChildPrice(e.target.value);
+                      }
+                    }}
+                    style={{ ...inpStyle, fontWeight: 600 }}
+                  />
+                  {(() => {
+                    const firstAdultFee = parseFloat(price1Person) || 1500;
+                    const sampleChildFee = childDiscountType === 'percentage'
+                      ? Math.round(firstAdultFee * (1 - (parseFloat(childDiscountValue) || 0) / 100))
+                      : (parseFloat(childPrice) || 0);
+                    return (
+                      <div style={{ marginTop: '6px', fontSize: '0.76rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span>💡 Calculated Child Fee:</span>
+                        <strong style={{ color: '#047857' }}>৳{sampleChildFee.toLocaleString()}</strong>
+                        <span style={{ color: '#6B7280' }}>(from ৳{firstAdultFee.toLocaleString()} Single rate)</span>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div>
+                  <label style={lblStyle}>Infant Price (৳) <span style={{ fontSize: '0.72rem', color: '#6B7280' }}>(Under 2 Yrs)</span> *</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 0"
+                    value={infantPrice}
+                    onChange={(e) => setInfantPrice(e.target.value)}
+                    style={{ ...inpStyle, fontWeight: 600 }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={lblStyle}>Child &amp; Infant Policy Notes</label>
+                <textarea
+                  rows="2"
+                  placeholder="e.g. 50% Off for Children aged 2-11 years. Infants under 2 years are free of charge."
+                  value={childPolicyNotes}
+                  onChange={(e) => setChildPolicyNotes(e.target.value)}
+                  style={{ ...inpStyle, resize: 'vertical' }}
+                />
+              </div>
+            </div>
+
+            {/* ── 5. Bio, Services & Cancellation Policy ── */}
+            <h3 style={secTitle}>5. Tour Itinerary Overview, Services & Policy</h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', marginBottom: '28px' }}>
               <div>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import VisaFilterSidebar, { defaultVisaFilters } from '../components/VisaFilterSidebar';
+import { useCurrency } from '../context/CurrencyContext';
 
 // ─────────────────────────────────────────────────────
 // SINGLE SOURCE OF TRUTH — all prices in BDT
@@ -237,15 +238,13 @@ const ALL_VISAS = [
   },
 ];
 
-function fmtBdt(amount) {
-  return `৳${Number(amount).toLocaleString()}`;
-}
-
 function discountPct(price, old) {
   return Math.round(((old - price) / old) * 100);
 }
 
 export default function StudentVisaPage() {
+  const { formatPrice } = useCurrency();
+  const fmtBdt = (amount) => formatPrice(amount);
   const [filters, setFilters] = useState(defaultVisaFilters);
   const [sortBy, setSortBy] = useState('rating');
   const [favorites, setFavorites] = useState({});

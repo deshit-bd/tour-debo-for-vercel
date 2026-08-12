@@ -372,24 +372,36 @@ export default function SellerMessagesPage() {
                   </div>
                 )}
 
-                {/* Bottom Input Area (Fixed) */}
-                <form onSubmit={handleSendMessage} style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                  <input
-                    type="text"
-                    placeholder="Type / for Quick Replies or write a message..."
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    style={{
-                      flex: 1,
-                      background: '#F1F5F9',
-                      border: 'none',
-                      padding: '12px 18px',
-                      borderRadius: '16px',
-                      fontSize: '0.9rem',
-                      color: '#0F172A',
-                      outline: 'none'
-                    }}
-                  />
+                {/* Bottom Input Area (Multi-line Auto-wrapping Textarea) */}
+                <form onSubmit={handleSendMessage} style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', flexShrink: 0 }}>
+                  <div style={{ flex: 1, position: 'relative', background: '#F8FAFC', borderRadius: '16px', border: '1.5px solid #CBD5E1', padding: '4px 14px' }}>
+                    <textarea
+                      rows={Math.min(4, Math.max(1, messageInput.split('\n').length))}
+                      placeholder="Type / for Quick Replies or write a message..."
+                      value={messageInput}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        background: 'transparent',
+                        border: 'none',
+                        padding: '8px 0',
+                        fontSize: '0.88rem',
+                        color: '#0F172A',
+                        outline: 'none',
+                        resize: 'none',
+                        fontFamily: 'inherit',
+                        lineHeight: 1.45,
+                        maxHeight: '100px',
+                        overflowY: 'auto'
+                      }}
+                    />
+                  </div>
 
                   {/* Attachment Icon Button */}
                   <button

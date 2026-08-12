@@ -147,6 +147,7 @@ export default function GuideDetailPage({ params }) {
 
   const [selectedTier, setSelectedTier] = useState(2); // 1 | 2 | 3
   const [passCount, setPassCount] = useState(1);
+  const [childCount, setChildCount] = useState(0);
   const [voucher, setVoucher] = useState('');
   const [voucherApplied, setVoucherApplied] = useState(false);
   const [useCoins, setUseCoins] = useState(true);
@@ -271,19 +272,39 @@ export default function GuideDetailPage({ params }) {
     cancellation: true,
   });
 
-  const p1 = guide.price1Person || 1500;
-  const p2 = guide.price2Person || 2500;
-  const p3 = guide.price3Person || 3200;
-
-  const tierOptions = [
-    { tier: 1, name: 'Single', label: '1 Person Tour Rate', rate: p1, originalPrice: Math.round(p1 * 1.2) },
-    { tier: 2, name: 'Couple', label: '2 Persons Variety', rate: p2, originalPrice: Math.round(p2 * 1.2) },
-    { tier: 3, name: 'Group', label: '3 Persons Variety', rate: p3, originalPrice: Math.round(p3 * 1.25) },
-  ];
+  const tierOptions = (guide.pricingItems && Array.isArray(guide.pricingItems) && guide.pricingItems.length > 0)
+    ? guide.pricingItems.map((item, idx) => ({
+        tier: idx + 1,
+        name: item.title && item.title.includes('Couple') ? 'Couple' : 'Single',
+        label: item.title || `Option #${idx + 1}`,
+        rate: item.finalPrice || Number(item.regularPrice) || 1500,
+        originalPrice: Number(item.regularPrice) || Math.round((item.finalPrice || 1500) * 1.2),
+      }))
+    : [
+        { tier: 1, name: 'Single', label: 'Single Person Package', rate: Number(guide.price1Person) || 1512, originalPrice: 1800 },
+        { tier: 2, name: 'Couple', label: 'Couple Package (2 Persons)', rate: Number(guide.price2Person) || 2500, originalPrice: 3000 },
+      ];
 
   const selectedOption = tierOptions.find((o) => o.tier === selectedTier) || tierOptions[1];
-  const totalPrice = selectedOption.rate * passCount;
-  const totalOriginalPrice = selectedOption.originalPrice * passCount;
+
+  const perPersonAdultRate = Math.round(selectedOption.rate / (selectedOption.tier === 2 ? 2 : (selectedOption.tier === 3 ? 3 : 1)));
+
+  const childRatePerApplicant = (() => {
+    if (guide.childDiscountType === 'flat' && guide.childPrice && Number(guide.childPrice) > 0) {
+      return Number(guide.childPrice);
+    }
+    if (guide.childDiscountType === 'percentage' && guide.childDiscountValue) {
+      const disc = Number(guide.childDiscountValue) || 50;
+      return Math.round(perPersonAdultRate * ((100 - disc) / 100));
+    }
+    if (guide.childPrice && Number(guide.childPrice) > 0) return Number(guide.childPrice);
+    return Math.round(perPersonAdultRate * 0.5);
+  })();
+
+  const adultTotalPrice = selectedOption.rate * passCount;
+  const childTotalPrice = childRatePerApplicant * childCount;
+  const totalPrice = adultTotalPrice + childTotalPrice;
+  const totalOriginalPrice = (selectedOption.originalPrice * passCount) + (Math.round(childRatePerApplicant * 1.2) * childCount);
 
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newRating, setNewRating] = useState(5);
@@ -340,7 +361,7 @@ export default function GuideDetailPage({ params }) {
       return;
     }
     // Navigate directly to Checkout / Booking Confirmation Page with date & capacity info
-    router.push(`/checkout?type=guide&guide=${encodeURIComponent(guide.guideName)}&title=${encodeURIComponent(guide.title)}&variety=${encodeURIComponent(selectedOption.name)}&date=${selectedTourDate}&passes=${passCount}&price=${totalPrice}`);
+    router.push(`/checkout?type=guide&guide=${encodeURIComponent(guide.guideName)}&title=${encodeURIComponent(guide.title)}&variety=${encodeURIComponent(selectedOption.name)}&date=${selectedTourDate}&passes=${passCount}&childs=${childCount}&price=${totalPrice}`);
   };
 
   return (
@@ -415,7 +436,7 @@ export default function GuideDetailPage({ params }) {
                         ৳ 300 OFF <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: GUIDE2026)</span>
                       </strong>
                       <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                        Min. Spend ৳2,000 • Valid till 31 Aug 2026
+                        Min. Spend ৳2,000 • Aug 9th 26 - Sep 23rd 26
                       </span>
                     </div>
 
@@ -461,7 +482,7 @@ export default function GuideDetailPage({ params }) {
                         -15% OFF Special Guide Discount
                       </strong>
                       <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                        Applied directly on booking fare
+                        Min. Spend ৳2,000 • Aug 9th 26 - Sep 23rd 26
                       </span>
                     </div>
 
@@ -470,7 +491,7 @@ export default function GuideDetailPage({ params }) {
                         background: '#DCFCE7',
                         color: '#15803D',
                         border: '1px solid #86EFAC',
-                        padding: '3px 8px',
+                        padding: '3px 9px',
                         borderRadius: '12px',
                         fontSize: '0.72rem',
                         fontWeight: 800,
@@ -1023,7 +1044,82 @@ export default function GuideDetailPage({ params }) {
                     </div>
                   );
                 })}
+
+                {/* Child Applicant Counter Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#F8FAFC', borderRadius: '10px', border: '1px dashed #CBD5E1', marginTop: '4px' }}>
+                  <div>
+                    <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#334155', display: 'block' }}>
+                      Child Applicant (Age 2-11 Yrs)
+                    </span>
+                    <small style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700' }}>
+                      ৳{childRatePerApplicant.toLocaleString()} / child ({guide.childDiscountType === 'flat' ? 'Fixed Fee' : `${guide.childDiscountValue || 50}% Off`})
+                    </small>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setChildCount((prev) => Math.max(0, prev - 1))}
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: '#DBEAFE',
+                        color: '#1D4ED8',
+                        cursor: 'pointer',
+                        fontWeight: '900',
+                        fontSize: '0.95rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        lineHeight: 1,
+                      }}
+                    >
+                      -
+                    </button>
+                    <span style={{ fontWeight: '800', minWidth: '14px', textAlign: 'center', fontSize: '0.88rem', color: '#1E40AF' }}>
+                      {childCount}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setChildCount((prev) => prev + 1)}
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: '#2563EB',
+                        color: '#FFFFFF',
+                        cursor: 'pointer',
+                        fontWeight: '900',
+                        fontSize: '0.95rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        lineHeight: 1,
+                        boxShadow: '0 2px 4px rgba(37,99,235,0.2)',
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
+
+              {/* Price Breakdown Summary Badge when Child > 0 */}
+              {childCount > 0 && (
+                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '8px 12px', borderRadius: '8px', fontSize: '0.78rem', color: '#166534', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                    <span>Adult Rate ({passCount}x {selectedOption.name}):</span>
+                    <strong>৳{adultTotalPrice.toLocaleString()}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Child Rate ({childCount}x):</span>
+                    <strong>৳{childTotalPrice.toLocaleString()}</strong>
+                  </div>
+                </div>
+              )}
 
               {/* Book Guide Button */}
               <button

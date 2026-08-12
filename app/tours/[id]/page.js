@@ -421,7 +421,7 @@ export default function TourDetailPage() {
                     ৳ 500 off <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534' }}>(Code: EID2026)</span>
                   </strong>
                   <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                    Min. Spend ৳5,000 • Valid till 31 Aug 2026
+                    Min. Spend ৳5,000 • Aug 9th 26 - Sep 23rd 26
                   </span>
                 </div>
 
@@ -451,7 +451,7 @@ export default function TourDetailPage() {
               </div>
             </div>
 
-            {/* 5. Special Package Direct Discount Box (To the Right of Voucher Box) */}
+            {/* 5. Special Package Direct Discount Box */}
             {(tour.discountTag || tour.specialDiscount || true) && (
               <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '4px' }}>
                 <div
@@ -471,7 +471,7 @@ export default function TourDetailPage() {
                       {tour.discountTag || '-22% OFF'} Offered Extra Discount
                     </strong>
                     <span style={{ fontSize: '0.66rem', color: '#14532D', fontWeight: 600, marginTop: '2px' }}>
-                      Applied directly on package price
+                      Min. Spend ৳2,000 • Aug 9th 26 - Sep 23rd 26
                     </span>
                   </div>
 
@@ -1183,8 +1183,9 @@ export default function TourDetailPage() {
                   return `৳${priceVal.toLocaleString()}`;
                 })()}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#60A5FA', marginTop: '2px' }}>
-                {tour.discount?.expiry && tour.discount.expiry !== '31 Dec 2026' ? `Valid till ${tour.discount.expiry}` : 'Valid till Offer Expiration'}
+              <div style={{ fontSize: '0.74rem', color: '#2563EB', fontWeight: '700', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>📅 Valid Range:</span>
+                <span>Aug 9th 26 - Sep 23rd 26</span>
               </div>
             </div>
 

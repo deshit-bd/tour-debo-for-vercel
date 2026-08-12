@@ -5,8 +5,10 @@ import Link from 'next/link';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import SellerSidebar from '../components/SellerSidebar';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export default function ManagePackagesPage() {
+  const { formatPrice } = useCurrency();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
 
@@ -118,8 +120,8 @@ export default function ManagePackagesPage() {
         <div className="seller-layout-grid">
           <SellerSidebar />
 
-          <div className="seller-main-content">
-            <div className="seller-card">
+          <div className="seller-main-content" style={{ minWidth: 0, width: '100%' }}>
+            <div className="seller-card" style={{ minWidth: 0, width: '100%', overflow: 'hidden' }}>
               <div className="seller-card-title">
                 <div>
                   <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Manage Tour Packages</h2>
@@ -153,70 +155,76 @@ export default function ManagePackagesPage() {
                 </select>
               </div>
 
-              {/* Package Table */}
-              <table className="seller-table">
-                <thead>
-                  <tr>
-                    <th>Package ID</th>
-                    <th>Package Title</th>
-                    <th>Category</th>
-                    <th>Booking Type</th>
-                    <th>Regular Price</th>
-                    <th>Discount Price</th>
-                    <th>Sales</th>
-                    <th>Rating</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPackages.map(pkg => (
-                    <tr key={pkg.id}>
-                      <td style={{ fontWeight: 700, color: '#64748B', fontSize: '0.85rem' }}>
-                        {pkg.pkgId}
-                      </td>
-                      <td style={{ fontWeight: 600 }}>
-                        <div>{pkg.title}</div>
-                        {pkg.isCustom && (
-                          <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 600, display: 'inline-block', marginTop: '2px' }}>
-                            Published Package
-                          </span>
-                        )}
-                      </td>
-                      <td>{pkg.type}</td>
-                      <td><span className="status-pill pending">{pkg.mode}</span></td>
-                      <td style={{ color: '#64748B', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 500 }}>{pkg.regularPrice}</td>
-                      <td style={{ color: '#16A34A', fontWeight: 700 }}>{pkg.discountPrice}</td>
-                      <td>{pkg.sales} Bookings</td>
-                      <td>{pkg.rating}</td>
-                      <td><span className="status-pill success">{pkg.status}</span></td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <Link
-                            href={`/business-center/packages/add?edit=${pkg.id}`}
-                            style={{ background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', textDecoration: 'none' }}
-                          >
-                            Edit ✏️
-                          </Link>
-                          <Link
-                            href={`/tours/${pkg.id}`}
-                            target="_blank"
-                            style={{ background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', textDecoration: 'none' }}
-                          >
-                            View Live
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(pkg.id, pkg.isCustom)}
-                            style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '6px 12px', borderRadius: '8px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+              {/* Package Table with Forced Horizontal Scroll & Clean Action Icons */}
+              <div style={{ width: '100%', overflowX: 'auto', border: '1px solid #E2E8F0', borderRadius: '14px', background: '#FFFFFF', paddingBottom: '6px' }}>
+                <table className="seller-table" style={{ width: '100%', minWidth: '1250px', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ padding: '14px 16px', minWidth: '100px' }}>Package ID</th>
+                      <th style={{ padding: '14px 16px', minWidth: '220px' }}>Package Title</th>
+                      <th style={{ padding: '14px 16px', minWidth: '130px' }}>Category</th>
+                      <th style={{ padding: '14px 16px', minWidth: '130px' }}>Booking Type</th>
+                      <th style={{ padding: '14px 16px', minWidth: '120px' }}>Regular Price</th>
+                      <th style={{ padding: '14px 16px', minWidth: '120px' }}>Discount Price</th>
+                      <th style={{ padding: '14px 16px', minWidth: '110px' }}>Sales</th>
+                      <th style={{ padding: '14px 16px', minWidth: '90px' }}>Rating</th>
+                      <th style={{ padding: '14px 16px', minWidth: '100px' }}>Status</th>
+                      <th style={{ padding: '14px 16px', minWidth: '120px', textAlign: 'right' }}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredPackages.map(pkg => (
+                      <tr key={pkg.id}>
+                        <td style={{ padding: '14px 16px', fontWeight: 700, color: '#64748B', fontSize: '0.85rem' }}>
+                          {pkg.pkgId}
+                        </td>
+                        <td style={{ padding: '14px 16px', fontWeight: 600 }}>
+                          <div>{pkg.title}</div>
+                          {pkg.isCustom && (
+                            <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '10px', fontWeight: 600, display: 'inline-block', marginTop: '2px' }}>
+                              Published Package
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>{pkg.type}</td>
+                        <td style={{ padding: '14px 16px' }}><span className="status-pill pending">{pkg.mode}</span></td>
+                        <td style={{ padding: '14px 16px', color: '#64748B', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 500 }}>{formatPrice(pkg.regularPrice)}</td>
+                        <td style={{ padding: '14px 16px', color: '#16A34A', fontWeight: 700 }}>{formatPrice(pkg.discountPrice)}</td>
+                        <td style={{ padding: '14px 16px' }}>{pkg.sales} Bookings</td>
+                        <td style={{ padding: '14px 16px' }}>{pkg.rating}</td>
+                        <td style={{ padding: '14px 16px' }}><span className="status-pill success">{pkg.status}</span></td>
+                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Link
+                              href={`/tours/${pkg.id}`}
+                              target="_blank"
+                              title="View Package"
+                              style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', color: '#1D4ED8', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <i className="fa-solid fa-eye" style={{ fontSize: '0.85rem' }}></i>
+                            </Link>
+                            <Link
+                              href={`/business-center/packages/add?edit=${pkg.id}`}
+                              title="Edit Package"
+                              style={{ background: '#FEF3C7', border: '1px solid #FDE68A', color: '#D97706', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <i className="fa-solid fa-pen-to-square" style={{ fontSize: '0.85rem' }}></i>
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(pkg.id, pkg.isCustom)}
+                              title="Delete Package"
+                              style={{ background: '#FEE2E2', border: '1px solid #FECACA', color: '#DC2626', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                              <i className="fa-solid fa-trash-can" style={{ fontSize: '0.85rem' }}></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

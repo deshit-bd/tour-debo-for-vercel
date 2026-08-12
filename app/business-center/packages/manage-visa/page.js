@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import SellerSidebar from '../../components/SellerSidebar';
+import { useCurrency } from '../../../context/CurrencyContext';
 
 const SAMPLE_VISAS = [
   { id: 'visa-usa-001', country: 'United States', capital: 'Washington, D.C.', visaType: 'Tourist Visa', validity: '90 Days', entryType: 'Single Entry', processingTime: '5-7 Working Days', visaFee: '2,400', processingFee: '36,000', applications: 210, rating: '4.9', status: 'Active', isCustom: false },
@@ -27,6 +28,7 @@ const TYPE_COLORS = {
 };
 
 export default function ManageVisaPage() {
+  const { formatPrice } = useCurrency();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
   const [filterStatus, setFilterStatus] = useState('All');
@@ -98,7 +100,7 @@ export default function ManageVisaPage() {
       <main className="figma-main-content seller-main-wrapper">
         <div className="seller-layout-grid">
           <SellerSidebar />
-          <div className="seller-main-content">
+          <div className="seller-main-content" style={{ minWidth: 0, width: '100%' }}>
 
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
@@ -149,7 +151,7 @@ export default function ManageVisaPage() {
             </div>
 
             {/* Table */}
-            <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden', minWidth: 0, width: '100%' }}>
               {filtered.length === 0 ? (
                 <div style={{ padding: '60px 20px', textAlign: 'center', color: '#64748B' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '12px' }}>&#127760;</div>
@@ -160,8 +162,8 @@ export default function ManageVisaPage() {
                   </Link>
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div style={{ overflowX: 'auto', width: '100%' }}>
+                  <table style={{ width: '100%', minWidth: '1150px', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
                         <th style={thStyle}>Visa ID</th>
@@ -174,7 +176,7 @@ export default function ManageVisaPage() {
                         <th style={thStyle}>Applications</th>
                         <th style={thStyle}>Rating</th>
                         <th style={thStyle}>Status</th>
-                        <th style={{ ...thStyle, textAlign: 'center' }}>Actions</th>
+                        <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -204,8 +206,8 @@ export default function ManageVisaPage() {
                             </td>
                             <td style={{ ...tdStyle, whiteSpace: 'nowrap', fontSize: '0.82rem', color: '#64748B' }}>{v.processingTime}</td>
                             <td style={tdStyle}>
-                              <div style={{ fontWeight: '700', color: '#0F172A' }}>&#2547;{v.visaFee}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>+&#2547;{v.processingFee} fee</div>
+                              <div style={{ fontWeight: '700', color: '#0F172A' }}>{formatPrice(v.visaFee)}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>+{formatPrice(v.processingFee)} fee</div>
                             </td>
                             <td style={{ ...tdStyle, fontWeight: '700', color: '#2563EB' }}>{(v.applications || 0).toLocaleString()}</td>
                             <td style={{ ...tdStyle, color: '#F59E0B', fontWeight: '700' }}>&#9733; {v.rating}</td>
@@ -224,14 +226,22 @@ export default function ManageVisaPage() {
                                 {v.status === 'Active' ? 'Active' : 'Paused'}
                               </button>
                             </td>
-                            <td style={{ ...tdStyle, textAlign: 'center' }}>
-                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                            <td style={{ ...tdStyle, textAlign: 'right' }}>
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
                                 <Link
-                                  href={'/business-center/packages/add-visa?edit=' + v.id}
-                                  style={{ background: '#EFF6FF', color: '#2563EB', border: '1.5px solid #BFDBFE', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', textDecoration: 'none', whiteSpace: 'nowrap' }}
-                                  title="Edit this visa"
+                                  href={`/visa/${v.id}`}
+                                  target="_blank"
+                                  title="View Visa Details"
+                                  style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', color: '#1D4ED8', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
-                                  Edit
+                                  <i className="fa-solid fa-eye" style={{ fontSize: '0.85rem' }}></i>
+                                </Link>
+                                <Link
+                                  href={`/business-center/packages/add-visa?edit=${v.id}`}
+                                  title="Edit Visa Service"
+                                  style={{ background: '#FEF3C7', border: '1px solid #FDE68A', color: '#D97706', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                  <i className="fa-solid fa-pen-to-square" style={{ fontSize: '0.85rem' }}></i>
                                 </Link>
                                 {deleteConfirmId === v.id ? (
                                   <div style={{ display: 'flex', gap: '4px' }}>
@@ -239,8 +249,8 @@ export default function ManageVisaPage() {
                                     <button onClick={() => setDeleteConfirmId(null)} style={{ background: '#F1F5F9', color: '#475569', border: '1px solid #E2E8F0', padding: '6px 10px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer' }}>No</button>
                                   </div>
                                 ) : (
-                                  <button onClick={() => setDeleteConfirmId(v.id)} style={{ background: '#FEF2F2', color: '#DC2626', border: '1.5px solid #FECACA', padding: '6px 10px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }} title="Delete this visa">
-                                    Delete
+                                  <button onClick={() => setDeleteConfirmId(v.id)} style={{ background: '#FEE2E2', border: '1px solid #FECACA', color: '#DC2626', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} title="Delete this visa">
+                                    <i className="fa-solid fa-trash-can" style={{ fontSize: '0.85rem' }}></i>
                                   </button>
                                 )}
                               </div>

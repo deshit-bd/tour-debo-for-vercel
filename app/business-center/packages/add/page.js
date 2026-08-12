@@ -93,10 +93,24 @@ export default function AddPackagePage() {
   const [minTravelers, setMinTravelers] = useState(1);
   const [maxTravelers, setMaxTravelers] = useState(15);
 
-  // Section 7: Pricing Breakdown
-  const [childPrice, setChildPrice] = useState('');
-  const [infantPrice, setInfantPrice] = useState('');
-  const [groupDiscount, setGroupDiscount] = useState('');
+  // Section 7: Pricing Breakdown & Child Policy
+  const [childDiscountType, setChildDiscountType] = useState('percentage'); // 'percentage' | 'flat'
+  const [childDiscountValue, setChildDiscountValue] = useState('50'); // 50% Off
+  const [childPrice, setChildPrice] = useState('5000');
+  const [infantPrice, setInfantPrice] = useState('1500');
+  const [groupDiscount, setGroupDiscount] = useState('10% Off for 5+ Guests');
+  const [childPolicyNotes, setChildPolicyNotes] = useState('50% Off for Children aged 2-11 years. Infant fee is fixed at ৳1,500 for children under 2 years.');
+
+  // Auto-sync Child Policy Notes
+  useEffect(() => {
+    const childDesc = childDiscountType === 'percentage'
+      ? `${childDiscountValue || 0}% Off`
+      : `৳${Number(childPrice || 0).toLocaleString()} fixed rate`;
+    const infantDesc = infantPrice
+      ? `Infant fee is fixed at ৳${Number(infantPrice || 0).toLocaleString()} for children under 2 years.`
+      : 'Infants under 2 years apply free or nominal fee.';
+    setChildPolicyNotes(`${childDesc} for Children aged 2-11 years. ${infantDesc}`);
+  }, [childDiscountType, childDiscountValue, childPrice, infantPrice]);
 
   // Section 22: Publish Settings & Status
   const [publishStatus, setPublishStatus] = useState('Published'); // Draft | Pending Review | Published | Rejected
@@ -326,6 +340,12 @@ export default function AddPackagePage() {
         if (pkgToEdit.desc) setPackageDetails(pkgToEdit.desc);
         if (pkgToEdit.whatsIncluded) setWhatsIncluded(pkgToEdit.whatsIncluded);
         if (pkgToEdit.whatsExcluded) setWhatsExcluded(pkgToEdit.whatsExcluded);
+        if (pkgToEdit.childDiscountType) setChildDiscountType(pkgToEdit.childDiscountType);
+        if (pkgToEdit.childDiscountValue) setChildDiscountValue(pkgToEdit.childDiscountValue);
+        if (pkgToEdit.childPrice) setChildPrice(pkgToEdit.childPrice);
+        if (pkgToEdit.infantPrice) setInfantPrice(pkgToEdit.infantPrice);
+        if (pkgToEdit.groupDiscount) setGroupDiscount(pkgToEdit.groupDiscount);
+        if (pkgToEdit.childPolicyNotes) setChildPolicyNotes(pkgToEdit.childPolicyNotes);
         if (pkgToEdit.cancellationPolicy) setCancellationPolicy(pkgToEdit.cancellationPolicy);
         if (pkgToEdit.termsConditions) setTermsConditions(pkgToEdit.termsConditions);
         if (pkgToEdit.travelTips) setTravelTips(pkgToEdit.travelTips);
@@ -375,6 +395,12 @@ export default function AddPackagePage() {
       status: 'Active',
       sales: 0,
       pricingItems: formattedPricingItems,
+      childDiscountType,
+      childDiscountValue,
+      childPrice,
+      infantPrice,
+      groupDiscount,
+      childPolicyNotes,
       addOns: optionalAddOns,
       duration: `${daysCount} Days / ${nightsCount} Nights`,
       image: coverImagePreview || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
@@ -1358,11 +1384,11 @@ export default function AddPackagePage() {
                                   </label>
                                   <input
                                     type="text"
-                                    placeholder="e.g. Single Person / Deluxe Suite"
+                                    placeholder="e.g. Single Person Package"
                                     value={item.title}
                                     onChange={(e) => handlePricingItemChange(index, 'title', e.target.value)}
                                     required
-                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 500 }}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
                                   />
                                 </div>
 
@@ -1590,41 +1616,90 @@ export default function AddPackagePage() {
                     />
                   </div>
 
-                  {/* 7. PRICING & DISCOUNTS (SRS Section 7) */}
+                  {/* 7. Child, Infant & Group Pricing Breakdown */}
                   <div className="seller-form-group full-width" style={{ marginTop: '20px' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1E293B', borderBottom: '2px solid #E2E8F0', paddingBottom: '8px' }}>
-                      7. Child, Infant & Group Pricing
-                    </h3>
-                  </div>
+                    <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: '16px', padding: '20px' }}>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#166534', margin: '0 0 6px 0' }}>
+                        7. Child &amp; Infant Pricing Breakdown
+                      </h3>
+                      <p style={{ fontSize: '0.82rem', color: '#4B5563', margin: '0 0 16px 0' }}>
+                        Configure separate pricing rules, discounts, and policy notes for children and infants.
+                      </p>
 
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Child Price (৳)</label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 5000"
-                      value={childPrice}
-                      onChange={(e) => setChildPrice(e.target.value)}
-                    />
-                  </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                        <div>
+                          <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Child Pricing Discount Type *
+                          </label>
+                          <select
+                            value={childDiscountType}
+                            onChange={(e) => setChildDiscountType(e.target.value)}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600, background: '#FFFFFF' }}
+                          >
+                            <option value="percentage">Percentage Discount (% Off Adult Rate)</option>
+                            <option value="flat">Fixed Rate (৳ per Child)</option>
+                          </select>
+                        </div>
 
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Infant Price (৳)</label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 1500"
-                      value={infantPrice}
-                      onChange={(e) => setInfantPrice(e.target.value)}
-                    />
-                  </div>
+                        <div>
+                          <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            {childDiscountType === 'percentage' ? 'Child Discount Percentage (% Off) *' : 'Child Fixed Price (৳) *'}
+                          </label>
+                          <input
+                            type="number"
+                            placeholder={childDiscountType === 'percentage' ? 'e.g. 50' : 'e.g. 5000'}
+                            value={childDiscountType === 'percentage' ? childDiscountValue : childPrice}
+                            onChange={(e) => {
+                              if (childDiscountType === 'percentage') {
+                                setChildDiscountValue(e.target.value);
+                              } else {
+                                setChildPrice(e.target.value);
+                              }
+                            }}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                          />
+                          {(() => {
+                            const firstAdultFee = parseFloat(dynamicPricingItems[0]?.regularPrice) || 0;
+                            const sampleChildFee = childDiscountType === 'percentage'
+                              ? Math.round(firstAdultFee * (1 - (parseFloat(childDiscountValue) || 0) / 100))
+                              : (parseFloat(childPrice) || 0);
+                            return (
+                              <div style={{ marginTop: '6px', fontSize: '0.76rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span>💡 Calculated Child Fee:</span>
+                                <strong style={{ color: '#047857' }}>৳{sampleChildFee.toLocaleString()}</strong>
+                                {firstAdultFee > 0 && <span style={{ color: '#6B7280' }}>(from ৳{firstAdultFee.toLocaleString()} Adult rate)</span>}
+                              </div>
+                            );
+                          })()}
+                        </div>
 
-                  <div className="seller-form-group">
-                    <label style={{ fontWeight: 600 }}>Group Discount (%)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 10% Off for 5+ Guests"
-                      value={groupDiscount}
-                      onChange={(e) => setGroupDiscount(e.target.value)}
-                    />
+                        <div>
+                          <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                            Infant Price (৳) <span style={{ fontSize: '0.72rem', color: '#6B7280' }}>(Under 2 Yrs)</span> *
+                          </label>
+                          <input
+                            type="number"
+                            placeholder="e.g. 1500"
+                            value={infantPrice}
+                            onChange={(e) => setInfantPrice(e.target.value)}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 600 }}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '4px' }}>
+                          Child &amp; Infant Policy Notes
+                        </label>
+                        <textarea
+                          rows="2"
+                          placeholder="e.g. 50% Off for Children aged 2-11 years. Infant fee is fixed at ৳1,500 for children under 2 years."
+                          value={childPolicyNotes}
+                          onChange={(e) => setChildPolicyNotes(e.target.value)}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', outline: 'none', resize: 'vertical' }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
                   {/* 22. PUBLISH SETTINGS & STATUS (SRS Section 22) */}

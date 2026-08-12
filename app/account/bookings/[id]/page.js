@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import AccountSidebar from '../../../components/AccountSidebar';
+import { useCurrency } from '../../../context/CurrencyContext';
 import { generateTicketPDF } from '../../../utils/pdfGenerator';
 
 const SAMPLE_BOOKINGS = {
@@ -63,6 +64,7 @@ const SAMPLE_BOOKINGS = {
 };
 
 export default function BookingDetailsPage() {
+  const { formatPrice } = useCurrency();
   const params = useParams();
   const router = useRouter();
   const bookingId = params?.id || '8849201948102';
@@ -177,7 +179,7 @@ export default function BookingDetailsPage() {
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff' }}>{booking.amount}</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff' }}>{formatPrice(booking.amount)}</div>
                   <span style={{ background: booking.status === 'Completed' ? '#10B981' : '#F59E0B', color: '#ffffff', padding: '4px 14px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: 800, display: 'inline-block', marginTop: '6px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                     ✓ {booking.status}
                   </span>

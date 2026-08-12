@@ -61,7 +61,7 @@ function SidebarInner() {
             </li>
             <li>
               <Link href="/account/points" {...navProps} style={{ textDecoration: 'none', fontSize: '0.82rem', fontWeight: isMyPointsActive ? '700' : '500', color: isMyPointsActive ? '#2563EB' : '#64748B' }}>
-                My Points
+                My Points &amp; Referrals
               </Link>
             </li>
             <li>

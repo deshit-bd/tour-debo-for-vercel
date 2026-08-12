@@ -169,8 +169,8 @@ function AddVisaFormContent() {
 
   // ── Section 3: Pricing Policy (Same as Tour Package: Dynamic Options & Discount Calculator) ──
   const [dynamicPricingItems, setDynamicPricingItems] = useState([
-    { id: 1, title: '30 Days Single Entry', regularPrice: '6500', discountType: 'percentage', discountValue: '10' },
-    { id: 2, title: '90 Days Multiple Entry', regularPrice: '18500', discountType: 'amount', discountValue: '2000' }
+    { id: 1, title: '30 Days', regularPrice: '6500', discountType: 'percentage', discountValue: '10' },
+    { id: 2, title: '90 Days', regularPrice: '18500', discountType: 'amount', discountValue: '2000' }
   ]);
 
   const addPricingItem = () => {
@@ -207,7 +207,25 @@ function AddVisaFormContent() {
     }
   };
 
-  // ── Section 4: Required Documents ──
+  // ── Section 4: Child & Infant Pricing Breakdown ──
+  const [childDiscountType, setChildDiscountType] = useState('percentage'); // 'percentage' | 'flat'
+  const [childDiscountValue, setChildDiscountValue] = useState('50'); // 50% Off
+  const [childPrice, setChildPrice] = useState('3250');
+  const [infantPrice, setInfantPrice] = useState('1000');
+  const [childPolicyNotes, setChildPolicyNotes] = useState('50% Off for Children aged 2-11 years. Infant processing fee is fixed at ৳1,000 for children under 2 years.');
+
+  // Auto-sync Child Policy Notes string dynamically when discount or price values change
+  useEffect(() => {
+    const childDesc = childDiscountType === 'percentage'
+      ? `${childDiscountValue || 0}% Off`
+      : `৳${Number(childPrice || 0).toLocaleString()} fixed rate`;
+    const infantDesc = infantPrice
+      ? `Infant processing fee is fixed at ৳${Number(infantPrice).toLocaleString()} for children under 2 years.`
+      : 'Infants under 2 years apply free or nominal fee.';
+    setChildPolicyNotes(`${childDesc} for Children aged 2-11 years. ${infantDesc}`);
+  }, [childDiscountType, childDiscountValue, childPrice, infantPrice]);
+
+  // ── Section 5: Required Documents ──
   const [stickerStudentDocs, setStickerStudentDocs] = useState('07 Months Valid Passport With Old Passport (If have)\nRecent 2 copy photograph taken in last 3 months (white background only, photo size 35 mm X 45 mm)\nID card (Student) one photocopy both sides\nLeave letter from school or college original copy\nParents bank statement (Last 06 months) and solvency certificate with minimum balance BDT 70,000 for each applicant');
   const [generalDocs, setGeneralDocs] = useState('Filled visa application form\nValid passport and previous travel history copies\nBank statement and sponsor documents\nAdmission or invitation letter where applicable');
 
@@ -283,6 +301,11 @@ function AddVisaFormContent() {
           })));
         }
 
+        if (item.childDiscountType) setChildDiscountType(item.childDiscountType);
+        if (item.childDiscountValue) setChildDiscountValue(item.childDiscountValue);
+        if (item.childPrice) setChildPrice(item.childPrice);
+        if (item.infantPrice) setInfantPrice(item.infantPrice);
+        if (item.childPolicyNotes) setChildPolicyNotes(item.childPolicyNotes);
         if (item.stickerStudentDocs) setStickerStudentDocs(item.stickerStudentDocs);
         if (item.generalDocs) setGeneralDocs(item.generalDocs);
         if (item.description) setDescription(item.description);
@@ -322,6 +345,11 @@ function AddVisaFormContent() {
       processingTime: processingTime || '5-7 Working Days',
       visaFee: visaFee || '0',
       processingFee: processingFee || firstCalculatedPrice.toString(),
+      childDiscountType,
+      childDiscountValue,
+      childPrice,
+      infantPrice,
+      childPolicyNotes,
       dynamicPricingItems: dynamicPricingItems,
       matrixItems: dynamicPricingItems.map(item => ({
         id: item.id,
@@ -592,7 +620,6 @@ function AddVisaFormContent() {
                                 onChange={(e) => {
                                   const entry = e.target.value;
                                   handlePricingItemChange(index, 'entryType', entry);
-                                  // Update title entry suffix if needed
                                   if (!item.title) {
                                     handlePricingItemChange(index, 'title', `30 Days ${entry}`);
                                   }
@@ -605,14 +632,14 @@ function AddVisaFormContent() {
                               </select>
                             </div>
 
-                            {/* Validity & Entry Title Input */}
+                            {/* Validity Title Input */}
                             <div>
                               <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '4px' }}>
-                                Validity &amp; Entry Title *
+                                Validity *
                               </label>
                               <input
                                 type="text"
-                                placeholder="e.g. 30 Days Single Entry"
+                                placeholder="e.g. 30 Days"
                                 value={item.title}
                                 onChange={(e) => handlePricingItemChange(index, 'title', e.target.value)}
                                 required
@@ -682,8 +709,84 @@ function AddVisaFormContent() {
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
 
-              {/* ── 4. Required Documents ── */}
-              <h3 style={sec}>4. Required Documents</h3>
+              {/* ── 4. Child & Infant Pricing Breakdown ── */}
+              <h3 style={sec}>4. Child &amp; Infant Pricing Breakdown</h3>
+              <p style={subsec}>Configure separate pricing, discounts, and policy rules for child and infant applicants.</p>
+
+              <div style={{ background: '#F0FDF4', border: '1.5px solid #BBF7D0', borderRadius: '16px', padding: '20px', marginBottom: '28px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={lbl}>Child Pricing Discount Type *</label>
+                    <select
+                      value={childDiscountType}
+                      onChange={(e) => setChildDiscountType(e.target.value)}
+                      style={{ ...inp, fontWeight: 600 }}
+                    >
+                      <option value="percentage">Percentage Discount (% Off Adult Rate)</option>
+                      <option value="flat">Fixed Rate (৳ per Child)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={lbl}>
+                      {childDiscountType === 'percentage' ? 'Child Discount Percentage (% Off) *' : 'Child Fixed Price (৳) *'}
+                    </label>
+                    <input
+                      type="number"
+                      placeholder={childDiscountType === 'percentage' ? 'e.g. 50' : 'e.g. 3250'}
+                      value={childDiscountType === 'percentage' ? childDiscountValue : childPrice}
+                      onChange={(e) => {
+                        if (childDiscountType === 'percentage') {
+                          setChildDiscountValue(e.target.value);
+                        } else {
+                          setChildPrice(e.target.value);
+                        }
+                      }}
+                      style={{ ...inp, fontWeight: 600 }}
+                    />
+                    {(() => {
+                      const sampleAdultFee = calculateFinalPrice(dynamicPricingItems[0] || { regularPrice: 0, discountValue: 0 });
+                      const sampleChildFee = childDiscountType === 'percentage'
+                        ? Math.round(sampleAdultFee * (1 - (parseFloat(childDiscountValue) || 0) / 100))
+                        : (parseFloat(childPrice) || 0);
+                      return (
+                        <div style={{ marginTop: '6px', fontSize: '0.76rem', color: '#166534', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span>💡 Calculated Child Fee:</span>
+                          <strong style={{ color: '#047857' }}>৳{sampleChildFee.toLocaleString()}</strong>
+                          <span style={{ color: '#6B7280' }}>(from ৳{sampleAdultFee.toLocaleString()} Adult rate)</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div>
+                    <label style={lbl}>Infant Price (৳) <span style={{ fontSize: '0.72rem', color: '#6B7280' }}>(Under 2 Yrs)</span> *</label>
+                    <input
+                      type="number"
+                      placeholder="e.g. 1000"
+                      value={infantPrice}
+                      onChange={(e) => setInfantPrice(e.target.value)}
+                      style={{ ...inp, fontWeight: 600 }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={lbl}>Child &amp; Infant Policy Notes</label>
+                  <textarea
+                    rows="2"
+                    placeholder="e.g. Birth certificate and parent passport copy required for child applicants under 12."
+                    value={childPolicyNotes}
+                    onChange={(e) => setChildPolicyNotes(e.target.value)}
+                    style={{ ...inp, resize: 'vertical' }}
+                  />
+                </div>
+              </div>
+
+              <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
+
+              {/* ── 5. Required Documents ── */}
+              <h3 style={sec}>5. Required Documents</h3>
               <p style={subsec}>Each line will show as a bullet point on the visa detail page. Press Enter to separate each item.</p>
               <div style={{ display: 'grid', gap: '16px', marginBottom: '28px' }}>
                 <div>
@@ -698,8 +801,8 @@ function AddVisaFormContent() {
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
 
-              {/* ── 5. Description & Policy ── */}
-              <h3 style={sec}>5. Description and Policy Information</h3>
+              {/* ── 6. Description & Policy ── */}
+              <h3 style={sec}>6. Description and Policy Information</h3>
               <p style={subsec}>These appear in accordion sections on the public visa detail page.</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
                 <div>
@@ -722,8 +825,8 @@ function AddVisaFormContent() {
 
               <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '0 0 20px 0' }} />
 
-              {/* ── 6. Cover Image and Gallery ── */}
-              <h3 style={sec}>6. Cover Image and Gallery Photos</h3>
+              {/* ── 7. Cover Image and Gallery ── */}
+              <h3 style={sec}>7. Cover Image and Gallery Photos</h3>
               <p style={subsec}>Upload a hero image and gallery photos for this visa destination.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '28px', alignItems: 'start' }}>
                 <div>

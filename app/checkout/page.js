@@ -160,8 +160,11 @@ function CheckoutContent() {
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const sellerDiscount = isGuideBooking ? 0 : 15;
-  const voucherDiscount = voucher.toUpperCase() === 'DESH2026' ? (isGuideBooking ? 100 / 120 : 20) : 0;
-  const coinsDiscount = useCoins ? (isGuideBooking ? 50 / 120 : 50 / 120) : 0;
+  const voucherUpper = voucher.trim().toUpperCase();
+  const voucherDiscount = voucherUpper === 'DESH2026' ? (isGuideBooking ? 100 : 20) : (
+    voucherUpper === 'REF-REWARD-500' || voucherUpper === 'REF-FRIEND-500' || voucherUpper.startsWith('DISC500') ? 500 : 0
+  );
+  const coinsDiscount = useCoins ? (isGuideBooking ? 50 : 50) : 0;
   const bankCashback = paymentMethod === 'bank' ? Math.round(subtotal * 0.05 * 100) / 100 : 0;
   const partnerDiscount = isGuideBooking ? 0 : (paymentMethod === 'card' ? 10 : (paymentMethod === 'bkash' ? 5 : 0));
   const taxes = 0;
